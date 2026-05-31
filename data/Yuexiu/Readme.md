@@ -10,7 +10,7 @@ This folder contains the processed geospatial data for the **Yuexiu District** (
 | File Name | Description | Source |
 | :--- | :--- | :--- |
 | **Yuexiu_boundary_proj** | The master administrative boundary of Yuexiu. Used as the clipping mask for all layers. | GADM / Local Admin |
-| **Yuexiu_subdistricts_proj** | The 18 Sub-districts (*Jiēdào*) of Yuexiu. Primary unit for administrative comparison. | Quickosm |
+| **Yuexiu_subdistricts_proj** | The 18 Sub-districts (*Jiēdào*) of Yuexiu. Primary unit for administrative comparison. | QuickOSM |
 | **Yuexiu_VIIRS_Points_Joined_proj** | Point cloud of Nighttime Light centroids joined with Sub-district names for zonal statistics. | NASA / Processed |
 | **Yuexiu_osm_roads_proj** | Full road network including highways, primary roads, and residential streets. | OpenStreetMap |
 | **Yuexiu_osm_green_proj** | Urban parks, gardens, and significant green spaces. | OpenStreetMap |
