@@ -1,4 +1,4 @@
-# Project: Urban Comparative Analysis – Yuexiu District, Guangzhou
+# Yuexiu District, Guangzhou
 
 This folder contains the processed geospatial data for the **Yuexiu District** (~33.64 km²). All data has been clipped to the district boundary and reprojected to a metric Coordinate Reference System (CRS) to ensure accurate spatial analysis and comparison with the Delft (Netherlands) dataset.
 
