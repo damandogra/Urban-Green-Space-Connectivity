@@ -1,0 +1,1 @@
+# connectivity script placeholder
