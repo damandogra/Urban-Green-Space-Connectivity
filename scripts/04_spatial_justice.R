@@ -1,1 +1,0 @@
-# spatial justice script placeholder
