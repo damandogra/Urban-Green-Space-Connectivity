@@ -58,6 +58,5 @@ APPLIED_SPATIAL_ANALYTICS/
 │   └── [figures auto-saved here by ggsave()]
 │
 ├── report.qmd               # Narrative + renders figures from report_files/
-├── test.R                   # Quick scratch / debugging
 └── README.md
 ```
