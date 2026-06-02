@@ -1,40 +1,71 @@
-# Report template for the Applied Spatial Analytics 2026 course
+# Running the pipeline
+## Prerequisites
+ 
+- [R](https://cran.r-project.org/) ≥ 4.3
+- [RStudio](https://posit.co/download/rstudio-desktop/) or [Quarto CLI](https://quarto.org/docs/get-started/)
+- [Quarto](https://quarto.org/) ≥ 1.4
+Install required R packages once:
+ 
+```r
+install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse"))
+```
+---
 
-This is a template repository used as a starting point for the group
-reports produced in the Applied Spatial Analytics 2025 course at
-TU Delft.
+## Data
+ 
+Data files are **not tracked in this repo**. Place them at the paths expected by `R/00_config.R`:
+ 
+```
+data/
+├── delft/
+│   ├── raster/    # delft_worldpop_proj.tif, ndvi_delft_proj.tif, …
+│   └── vector/    # delft_boundary_proj.gpkg, delft_osm_green_proj.gpkg, …
+└── Yuexiu/
+    ├── raster/    # Yuexiu_viirs_proj.tif, …
+    └── vector/    # yuexiu_boundary.gpkg, guangzhou_osm_green_proj.gpkg, …
+```
+ 
+> All paths are centralised in `R/00_config.R` — edit that file if your data lives elsewhere.
+ 
+---
 
-By starting this assignment in GitHub Classroom, you created a copy
-of this repository that you have write access to. You will continue to
-work on your report in that repository throughout the quarter. A great
-way to practice and apply what you learned in the "Intro to Git and GitHub"
-assignment!
+## How to run
+ 
+### 1. Clone and open
+ 
+```bash
+git clone https://github.com/Applied-Spatial-Analytics/create-your-report-groupe.git
+```
+ 
+Open `asa2025-report.Rproj` in RStudio.
+ 
+### 2. Run the pipeline scripts in order
+ 
+```r
+source("R/00_config.R")               # paths & constants
+source("R/01_load_data.R")            # load & validate layers
+source("R/02_accessibility.R")        # SQ1 — green space access
+source("R/03_typology_biodiversity.R")# SQ2 — typology & NDVI
+source("R/04_spatial_justice.R")      # SQ3 — Gini, equity
+source("R/05_connectivity.R")         # SQ4 — fragmentation & graph
+source("R/06_mcda_nbs.R")             # SQ5 — MCDA & corridors
+```
+ 
+Figures are saved automatically to `report_files/`.
+ 
+### 3. Render the report
+ 
+In RStudio: open `report.qmd` and click **Render**, or from the terminal:
+ 
+```bash
+quarto render report.qmd
+```
+ 
+Output: `report.html`
+ 
+---
 
-### Getting started with the report
-
-1. In RStudio, create a new project from version control. Use the
-   URL of your repository to clone it.
-   
-2. To start working on the report, open the `report.qmd` file, add the
-   names of your group members, and press on the "Render" button. Next,
-   stage and commit all changed files and push them to GitHub. You will
-   follow this **stage -> commit -> push** workflow every time you make a
-   change.
-
-### Feedback
-
-In the **Pull requests** section of your repository, you will find a
-**Feedback** pull request. We will use this pull request to provide
-feedback on your report throughout the quarter. You can also use this
-pull request to ask questions about the feedback.
-
-### Asking for help
-
-If you have questions about the assignment, please ask them in
-[Discussions](https://github.com/Applied-Spatial-Analytics/asa2026/discussions).
-
-
-#### File strcture
+## File strcture
 ```text
 APPLIED_SPATIAL_ANALYTICS/
 ├── data/
@@ -60,3 +91,9 @@ APPLIED_SPATIAL_ANALYTICS/
 ├── report.qmd               # Narrative + renders figures from report_files/
 └── README.md
 ```
+
+## Reproducibility notes
+ 
+- All file paths live in `R/00_config.R` — no hardcoded paths elsewhere.
+- Uses only open, globally available datasets (OSM, WorldPop, GBIF, VIIRS, NDVI).
+- The workflow is fully reproducible in any city/district by updating `00_config.R`.
