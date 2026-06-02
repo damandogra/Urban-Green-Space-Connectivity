@@ -2,7 +2,7 @@
 title: "Spatial Justice through Urban Green Space Connectivity"
 subtitle: "Project report of Group E"
 author:
-  - name: "Roxanne"
+  - name: "Roxanne Vuijk"
     affiliation: "MSc Urbanism"
   - name: "Belina Aileen"
     affiliation: "MSc Geomatics"
