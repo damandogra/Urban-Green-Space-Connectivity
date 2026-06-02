@@ -35,7 +35,7 @@ If you have questions about the assignment, please ask them in
 
 
 #### File strcture
-
+```text
 APPLIED_SPATIAL_ANALYTICS/
 ├── data/
 │   ├── delft/
@@ -60,3 +60,4 @@ APPLIED_SPATIAL_ANALYTICS/
 ├── report.qmd               # Narrative + renders figures from report_files/
 ├── test.R                   # Quick scratch / debugging
 └── README.md
+```
