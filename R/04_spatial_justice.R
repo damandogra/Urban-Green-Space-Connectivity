@@ -1,6 +1,19 @@
-# not debugged and ran
+# ── 04_spatial_justice.R (v2 — cleaned) ──────────────────────────────────────
+# Spatial justice analysis: Gini, bivariate choropleth,
+# green space vs. income / VIIRS correlation.
+#
+# v2 changes on top of v1 fixes:
+#   8. Filter pop_count < 100 from both cities before ALL analyses.
+#      These are WorldPop placeholder values (no real population signal),
+#      not real residential units. Leaving them in inflates green_pc_m2
+#      to thousands of m²/person and corrupts every per-capita metric.
+#   9. Delft Wijk 16 (Delftse Hout) and Wijk 26 (Abtswoude) are park/polder
+#      wijken with real pop but no CBS income disclosure — noted in output.
+#  10. Lorenz / Gini now computed on the cleaned set for consistency.
+# ─────────────────────────────────────────────────────────────────────────────
 
 source("R/00_config.R")
+
 library(sf)
 library(terra)
 library(exactextractr)
@@ -12,26 +25,35 @@ library(scales)
 
 sf_use_s2(FALSE)
 
-# ── Load pre-computed accessibility outputs + raw data ────────────────────────
+# ── Load data ─────────────────────────────────────────────────────────────────
 d  <- readRDS(file.path(OUT_ROOT, "yuexiu_data.rds"))
 dl <- readRDS(file.path(OUT_ROOT, "delft_data.rds"))
 
 yx_sub_access  <- readRDS(file.path(OUT_ROOT, "yx_sub_access.rds"))
 dl_wijk_access <- readRDS(file.path(OUT_ROOT, "dl_wijk_access.rds"))
 
-d$yx_pop  <- rast(d$yx_pop)
-d$yx_viirs <- rast(d$yx_viirs)
-dl$dl_pop  <- rast(dl$dl_pop)
+d$yx_pop   <- unwrap(d$yx_pop)
+d$yx_viirs <- unwrap(d$yx_viirs)
+dl$dl_pop  <- unwrap(dl$dl_pop)
 
-# ── 3A. Gini coefficient of green space per capita ────────────────────────────
-# Lorenz curve: rank neighbourhoods by green_pc_m2; Gini = 1 - 2*AUC(Lorenz)
+# ── FIX 8: Remove placeholder-population units ───────────────────────────────
+# WorldPop assigns pop_count = 1 where the raster has no signal (parks,
+# military zones, water bodies). These units produce artificially huge
+# green_pc_m2 values and must be excluded from all per-capita analyses.
+POP_MIN <- 100   # safe threshold: no real residential wijk has < 100 people
 
+yx_sub_access  <- yx_sub_access  |> filter(pop_count >= POP_MIN)
+dl_wijk_access <- dl_wijk_access |> filter(pop_count >= POP_MIN)
+
+message(sprintf("After pop filter — Yuexiu: %d subdistricts | Delft: %d wijken",
+                nrow(yx_sub_access), nrow(dl_wijk_access)))
+
+# ── 3A. Gini coefficient ──────────────────────────────────────────────────────
 gini_index <- function(x) {
   x <- x[!is.na(x) & x >= 0]
   if (length(x) == 0) return(NA_real_)
   x <- sort(x)
   n <- length(x)
-  # Standard Gini formula
   2 * sum(seq_len(n) * x) / (n * sum(x)) - (n + 1) / n
 }
 
@@ -60,28 +82,16 @@ gini_labels <- data.frame(
   label = sprintf("Gini = %.3f", c(yx_gini, dl_gini))
 )
 
-# ── 3B. Bivariate choropleth: green density vs. population density ────────────
-# Classify each unit into a 3×3 matrix (low/mid/high green × low/mid/high pop)
-
+# ── 3B. Bivariate choropleth ──────────────────────────────────────────────────
 tertile_label <- function(x, labels = c("Low", "Mid", "High")) {
-  cut(x, breaks = quantile(x, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE),
-      labels = labels, include.lowest = TRUE)
+  brks <- quantile(x, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
+  if (length(unique(brks)) < 4) return(factor(rep(NA, length(x)), levels = labels))
+  cut(x, breaks = brks, labels = labels, include.lowest = TRUE)
 }
 
-# Yuexiu: use green_area_m2 and pop_count from accessibility output
 yx_bivar <- yx_sub_access |>
   mutate(
-    admin_area_m2 = as.numeric(st_area(st_transform(geometry, CRS_YX))),
-    green_density = green_area_m2 / admin_area_m2,  # fraction of area
-    pop_density   = pop_count / (admin_area_m2 / 10000),  # per ha
-    grn_class     = tertile_label(green_density),
-    pop_class     = tertile_label(pop_density),
-    bivar_class   = paste(grn_class, pop_class, sep = "-")
-  )
-
-dl_bivar <- dl_wijk_access |>
-  mutate(
-    admin_area_m2 = as.numeric(st_area(st_transform(geometry, CRS_DELFT))),
+    admin_area_m2 = as.numeric(st_area(st_transform(yx_sub_access, CRS_YX))),
     green_density = green_area_m2 / admin_area_m2,
     pop_density   = pop_count / (admin_area_m2 / 10000),
     grn_class     = tertile_label(green_density),
@@ -89,78 +99,99 @@ dl_bivar <- dl_wijk_access |>
     bivar_class   = paste(grn_class, pop_class, sep = "-")
   )
 
-# 3×3 bivariate colour palette (green axis × population axis)
+dl_bivar <- dl_wijk_access |>
+  mutate(
+    admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access, CRS_DELFT))),
+    green_density = green_area_m2 / admin_area_m2,
+    pop_density   = pop_count / (admin_area_m2 / 10000),
+    grn_class     = tertile_label(green_density),
+    pop_class     = tertile_label(pop_density),
+    bivar_class   = paste(grn_class, pop_class, sep = "-")
+  )
+
 bivar_palette <- c(
-  "Low-Low"   = "#e8f4e8",  # low green, low pop  → pale green
-  "Low-Mid"   = "#b8d4b8",
-  "Low-High"  = "#5aaa5a",  # low green, high pop → equity concern
-  "Mid-Low"   = "#d4e8f4",
-  "Mid-Mid"   = "#7fb0cc",
-  "Mid-High"  = "#2277aa",
-  "High-Low"  = "#f4d4e8",
-  "High-Mid"  = "#cc7faa",
-  "High-High" = "#8833aa"   # high green, high pop → green-rich dense area
+  "Low-Low"   = "#e8f4e8", "Low-Mid"   = "#b8d4b8", "Low-High"  = "#5aaa5a",
+  "Mid-Low"   = "#d4e8f4", "Mid-Mid"   = "#7fb0cc", "Mid-High"  = "#2277aa",
+  "High-Low"  = "#f4d4e8", "High-Mid"  = "#cc7faa", "High-High" = "#8833aa"
 )
 
-# ── 3C. Green space – income / nightlight correlation ─────────────────────────
-# Delft: Pearson r between green_pc_m2 and mean disposable income
-# Yuexiu: Pearson r between green_pc_m2 and mean VIIRS radiance
+# ── 3C. Income / VIIRS correlations ──────────────────────────────────────────
 
-# --- Delft income ---
+# --- Delft income (buurt → wijk aggregation) ---
 dl_inc_sf <- dl$dl_inc
-# Extract a numeric income column (look for any column with "income", "inkomen", or "besteed")
-inc_col <- names(dl_inc_sf)[grepl("income|inkomen|besteed|gemiddeld",
-                                   names(dl_inc_sf), ignore.case = TRUE)][1]
-if (is.na(inc_col)) {
-  message("Warning: no income column auto-detected in dl_inc. Check column names:")
-  print(names(dl_inc_sf))
-  inc_col <- names(dl_inc_sf)[2]  # fallback: second column
+INC_COL   <- "mean_income_per_resident_x1000eur"
+
+if (!INC_COL %in% names(dl_inc_sf)) {
+  cbs <- c("gemiddeldInkomenPerInwoner",
+           "gemiddeldInkomenPerInkomensontvanger",
+           "gemiddeldGestandaardiseerdInkomenVanHuishoudens")
+  INC_COL <- cbs[cbs %in% names(dl_inc_sf)][1]
+  if (is.na(INC_COL)) stop("No income column found in dl_inc.")
+  dl_inc_sf[[INC_COL]] <- ifelse(dl_inc_sf[[INC_COL]] < 0, NA_real_, dl_inc_sf[[INC_COL]])
+  message("Fell back to CBS column: ", INC_COL)
+} else {
+  message("Using income column: ", INC_COL)
 }
-message(sprintf("Using income column: %s", inc_col))
 
-# Spatial join income to wijken
-dl_inc_joined <- st_join(
-  dl_wijk_access |> select(green_pc_m2, nearest_green_m),
-  dl_inc_sf[, inc_col],
-  join = st_intersects,
-  largest = TRUE
-) |>
-  rename(income = all_of(inc_col)) |>
-  mutate(income = as.numeric(income))
+dl_inc_wijk <- st_drop_geometry(dl_inc_sf) |>
+  filter(!is.na(wijkcode)) |>
+  group_by(wijkcode) |>
+  summarise(income_wijk = mean(.data[[INC_COL]], na.rm = TRUE), .groups = "drop") |>
+  mutate(income_wijk = ifelse(is.nan(income_wijk), NA_real_, income_wijk))
 
-dl_corr <- cor(dl_inc_joined$green_pc_m2, dl_inc_joined$income,
-                use = "complete.obs", method = "pearson")
-message(sprintf("Delft Pearson r (green pc ~ income): %.3f", dl_corr))
+dl_inc_joined <- dl_wijk_access |>
+  left_join(dl_inc_wijk, by = "wijkcode")
+
+n_income <- sum(!is.na(dl_inc_joined$income_wijk))
+message(sprintf("Delft: %d / %d wijken have income data after pop filter",
+                n_income, nrow(dl_inc_joined)))
+
+# Note park/polder wijken with real pop but suppressed income
+park_wijken <- dl_inc_joined |>
+  st_drop_geometry() |>
+  filter(is.na(income_wijk)) |>
+  select(wijknaam, pop_count, green_pc_m2)
+if (nrow(park_wijken) > 0) {
+  message("Wijken with population but no income disclosure (likely park/polder):")
+  print(park_wijken)
+}
+
+dl_corr <- cor(dl_inc_joined$green_pc_m2, dl_inc_joined$income_wijk,
+               use = "complete.obs", method = "pearson")
+message(sprintf("Delft Pearson r (green pc ~ income): %.3f  [n = %d]",
+                dl_corr, n_income))
 
 # --- Yuexiu VIIRS ---
+yx_viirs_rast <- d$yx_viirs
+yx_sub_reproj <- st_transform(yx_sub_access, crs(yx_viirs_rast))
+
 yx_viirs_zonal <- yx_sub_access |>
-  mutate(
-    viirs_mean = exact_extract(d$yx_viirs,
-                                st_transform(yx_sub_access, st_crs(d$yx_viirs)),
-                                "mean")
-  )
+  mutate(viirs_mean = exact_extract(yx_viirs_rast, yx_sub_reproj, "mean"))
+
 yx_corr <- cor(yx_viirs_zonal$green_pc_m2, yx_viirs_zonal$viirs_mean,
-                use = "complete.obs", method = "pearson")
-message(sprintf("Yuexiu Pearson r (green pc ~ VIIRS): %.3f", yx_corr))
+               use = "complete.obs", method = "pearson")
+message(sprintf("Yuexiu Pearson r (green pc ~ VIIRS): %.3f  [n = %d]",
+                yx_corr, sum(!is.na(yx_viirs_zonal$viirs_mean))))
 
 # ── Save outputs ──────────────────────────────────────────────────────────────
-saveRDS(lorenz_data,     file.path(OUT_ROOT, "lorenz_data.rds"))
-saveRDS(gini_labels,     file.path(OUT_ROOT, "gini_labels.rds"))
-saveRDS(yx_bivar,        file.path(OUT_ROOT, "yx_bivar.rds"))
-saveRDS(dl_bivar,        file.path(OUT_ROOT, "dl_bivar.rds"))
-saveRDS(dl_inc_joined,   file.path(OUT_ROOT, "dl_inc_joined.rds"))
-saveRDS(yx_viirs_zonal,  file.path(OUT_ROOT, "yx_viirs_zonal.rds"))
+saveRDS(lorenz_data,    file.path(OUT_ROOT, "lorenz_data.rds"))
+saveRDS(gini_labels,    file.path(OUT_ROOT, "gini_labels.rds"))
+saveRDS(yx_bivar,       file.path(OUT_ROOT, "yx_bivar.rds"))
+saveRDS(dl_bivar,       file.path(OUT_ROOT, "dl_bivar.rds"))
+saveRDS(dl_inc_joined,  file.path(OUT_ROOT, "dl_inc_joined.rds"))
+saveRDS(yx_viirs_zonal, file.path(OUT_ROOT, "yx_viirs_zonal.rds"))
 
 corr_summary <- data.frame(
   city      = c("Delft", "Yuexiu"),
   proxy     = c("Household income (CBS)", "Nighttime light (VIIRS)"),
-  pearson_r = c(dl_corr, yx_corr)
+  pearson_r = c(dl_corr, yx_corr),
+  n         = c(n_income, sum(!is.na(yx_viirs_zonal$viirs_mean)))
 )
 saveRDS(corr_summary, file.path(OUT_ROOT, "corr_summary.rds"))
 
 # ── Figures ───────────────────────────────────────────────────────────────────
 
-# Figure 3A: Lorenz curves with Gini annotations
+# Figure 3A: Lorenz curves
 p_lorenz <- ggplot(lorenz_data, aes(x = cum_pop, y = cum_grn, colour = city)) +
   geom_line(linewidth = 1.1) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "grey50") +
@@ -180,34 +211,53 @@ p_lorenz <- ggplot(lorenz_data, aes(x = cum_pop, y = cum_grn, colour = city)) +
 ggsave(file.path(OUT_ROOT, "fig_lorenz_gini.png"),
        p_lorenz, width = 8, height = 6, dpi = 300)
 
-# Figure 3B: Bivariate choropleth maps
+# Figure 3B: Bivariate choropleth — single shared legend
+# Key fix: convert bivar_class to a factor with IDENTICAL levels in both
+# sf objects. patchwork's guides = "collect" only merges legends when the
+# underlying scale (values + breaks + name) is byte-for-byte identical.
+# Sorting + factoring guarantees that.
+all_classes <- sort(names(bivar_palette))   # all 9 possible cells, always same order
+
+yx_bivar <- yx_bivar |>
+  mutate(bivar_class = factor(bivar_class, levels = all_classes))
+dl_bivar <- dl_bivar |>
+  mutate(bivar_class = factor(bivar_class, levels = all_classes))
+
+shared_fill <- scale_fill_manual(
+  values   = bivar_palette,
+  breaks   = all_classes,
+  na.value = "grey80",
+  name     = "Green–Population\nmatrix",
+  drop     = FALSE
+)
+
 p_bv_yx <- ggplot(yx_bivar) +
   geom_sf(aes(fill = bivar_class), colour = "white", linewidth = 0.3) +
-  scale_fill_manual(values = bivar_palette, na.value = "grey80",
-                    name = "Green–Population\nmatrix") +
+  shared_fill +
   theme_minimal() +
-  labs(title = "Bivariate: Green Density × Population Density — Yuexiu",
-       subtitle = "3×3 tertile classification")
+  labs(title = "Yuexiu", subtitle = "3×3 tertile classification")
 
 p_bv_dl <- ggplot(dl_bivar) +
   geom_sf(aes(fill = bivar_class), colour = "white", linewidth = 0.3) +
-  scale_fill_manual(values = bivar_palette, na.value = "grey80",
-                    name = "Green–Population\nmatrix") +
+  shared_fill +
   theme_minimal() +
-  labs(title = "Bivariate: Green Density × Population Density — Delft",
-       subtitle = "3×3 tertile classification")
+  labs(title = "Delft", subtitle = "3×3 tertile classification")
 
 ggsave(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"),
-       p_bv_yx + p_bv_dl, width = 14, height = 6, dpi = 300)
+       p_bv_yx + p_bv_dl +
+         plot_annotation(
+           title = "Bivariate: Green Density × Population Density",
+           theme = theme(plot.title = element_text(size = 14, face = "bold"))
+         ) +
+         plot_layout(guides = "collect"),
+       width = 14, height = 6, dpi = 300)
 
 # 3×3 legend tile
-legend_df <- expand.grid(
-  grn_class = c("Low", "Mid", "High"),
-  pop_class = c("Low", "Mid", "High")
-) |>
-  mutate(bivar_class = paste(grn_class, pop_class, sep = "-"),
-         grn_class = factor(grn_class, c("Low", "Mid", "High")),
-         pop_class = factor(pop_class, c("Low", "Mid", "High")))
+legend_df <- expand.grid(grn_class = c("Low","Mid","High"),
+                         pop_class = c("Low","Mid","High")) |>
+  mutate(bivar_class = paste(grn_class, pop_class, sep="-"),
+         grn_class = factor(grn_class, c("Low","Mid","High")),
+         pop_class = factor(pop_class, c("Low","Mid","High")))
 
 p_legend <- ggplot(legend_df, aes(x = grn_class, y = pop_class, fill = bivar_class)) +
   geom_tile(colour = "white", linewidth = 0.5) +
@@ -219,34 +269,40 @@ p_legend <- ggplot(legend_df, aes(x = grn_class, y = pop_class, fill = bivar_cla
 ggsave(file.path(OUT_ROOT, "fig_bivariate_legend.png"),
        p_legend, width = 3.5, height = 3.5, dpi = 300)
 
-# Figure 3C: Scatter plots — green pc vs. income/VIIRS
+# Figure 3C: Scatter plots
 p_corr_dl <- ggplot(dl_inc_joined |> st_drop_geometry(),
-                     aes(x = income, y = green_pc_m2)) +
+                    aes(x = income_wijk, y = green_pc_m2)) +
   geom_point(colour = "#440154", size = 3, alpha = 0.8) +
-  geom_smooth(method = "lm", se = TRUE, colour = "#440154", fill = "#440154", alpha = 0.15) +
+  geom_smooth(method = "lm", se = TRUE, colour = "#440154",
+              fill = "#440154", alpha = 0.15) +
   annotate("text", x = Inf, y = Inf,
-           label = sprintf("r = %.3f", dl_corr),
-           hjust = 1.1, vjust = 1.5, size = 5, fontface = "bold") +
+           label = sprintf("r = %.3f\n(n = %d)", dl_corr, n_income),
+           hjust = 1.1, vjust = 1.5, size = 4.5, fontface = "bold") +
+  scale_x_continuous(labels = label_comma(suffix = "k€")) +
   scale_y_continuous(labels = label_comma()) +
   theme_minimal(base_size = 12) +
   labs(title = "Green Space per Capita vs. Household Income — Delft",
-       subtitle = "Pearson correlation; wijk level",
-       x = "Mean disposable income (€)", y = "Green space (m² per person)")
+       subtitle = "Pearson correlation; wijk level (residential wijken only)",
+       x = "Mean disposable income (€1 000 / resident)",
+       y = "Green space (m² per person)")
 
+n_yx <- sum(!is.na(yx_viirs_zonal$viirs_mean))
 p_corr_yx <- ggplot(yx_viirs_zonal |> st_drop_geometry(),
-                     aes(x = viirs_mean, y = green_pc_m2)) +
+                    aes(x = viirs_mean, y = green_pc_m2)) +
   geom_point(colour = "#21918c", size = 3, alpha = 0.8) +
-  geom_smooth(method = "lm", se = TRUE, colour = "#21918c", fill = "#21918c", alpha = 0.15) +
+  geom_smooth(method = "lm", se = TRUE, colour = "#21918c",
+              fill = "#21918c", alpha = 0.15) +
   annotate("text", x = Inf, y = Inf,
-           label = sprintf("r = %.3f", yx_corr),
-           hjust = 1.1, vjust = 1.5, size = 5, fontface = "bold") +
+           label = sprintf("r = %.3f\n(n = %d)", yx_corr, n_yx),
+           hjust = 1.1, vjust = 1.5, size = 4.5, fontface = "bold") +
   scale_y_continuous(labels = label_comma()) +
   theme_minimal(base_size = 12) +
   labs(title = "Green Space per Capita vs. VIIRS Nighttime Light — Yuexiu",
-       subtitle = "Pearson correlation; subdistrict level",
-       x = "Mean VIIRS radiance (nW/cm²/sr)", y = "Green space (m² per person)")
+       subtitle = "Pearson correlation; subdistrict level (residential only)",
+       x = "Mean VIIRS radiance (nW/cm²/sr)",
+       y = "Green space (m² per person)")
 
 ggsave(file.path(OUT_ROOT, "fig_equity_correlations.png"),
        p_corr_dl + p_corr_yx, width = 14, height = 6, dpi = 300)
 
-message("Script 04 complete — spatial justice figures saved.")
+message("Script 04 v2 complete — spatial justice figures saved.")
