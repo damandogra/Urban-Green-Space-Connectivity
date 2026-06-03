@@ -7,7 +7,7 @@
 Install required R packages once:
  
 ```r
-install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse"))
+install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse", "patchwork"))
 ```
 ---
 

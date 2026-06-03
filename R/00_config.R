@@ -1,12 +1,12 @@
-# R/00_config.R
 library(here)
 
-# ── Root-relative paths ──────────────────────────────────────────────────────
-DATA_ROOT  <- here("data")
-OUT_ROOT   <- here("report_files")
+# ── Output directory ──────────────────────────────────────────────────────────
+OUT_ROOT <- here("report_files")
 dir.create(OUT_ROOT, showWarnings = FALSE, recursive = TRUE)
 
-# ── Yuexiu (Guangzhou) paths ─────────────────────────────────────────────────
+DATA_ROOT <- here("data")
+
+# ── Yuexiu (Guangzhou) ────────────────────────────────────────────────────────
 YX <- list(
   boundary     = file.path(DATA_ROOT, "Yuexiu/vector/Yuexiu_boundary_proj.gpkg"),
   subdistricts = file.path(DATA_ROOT, "Yuexiu/vector/Yuexiu_subdistricts_proj.gpkg"),
@@ -22,34 +22,36 @@ YX <- list(
   viirs_rast   = file.path(DATA_ROOT, "Yuexiu/raster/Yuexiu_viirs_proj.tif")
 )
 
-# ── Delft paths ──────────────────────────────────────────────────────────────
+# ── Delft (Netherlands) ───────────────────────────────────────────────────────
 DL <- list(
   boundary   = file.path(DATA_ROOT, "delft/vector/delft_boundary_proj.gpkg"),
-  wijken     = file.path(DATA_ROOT, "delft/vector/delft_wijken_proj.gpkg"),   # NOTE: confirm layer name
+  wijken     = file.path(DATA_ROOT, "delft/vector/delft_wijken_proj.gpkg"),
+  buurten    = file.path(DATA_ROOT, "delft/vector/delft_buurten_proj.gpkg"),
   income     = file.path(DATA_ROOT, "delft/vector/delft_income_proj.gpkg"),
-  green      = file.path(DATA_ROOT, "delft/vector/delft_osm_green_proj.gpkg"),  # you'll need to add this
+  green      = file.path(DATA_ROOT, "delft/vector/delft_osm_green_proj.gpkg"),
   roads      = file.path(DATA_ROOT, "delft/vector/delft_osm_roads_proj.gpkg"),
+  water      = file.path(DATA_ROOT, "delft/vector/delft_osm_water_proj.gpkg"),
   gbif       = file.path(DATA_ROOT, "delft/vector/delft_gbif_proj.gpkg"),
   worldpop   = file.path(DATA_ROOT, "delft/raster/delft_worldpop_proj.tif"),
   worldcover = file.path(DATA_ROOT, "delft/raster/delft_worldcover_proj.tif"),
   ndvi       = file.path(DATA_ROOT, "delft/raster/ndvi_delft_proj.tif")
 )
 
-# ── CRS ──────────────────────────────────────────────────────────────────────
-CRS_DELFT  <- 28992   # Amersfoort RD New
-CRS_YX     <- 4547    # UTM Zone 49N (adjust to whatever your data uses)
+# ── CRS ───────────────────────────────────────────────────────────────────────
+CRS_YX   <- 32649   # WGS 84 / UTM Zone 49N
+CRS_DELFT <- 28992  # Amersfoort / RD New
 
-# ── Analysis thresholds ──────────────────────────────────────────────────────
-BUFFER_300M <- 300
-BUFFER_500M <- 500
-MIN_PATCH_HA <- 0.1        # minimum green patch size to include
-DISPERSAL_THRESH_M <- 150  # for connectivity graph edges
+# ── Analysis constants ────────────────────────────────────────────────────────
+BUFFER_300M        <- 300
+BUFFER_500M        <- 500
+MIN_PATCH_HA       <- 0.1   # drop green patches smaller than this
+DISPERSAL_THRESH_M <- 150   # max gap for connectivity graph edges
+WATER_LINE_BUFFER  <- 5     # metres to buffer water lines into polygons
 
-# ── MCDA weights (sum to 1) ───────────────────────────────────────────────────
-# Adjust these weights after group discussion
+# ── MCDA weights (must sum to 1) ──────────────────────────────────────────────
 MCDA_WEIGHTS <- c(
-  accessibility  = 0.30,
-  biodiversity   = 0.25,
-  connectivity   = 0.25,
-  social_equity  = 0.20
+  accessibility = 0.30,
+  biodiversity  = 0.25,
+  connectivity  = 0.25,
+  equity        = 0.20
 )
