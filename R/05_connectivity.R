@@ -92,7 +92,7 @@ build_connectivity_graph <- function(green_sf, local_crs,
   n      <- nrow(grn_m)
 
   # Build edge list: all pairs within dispersal threshold
-  dist_mat <- as.matrix(st_distance(cents))
+  dist_mat <- units::drop_units(st_distance(cents))
   edges <- which(dist_mat <= thresh_m & dist_mat > 0, arr.ind = TRUE)
   edges <- edges[edges[, 1] < edges[, 2], , drop = FALSE]  # upper triangle only
 
@@ -110,9 +110,14 @@ build_connectivity_graph <- function(green_sf, local_crs,
   betw <- tryCatch({
     if (!requireNamespace("igraph", quietly = TRUE)) stop("no igraph")
     g <- igraph::graph_from_edgelist(edges, directed = FALSE)
-    igraph::betweenness(g, normalized = TRUE)
+
+    betw_tmp <- igraph::betweenness(g, normalized = TRUE)
+    betw_full <- rep(0, n)
+    betw_full[as.integer(igraph::V(g)$name)] <- betw_tmp
+    betw_full
+
   }, error = function(e) {
-    message("  igraph not available — using degree as betweenness proxy")
+    message("  igraph not available – using degree as betweenness proxy")
     as.numeric(deg) / max(deg, 1)
   })
 

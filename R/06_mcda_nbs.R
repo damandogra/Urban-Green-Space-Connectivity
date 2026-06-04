@@ -60,7 +60,6 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
 
   # Use geometry from access_sf as the spatial backbone
   backbone <- access_sf |>
-    select(geometry) |>
     mutate(row_id = row_number())
 
   # --- Biodiversity sub-score ---
@@ -96,7 +95,7 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
   nodes_m  <- st_transform(graph_obj$nodes, local_crs)
   node_cents <- st_centroid(nodes_m)
 
-  joined_conn <- st_join(admin_m["geometry"], node_cents["betweenness"],
+  joined_conn <- st_join(admin_m, node_cents["betweenness"],
                           join = st_contains) |>
     st_drop_geometry() |>
     group_by(row_number()) |>
