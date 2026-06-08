@@ -1,7 +1,9 @@
+install.packages("rsi")
 source("R/00_config.R")
 library(sf)
 library(terra)
 library(dplyr)
+library(rsi)
 
 sf_use_s2(FALSE)
 
@@ -104,3 +106,4 @@ saveRDS(
 )
 
 message("Script 01 complete — data loaded and saved.")
+

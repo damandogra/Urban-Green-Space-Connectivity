@@ -385,6 +385,9 @@ saveRDS(type_summary, file.path(OUT_ROOT, "type_summary.rds"))
 # ── Figures ───────────────────────────────────────────────────────────────────
 
 # Figure 2A: Green typology stacked bar
+
+type_summary |> dplyr::filter(green_type != "agriculture")
+
 p_type <- ggplot(type_summary,
                  aes(x = city, y = pct_area, fill = green_type)) +
   geom_col(width = 0.6) +
@@ -479,3 +482,4 @@ ggsave(file.path(OUT_ROOT, "fig_blue_green_ratio.png"),
        p_bg_yx + p_bg_dl, width = 14, height = 6, dpi = 300)
 
 message("Script 03 complete — typology & biodiversity figures saved.")
+

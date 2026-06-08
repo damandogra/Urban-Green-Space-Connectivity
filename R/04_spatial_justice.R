@@ -306,3 +306,4 @@ ggsave(file.path(OUT_ROOT, "fig_equity_correlations.png"),
        p_corr_dl + p_corr_yx, width = 14, height = 6, dpi = 300)
 
 message("Script 04 v2 complete — spatial justice figures saved.")
+

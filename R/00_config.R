@@ -4,7 +4,7 @@ library(here)
 OUT_ROOT <- here("report_files")
 dir.create(OUT_ROOT, showWarnings = FALSE, recursive = TRUE)
 
-DATA_ROOT <- here("data")
+DATA_ROOT <- "/Users/belinaileen/Desktop/data"
 
 # ── Yuexiu (Guangzhou) ────────────────────────────────────────────────────────
 YX <- list(
@@ -55,3 +55,4 @@ MCDA_WEIGHTS <- c(
   connectivity  = 0.25,
   equity        = 0.20
 )
+

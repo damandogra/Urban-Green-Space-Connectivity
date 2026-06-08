@@ -7,6 +7,7 @@ library(ggplot2)
 library(patchwork)
 library(scales)
 
+
 sf_use_s2(FALSE)
 
 d  <- readRDS(file.path(OUT_ROOT, "yuexiu_data.rds"))
@@ -27,9 +28,9 @@ dl$dl_cover <- rast(dl$dl_cover)
 
 calc_green_per_capita <- function(admin_sf, green_sf, pop_rast, local_crs) {
   # 1. Ensure geometries are valid and non-empty
-  admin_sf <- admin_sf[!st_is_empty(admin_sf), ] 
+  admin_sf <- admin_sf[!st_is_empty(admin_sf), ]
   admin_sf <- st_make_valid(admin_sf)
-  
+
   admin_m <- st_transform(admin_sf, local_crs)
   green_m <- st_transform(green_sf, local_crs)
   green_union <- st_union(green_m)

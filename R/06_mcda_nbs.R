@@ -243,7 +243,7 @@ ggsave(file.path(OUT_ROOT, "fig_mcda_maps.png"),
 # Figure 5B: Priority tier maps
 tier_colours <- c("High priority"   = "#d73027",
                    "Medium priority" = "#fee090",
-                   "Low priority"    = "#4575b4")
+                   "Low priority"    = "#EBF6F9")
 
 p_tier_yx <- ggplot(yx_mcda) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
