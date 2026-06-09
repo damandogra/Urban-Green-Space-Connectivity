@@ -286,3 +286,4 @@ ggsave(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"),
        p_bw, width = 9, height = 6, dpi = 300)
 
 message("Script 05 complete — connectivity figures saved.")
+
