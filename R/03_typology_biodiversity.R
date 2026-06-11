@@ -101,7 +101,7 @@ classify_green_type <- function(green_sf) {
           grepl("groenvoorziening|planten|heesters|struiken", tag_raw, ignore.case = TRUE) ~ "Park / Recreation",
           grepl("rietland",                                  tag_raw, ignore.case = TRUE) ~ "Nature Reserve / Scrub",
           grepl("bouwland|fruitteelt|hoogstam",              tag_raw, ignore.case = TRUE) ~ "Allotment / Agriculture",
-          TRUE                                                                             ~ "Other / Unclassified"
+          TRUE                                                                            ~ "Other / Unclassified"
         )
       )
   } else {
@@ -123,7 +123,7 @@ classify_green_type <- function(green_sf) {
           grepl("allotment|farm|farmland",                       tag_raw, ignore.case = TRUE) ~ "Allotment / Agriculture",
           grepl("nature_reserve|wetland|scrub|heath",            tag_raw, ignore.case = TRUE) ~ "Nature Reserve / Scrub",
           grepl("pitch|track|sports_centre",                     tag_raw, ignore.case = TRUE) ~ "Sports Facility",
-          TRUE                                                                                 ~ "Other / Unclassified"
+          TRUE                                                                                ~ "Other / Unclassified"
         )
       )
   }
@@ -270,19 +270,20 @@ yx_grn_bio <- count_pts_in_polys(yx_grn_typed, d$yx_gbif,  CRS_YX)
 message("Species density — Delft...")
 dl_grn_bio <- count_pts_in_polys(dl_grn_typed, dl$dl_gbif, CRS_DELFT)
 
-# ── 2E. Blue-green ratio per admin unit ──────────────────────────────────────
+# ── 2E. Blue-green ratio / Environmental Justice Metrics ──────────────────────
 calc_blue_green_ratio <- function(admin_sf, green_sf, water_sf,
                                   water_line_sf  = NULL,
                                   local_crs,
-                                  water_line_buf = WATER_LINE_BUFFER) {
+                                  water_line_buf = WATER_LINE_BUFFER,
+                                  label          = "") {
 
-  admin_m <- scrub_sf(st_transform(admin_sf, local_crs), "bg-admin")$sf
-  green_m <- scrub_sf(st_transform(green_sf, local_crs), "bg-green")$sf
-  water_m <- scrub_sf(st_transform(water_sf, local_crs), "bg-water")$sf
+  admin_m <- scrub_sf(st_transform(admin_sf, local_crs), paste0(label, "-bg-admin"))$sf
+  green_m <- scrub_sf(st_transform(green_sf, local_crs), paste0(label, "-bg-green"))$sf
+  water_m <- scrub_sf(st_transform(water_sf, local_crs), paste0(label, "-bg-water"))$sf
 
   if (!is.null(water_line_sf)) {
     wl_poly <- st_buffer(st_transform(water_line_sf, local_crs), water_line_buf)
-    wl_poly <- scrub_sf(wl_poly, "bg-waterline")$sf
+    wl_poly <- scrub_sf(wl_poly, paste0(label, "-bg-waterline"))$sf
     water_m <- rbind(
       water_m[, intersect(names(water_m), names(wl_poly))],
       wl_poly[, intersect(names(water_m), names(wl_poly))]
@@ -292,9 +293,7 @@ calc_blue_green_ratio <- function(admin_sf, green_sf, water_sf,
   # Add admin row id
   admin_m$.adm_id <- seq_len(nrow(admin_m))
 
-  # Intersect all features against all admin units at once (no union needed)
-  # st_make_valid on individual polygons before intersection
-  area_in_admin <- function(feat_m, admin_m, label) {
+  area_in_admin <- function(feat_m, admin_m, feat_label) {
     areas <- rep(0, nrow(admin_m))
     feat_m <- st_make_valid(feat_m)
     if (st_is_longlat(feat_m)) {
@@ -312,7 +311,7 @@ calc_blue_green_ratio <- function(admin_sf, green_sf, water_sf,
         feat_geom,
         admin_m[, c(".adm_id", attr(admin_m, "sf_column"))]
       )),
-      error = function(e) { warning(label, ": ", conditionMessage(e)); NULL }
+      error = function(e) { warning(feat_label, ": ", conditionMessage(e)); NULL }
     )
     if (is.null(inter) || nrow(inter) == 0) return(areas)
 
@@ -327,50 +326,68 @@ calc_blue_green_ratio <- function(admin_sf, green_sf, water_sf,
     areas
   }
 
-  message("  computing green areas...")
+  message("   computing green areas...")
   green_areas <- area_in_admin(green_m, admin_m, "green")
-  message("  computing water areas...")
+  message("   computing water areas...")
   water_areas <- area_in_admin(water_m, admin_m, "water")
 
   out <- admin_sf |>
-  mutate(green_m2 = NA_real_, water_m2 = NA_real_, blue_green_ratio = NA_real_)
+    mutate(green_m2 = NA_real_, water_m2 = NA_real_,
+           green_pc_m2 = NA_real_, water_pc_m2 = NA_real_,
+           pop_density = NA_real_, green_pressure_idx = NA_real_,
+           blue_green_balance = NA_real_)
 
-  sc_idx <- scrub_sf(st_transform(admin_sf, local_crs), "bg-admin-idx")$kept
+  sc_idx <- scrub_sf(st_transform(admin_sf, local_crs), paste0(label, "-bg-admin-idx"))$kept
   idx    <- if (length(sc_idx) == length(green_areas)) sc_idx else seq_along(green_areas)
+
   out$green_m2[idx] <- green_areas
   out$water_m2[idx] <- water_areas
 
-  # Only compute ratio where green area is meaningful (>= 100 m²)
-  # Near-zero green areas produce nonsensical ratios and are set to NA
-  out$blue_green_ratio[idx] <- ifelse(
-    green_areas >= 100,
-    water_areas / green_areas,
-    NA_real_
-  )
-  out
+  # SAFELY HANDLE MISSING POPULATION COLUMN BEFORE SLICING
+  if (!"pop_count" %in% names(admin_sf)) {
+    warning(sprintf("pop_count column missing in study context [%s]. Falling back to area metrics (Pop = 1).", label))
+    pop_vec_orig <- rep(1, nrow(admin_sf))
+  } else {
+    pop_vec_orig <- admin_sf$pop_count
   }
+
+  # Clean alignment logic with execution geometry subsets
+  pop_vec <- pop_vec_orig[idx]
+  pop_vec[is.na(pop_vec)] <- 1
+
+  green_pc <- green_areas / pmax(pop_vec, 1)
+  water_pc <- water_areas / pmax(pop_vec, 1)
+
+  pop_density <- pop_vec / (as.numeric(st_area(st_transform(admin_sf[idx, ], local_crs))) / 10000)
+
+  out$green_pc_m2[idx]        <- green_pc
+  out$water_pc_m2[idx]        <- water_pc
+  out$pop_density[idx]        <- pop_density
+  out$green_pressure_idx[idx] <- pop_density / (green_pc + 0.01)
+  out$blue_green_balance[idx] <- log1p(water_pc) - log1p(green_pc)
+
+  return(out)
+}
 
 # Deduplicate wijken by wijkcode to avoid phantom rows from CBS join
 dl$dl_wijk <- dl$dl_wijk[!duplicated(dl$dl_wijk$wijkcode), ]
-
 dl$dl_wijk <- dl$dl_wijk[!is.na(dl$dl_wijk$wijknaam) & dl$dl_wijk$wijknaam != "", ]
-
-# Keep only Delft municipality (GM0503) — file also contains
-# bordering wijken from Den Haag, Rijswijk, Midden-Delfland, Pijnacker-Nootdorp
 dl$dl_wijk <- dl$dl_wijk[dl$dl_wijk$gemeentecode == "GM0503", ]
 
 message("Blue-green ratio — Yuexiu subdistricts...")
 yx_sub_bg <- calc_blue_green_ratio(
   d$yx_sub, d$yx_grn, d$yx_water_poly,
   water_line_sf = d$yx_water_line,
-  local_crs     = CRS_YX
+  local_crs     = CRS_YX,
+  label         = "Yuexiu"
 )
 
 message("Blue-green ratio — Delft wijken...")
 dl_wijk_bg <- calc_blue_green_ratio(
   dl$dl_wijk, dl$dl_grn, dl$dl_water,
   water_line_sf = NULL,
-  local_crs     = CRS_DELFT
+  local_crs     = CRS_DELFT,
+  label         = "Delft"
 )
 
 # ── Save outputs ──────────────────────────────────────────────────────────────
@@ -384,9 +401,9 @@ saveRDS(type_summary, file.path(OUT_ROOT, "type_summary.rds"))
 
 # ── Figures ───────────────────────────────────────────────────────────────────
 
-# Figure 2A: Green typology stacked bar
-
-type_summary |> dplyr::filter(green_type != "agriculture")
+# Figure 2A: Fixed assignment pipeline
+type_summary <- type_summary |>
+  dplyr::filter(!green_type %in% c("agriculture", "Allotment / Agriculture"))
 
 p_type <- ggplot(type_summary,
                  aes(x = city, y = pct_area, fill = green_type)) +
@@ -448,7 +465,7 @@ bio_df <- bind_rows(
 ) |> filter(!is.na(gbif_obs_per_ha), gbif_obs_per_ha > 0, area_ha > 0)
 
 p_gbif <- ggplot(bio_df, aes(x = area_ha, y = gbif_obs_per_ha,
-                              colour = green_type, shape = city)) +
+                             colour = green_type, shape = city)) +
   geom_point(alpha = 0.6, size = 2) +
   scale_x_log10(labels = label_comma()) +
   scale_y_log10(labels = label_comma()) +
@@ -461,22 +478,21 @@ p_gbif <- ggplot(bio_df, aes(x = area_ha, y = gbif_obs_per_ha,
 ggsave(file.path(OUT_ROOT, "fig_gbif_density.png"),
        p_gbif, width = 10, height = 6, dpi = 300)
 
-# Figure 2F: Blue-green ratio maps
 p_bg_yx <- ggplot(yx_sub_bg) +
-  geom_sf(aes(fill = blue_green_ratio)) +
-  scale_fill_distiller(name = "Blue:Green\nratio", palette = "Blues",
+  geom_sf(aes(fill = blue_green_balance)) +
+  scale_fill_distiller(name = "BG Balance\n(log scale)", palette = "BrBG",
                        direction = 1, na.value = "grey80") +
   theme_minimal() +
-  labs(title    = "Blue-Green Ratio — Yuexiu Subdistricts",
-       subtitle = "Water area ÷ Green area per unit")
+  labs(title    = "Blue-Green Balance — Yuexiu Subdistricts",
+       subtitle = "log1p(Water PC) - log1p(Green PC)")
 
 p_bg_dl <- ggplot(dl_wijk_bg) +
-  geom_sf(aes(fill = blue_green_ratio)) +
-  scale_fill_distiller(name = "Blue:Green\nratio", palette = "Blues",
+  geom_sf(aes(fill = blue_green_balance)) +
+  scale_fill_distiller(name = "BG Balance\n(log scale)", palette = "BrBG",
                        direction = 1, na.value = "grey80") +
   theme_minimal() +
-  labs(title    = "Blue-Green Ratio — Delft Wijken",
-       subtitle = "Water area ÷ Green area per unit")
+  labs(title    = "Blue-Green Balance — Delft Wijken",
+       subtitle = "log1p(Water PC) - log1p(Green PC)")
 
 ggsave(file.path(OUT_ROOT, "fig_blue_green_ratio.png"),
        p_bg_yx + p_bg_dl, width = 14, height = 6, dpi = 300)

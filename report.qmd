@@ -27,7 +27,35 @@ Urban green spaces are still unequally distributed across different city distric
 
 -   is there a gap in studies/existing assessments that combine accessibility, biodiversity, and connectivity into a single framework??
 
-In order to assess wether a city (district) is succesfull, and where it can improve its UGS, this study provides a method that combines factors such as proximity, biodiversity and connectivity into a single framework that assesses spatial justice. There is a need for a reproducible method that evaluates urban green space quality in relation to spatial justice across different urban contexts.
+In order to assess wether a city (district) is succesful, and where it can improve its UGS, this study provides a method that combines factors such as proximity, biodiversity and connectivity into a single framework that assesses spatial justice. There is a need for a reproducible method that evaluates urban green space quality in relation to spatial justice across different urban contexts.
+
+### Literature Review
+
+For humans; green corridors as places to do sports, relax, meet people and help reduce risks from climare change
+impact by cooling the city through green corridors. For non-humans; provide  animals and pollinators to move better
+than when they are stuck only on their green spaces ( Cardinali, 2024)​
+
+In China, there has been efforts of green corridor (Chengdu's Tiangfu Greenway, Beijing urban green corridor). Study
+by Tang et al (2022) found that Guangzhou's greenways have met residents' needs (moderate, barely balanced
+relationship –0.5885/1) between greenway supply and demand. However, high-density areas have uneven access. ​
+
+Built-up area of Guangzhou of China from 1986 to 2018 continued to increase. However, the vegetation area
+continued to decrease during 32 years. (Guo et al, 2021)​
+
+Other than green corridors, we can also look at urban river corridors that proves to contribute to a healthy city,
+healthier resident and recreational opportiunities – adding ecological and social value (Claudiu)​
+
+Study by Meerow (2019) on green infrastructure spatial planning model for evaluating ecosystem service trade-offs
+and synergies across three coastal megacities through spatial criterion evaluation. One of the metrics; access to
+green space, used an indicator representing the population weighted mean distance to the nearest park for all
+buildings within a census tract (Logan et al 2019) -- thus calculating distance between nearest park to building. ​
+
+High levels of ecological connectivity within an urban landscape enables animals to move between patchy
+resources and allows for breeding whilst maintaining gene flow. In contrast, low levels of ecological connectivity
+restricts access to resources and prevents the movement of individuals and genes, inbreeding depression and
+extinction. Methodology include quantifying ecological connectivity; City biodiversity Index that calculates the
+probability of two randomly chosen locations to be connected and not separated by barriers. Tools used; Excel and
+ArcGIS (Kirk et al, 2023)
 
 ### Research aim
 
@@ -79,27 +107,38 @@ Translate analytical findings into strategies for increasing UGS quality
 
 ### Research questions
 
-How does connectivity between & biodiversity in urban green spaces contribute to spatial justice in the cities Delft and Guangzhou?
+How does Quality and Connectivity of Urban Green Spaces Contribute to Spatial Justice in Delft and Guangzhou?
 
-new proposal: How does quality and connectivity of urban green spaces contribute to spatial justice in Delft and Guangzhou?
+### Spatial context
 
-### Report structure
+Study sites: Delft, The Netherlands and historic center district of Yuexiu in Guangzhou, China.
 
-This study addresses the research question by breaking it up in several research sub-questions, which will come together in forming a MCDA, with which this study provides a method to determine the quality of urban green spaces, and therefore provide a tool for planners and designers to see on which aspect they can improve the urban green space and help them make informed decisions. Through a case study comparison between the city of Delft, The Netherlands, and the historic center district, Yuexiu in Guangzhou, China, this study provides a method which is applicable and reproducible for either small cities or city districts. It concludes with providing a strategy for using nature based solutions to improve spatial justice in relationship to urban green space connectivity.
+Methodology aims to be reproducible for either small cities or city districts. It concludes with providing a strategy for nature-based solutions to improve the relationship between spatial justice and green space connectivity.
 
-Define - Urban Green Space - connectivity & biodiversity - spatial justice
+## Methods
+
+### Analytical framework
+
+This study addresses the research question by breaking it up in several research sub-questions, which will come together in forming a MCDA. The study hopes to provide a method to determine the quality of urban green spaces, and therefore provide a tool for planners and designers to identify aspects for urban green space improvement for more informed decisions.
 
 The empirical analysis of this paper is split into four categories to provide more structure in throughout the data collection and evaluation, taking into account its multi-criterion nature. Within each of the categories, multiple relevant spatial analysis are conducted to provide meaning for the comparison between Delft and Yuexiu, to evaluate connectivity between green spaces.
 
 -   **Accessibility** evaluates the population accessibility with green areas. The analysis conducted are; green space per capita, measuring the square meters of green space per person within an administrative boundary, buffer analysis to measure percentage of people within different walking distances (e.g. 300m and 500m), and mean nearest green space distance per sub-district, captured based on the centroid of each administrative boundary of the sub-district.
 
--   **Typology diversity** The spatial analysis conducted here include grouping by different green space according to its Open-Street Map data green area classification (e.g. forests, nature reserve, etc). <!-- reveals the typology diversity but i think this is more to show distribution but not really for result analysis? -->
+-   **Typology diversity** <!-- The spatial analysis conducted here include grouping by different green space according to its Open-Street Map data green area classification (e.g. forests, nature reserve, etc).  reveals the typology diversity but i think this is more to show distribution but not really for result analysis? -->
 
-    Moreover, species observation density is compared against patch size. The species observation density obtains its data from Global Biodiversity Information Facility (GBIF), an open-access database for biodiversity data. Thus, revealing the relationship between patch size (size of park) compared to the abundance of wildlife within it. $$\log(\text{Area}) \quad \text{vs.} \quad \log\left(\frac{\text{Observations}}{\text{Area}}\right)$$
+    Species observation density is compared against patch size. The species observation density obtains its data from Global Biodiversity Information Facility (GBIF), an open-access database for biodiversity data. Thus, revealing the relationship between patch size (size of park) compared to the abundance of wildlife within it. $$\log(\text{Area}) \quad \text{vs.} \quad \log\left(\frac{\text{Observations}}{\text{Area}}\right)$$
 
-    The violin plot takes mean NDVI (per sub-district) to be plotted against green typology. Thus, the plot reveals the variability and spread/distribution of NDVI value within each green space type. -\> so we are evaluating whether each or which green space type has high or lower NDVI? <!-- it feels slightly redundant if we take a look how different green spaces if they have higher low NDVI? doesn't really help answer our question on biodiversity/accessibility? -->
+    -   <!--  The violin plot takes mean NDVI (per sub-district) to be plotted against green typology. Thus, the plot reveals the variability and spread/distribution of NDVI value within each green space type. -> so we are evaluating whether each or which green space type has high or lower NDVI? it feels slightly redundant if we take a look how different green spaces if they have higher low NDVI? doesn't really help answer our question on biodiversity/accessibility? -->
 
-    The green-blue ratio calculates the amount of area overlap between green features and water features, within each sub-district boundaries. Lower values indicate low water ratio compared to its amount of greeneries, whereas higher values reveal more water presence compared to the amount of green spaces. <!-- discussed in gc, maybe we are trying to implement green-blue infrastructure (whatsapp gc) -->
+    <!-- -->
+
+    -   <!-- The green-blue ratio calculates the amount of area overlap between green features and water features, within each sub-district boundaries. Lower values indicate low water ratio compared to its amount of greeneries, whereas higher values reveal more water presence compared to the amount of green spaces.  discussed in gc, maybe we are trying to implement green-blue infrastructure (whatsapp gc) -->
+
+<!-- addition, did we end up using k-means?-->
+
+Urban green spaces are heterogeneous (source 2). Different spaces provide in different ecological and social functions. Typologies can help identify recurring patterns across neighbourhoods/contexts. To identify these recurring patterns, this research does a typology construction, making use of the indicators derived from the MCDA The typology construction happens through a K-mean clustering, which is a statistical grouping method which groups observations into clusters based on similarity. These observations are grouped based on their MCDA indicator values. Through answering which urban green spaces are similar to others, there is a typology set created, which can then be used to classify and rate the chosen location on its urban green space quality. Resulting typologies reveal different combinations of accessibility, connectivity, biodiversity, and the neighbourhoods' demographic context.
+
 
 -   **Spatial justice** Gini coefficient is a measure of statistical dispersion, used in this report too reveal the urban green space inequality (within meaningful residential population, current minimum population is 100). Value of 0 reflects perfect equality, whereas value of 1 represents maximum inequality. In this case, gini of 0 means equal access of green space for everyone, whereas 0, means that an area has nearly all the green spaces within the city. It is closely linked to the Lorenz curve as the Gini score is a direct reflection of the shape of the Lorenz Curve.
 
@@ -107,31 +146,14 @@ The empirical analysis of this paper is split into four categories to provide mo
 
     *Lorenz curve* $$G = \frac{A}{A + B}$$
 
--   **Connectivity**
-
-    <!--not yet? -->
-
-## Methods
-
-### Analytical framework
-
-Define concepts: UGS - what is ugs? Connectivity Biodiversity Spatial justice
-
-The framework consists of four analytical dimensions, linked to the research objectives: accessibility, connectivity, biodiversity, and spatial justice. Each dimension contains several indicators, which are calculated for a set spatial unit and are integrated through MCDA. This analytical framework allows comparison between cities of different scales while maintaining methodological consistency. Through ... methods?... these criteria are combined in order to be able to define the quality of UGS in relationship to spatial justice.
-
-### Data collection
+-   **Connectivity** The landscape structure uses number of patches (NP) and mean patch size (MPS) in hectares to define overall availability and average size of habitat fragments. Moreover Eucladian Nearest Neighbour (ENN) is also computed by taking the centroid of green patch, thus evaluating the distance of green patches from each other as metric of connectivity. Taking it further, the green patch centroids are used as network nodes. Edges are also defined as the line connecting these nodes. Through Breadth-First-Search (BFS), number of connected components are calculated. This also allows for isolated green patches to also be identified, where the gene flow across the city is blocked. This metric allow for analysis of both degree of centrality, measuring local connectivity of green patches, and also betweenness centrality, based on the edges connecting these centroids, revealing accessibility.
 
 ### MCDA
 
-Urban green space quality cannot be defined by a single indicator and there are different dimensions of quality. With a Spatial Multi-Criteria Decision Analysis conditions in certain locations are evaluated through weighing different criteria. The categories derived from the research objectives are broken down to form these criteria and enables the integration of ecological, social, and spatial indicators into one framework. This analysis is geographically referenced through the use of a spatial unit - to be defined. By combining a variety of variables there is an analytical framework created which is applicable to any location using any spatial unit comparable in size - to be defined further. The MCDA framework combines indicators per category into an analytical dataset, where these indicators are weighted and aggregated into a quality score. The score allows spatial comparison between spatial units (neighbourhoods). The MCDA is a decision-support tool for decision makers such as planners, and leaved it open to options.
+Urban green space quality cannot be defined by a single indicator and there are different dimensions of quality. With a Spatial Multi-Criteria Decision Analysis (MCDA) conditions in certain locations are evaluated through weighing different criteria. The categories derived from the research objectives are broken down to form these criteria and enables the integration of ecological, social, and spatial indicators into one framework. The MCDA framework combines indicators per category into an analytical dataset, where these indicators are weighted and aggregated into a quality score. The score allows spatial comparison between spatial units; neighbourhoods (Delft) and sub-district (China) -- to be used as a decision-support tool for decision makers.
 
-### Typology construction
+### Data collection
 
-Urban green spaces are heterogeneous (source 2). Different spaces provide in different ecological and social functions. Typologies can help identify recurring patterns across neighbourhoods/contexts. To identify these recurring patterns, this research does a typology construction, making use of the indicators derived from the MCDA The typology construction happens through a K-mean clustering, which is a statistical grouping method which groups observations into clusters based on similarity. These observations are grouped based on their MCDA indicator values. Through answering which urban green spaces are similar to others, there is a typology set created, which can then be used to classify and rate the chosen location on its urban green space quality. Resulting typologies reveal different combinations of accessibility, connectivity, biodiversity, and the neighbourhoods' demographic context.
-
-Possible typologies: to be defined from analysis
-
-The typologies support targeted planning interventions.
 
 ### Spatial unit
 
@@ -141,19 +163,7 @@ Spatial analysis outcomes depend on a chosen spatial unit. To ensure comparabili
 
 ## Results
 
-### conclusion analysis 1: accessibility
-
-quantify the spatial distribution and accessibility of urban green spaces How accessible are green spaces for residents?
-
-green space per capita 300m accessibility buffer mean distance to green space percentage of residents within walking distance of green space.
-
-which typologies perform best and worst comparison between delft and quangzhou
-
-### Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-### conclusion analysis 2 : connectivity
+### 1. Accessibility
 
 Evaluate connectivity between different urban green spaces. What are the different typologies of urban green spaces and their access?
 
@@ -161,65 +171,50 @@ fragmentation patterns number and size of green patches connectivity graph resul
 
 which typologies perform best and worst comparison between delft and quangzhou
 
-### conclusion analysis 3: biodiversity
+```{r}
+knitr::include_graphics(file.path(OUT_ROOT, "fig_access_per_capita.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_nearest_green_distance.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_buffer_coverage.png"))
+```
+
+### 2. Typology diversity & Biodiversity
 
 Assess spatial justice through the relationship between population and access to green space. How equitable are green spaces distributed across administrative units in relation to population demographics?
 
-NVDI species density relationship between connectivirty and biodiversity relationship between demographics and biodiversity
+NVDI species density relationship between connectivity and biodiversity relationship between demographics and biodiversity
 
-which typologies perform best and worst comparison between delft and quangzhou
+which typologies perform best and worst comparison between delft and Guangzhou
 
-### conclusion analysis 4: spatial justice by comparison
+```{r}
+knitr::include_graphics(file.path(OUT_ROOT, "fig_green_typology.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_maps.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_gbif_density.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_blue_green_ratio.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_violin.png"))
+```
+
+As background context, Figure (x) reveal the the green space composition in urban area taken from the Open-Street Map data (e.g. forests, nature reserve, etc) between the two cities. While Delft seem to be dominated by green or meadows, Yuexiu green space composition is dominated by parls/recreation. This makes sense because Delft is a smaller city in comparison to Yuexiu historical city center, that is still surrounded by denser urban areas development.
+
+### 3. Spatial Justice
 
 Compare how strong these relationships are in different cities (Delft vs Guangzhou). How does urban green space relate to spatial justice in Delft compared to Guangzhou? which city performs better on each analysis? which one is more equitable
 
 gini coefficient green space per capita inequalities relationship between population density and green access income correlation what neighbourhoods are troubled? does this have to do with the heritage core in delft as well as guangzhou (both heritage centres)
 
 ```{r}
-# Install packages if you do not have them
-install.packages(c("sf", "ineq", "tidyverse"))
-library(sf)
-library(ineq)
-library(tidyverse)
+knitr::include_graphics(file.path(OUT_ROOT, "fig_equity_correlations.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_bivariate_legend.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_lorenz_gini.png"))
 ```
 
-```{r}
-# 50x50m grid 
-grid <- st_make_grid(yuexiu_bnd, cellsize = c(50, 50)) %>% st_sf()
-yuexiu_green$green_area <- as.numeric(st_area(yuexiu_green))
-
-grid_map <- st_interpolate_aw(yuexiu_green["green_area"], grid, extensive = TRUE)
-
-# gini calculation
-green_gini <- Gini(grid_map$green_area)
-print(green_gini)
-
-# map plotting
-ggplot(grid_map) +
-  geom_sf(aes(fill = green_area), color = NA) +
-  scale_fill_viridis_c(name = "Green Area") +
-  theme_minimal() +
-  labs(title = paste("Yuexiu Green Space (Gini:", round(green_gini, 3), ")"))
-
-```
+### 4. Connectivity
 
 ```{r}
-# 50x50m grid 
-grid <- st_make_grid(delft_bnd, cellsize = c(50, 50)) %>% st_sf()
-delft_green$green_area <- as.numeric(st_area(delft_green))
-
-grid_map_delft <- st_interpolate_aw(delft_green["green_area"], grid, extensive = TRUE)
-
-# gini calculation
-green_gini_delft <- Gini(grid_map_delft$delft_green)
-print(green_gini_delft)
-
-# map plotting
-ggplot(grid_map_delft) +
-  geom_sf(aes(fill = delft_green), color = NA) +
-  scale_fill_viridis_c(name = "Green Area") +
-  theme_minimal() +
-  labs(title = paste("Delft Green Space (Gini:", round(green_gini, 3), ")"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_enn_distribution.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_fragmentation_metrics.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_connectivity_maps.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"))
 ```
 
 ### conclusion analysis 5: NBS corridor prioritisation
@@ -230,15 +225,16 @@ Through applying MCDA, the study provides a method to overlay low-access zones a
 
 Translate analytical findings into strategies for increasing UGS quality. How do the differences between the two cities show how connectivity and accessibility can improve spatial justice? What strategies are suggested to improve spatial justice? Potential interventions: green corridors, linear parks, canal-side ecological networks, pocket parks, urban forest, biodiversity stepping stones, street greening, green roofs and walls. - connect those to a weakness found in the analysis.
 
-### shortcomings
+### Reproducability
 
-OSM data completeness differs between cities, also language barrier and access to chinese data. GBIF observations may contain sampling bias NDVI does not directly measure biodiversity different city scales influence comparability administrative boundaries introduce MAUP effects. more...
+As sources are gathered through globally availbale datasets, methodology can be replicated in other cities/districts. Framework is also available on Github and independent of local planning systems. GIS workflow can be reproduced in QGIS and R indicators depending on local contexts. 
 
-### reproducability
+### Limitations 
 
-use of globally availbale datasets methodology can be replicated in other cities/districts framework is independent of local planning systems GIS workflow can be reproduced in QGIS and R indicators can be adapted to local contexts.
+OSM data completeness differs between cities and is a crown-sourced data. This means that data gathered is not the most up-to-date nor accurate. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Moreover, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. 
+<!-- what does this mean ya; NDVI does not directly measure biodiversity different city scales influence comparability administrative boundaries introduce MAUP effects.--> more...
 
-### further research
+### Future Work
 
 citizen participation through surveys ecosystem valuation (more in depth)
 
