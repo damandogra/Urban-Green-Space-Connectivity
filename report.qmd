@@ -231,7 +231,7 @@ As sources are gathered through globally availbale datasets, methodology can be 
 
 ### Limitations 
 
-OSM data completeness differs between cities and is a crown-sourced data. This means that data gathered is not the most up-to-date nor accurate. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Moreover, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. 
+OSM data completeness differs between cities and is a crowd-sourced data. This means that data gathered is not the most up-to-date nor accurate. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Moreover, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. 
 <!-- what does this mean ya; NDVI does not directly measure biodiversity different city scales influence comparability administrative boundaries introduce MAUP effects.--> more...
 
 ### Future Work
