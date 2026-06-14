@@ -4,7 +4,7 @@ library(here)
 OUT_ROOT <- here("report_files")
 dir.create(OUT_ROOT, showWarnings = FALSE, recursive = TRUE)
 
-DATA_ROOT <- "/Users/belinaileen/Desktop/data"
+DATA_ROOT <- here("data")
 
 # ── Yuexiu (Guangzhou) ────────────────────────────────────────────────────────
 YX <- list(
