@@ -7,13 +7,12 @@ library(ggplot2)
 library(patchwork)
 library(scales)
 
-
 sf_use_s2(FALSE)
 
 d  <- readRDS(file.path(OUT_ROOT, "yuexiu_data.rds"))
 dl <- readRDS(file.path(OUT_ROOT, "delft_data.rds"))
 
-# Unwrapiing raster
+# Unwrapping raster
 d$yx_pop   <- rast(d$yx_pop)
 d$yx_ndvi  <- rast(d$yx_ndvi)
 d$yx_cover <- rast(d$yx_cover)
@@ -36,7 +35,7 @@ calc_green_per_capita <- function(admin_sf, green_sf, pop_rast, local_crs) {
   green_union <- st_union(green_m)
 
   results <- lapply(seq_len(nrow(admin_m)), function(i) {
-    unit   <- admin_m[i, ]
+    unit    <- admin_m[i, ]
     clipped <- tryCatch(
       st_intersection(green_union, st_geometry(unit)),
       error = function(e) st_sfc(crs = local_crs)
@@ -66,23 +65,18 @@ message("Calculating Delft green per capita...")
 dl_wijk_access <- calc_green_per_capita(dl$dl_wijk, dl$dl_grn, dl$dl_pop, CRS_DELFT)
 
 # ── 1B. % population within 300m and 500m of any green space ─────────────────
-pct_pop_within_buffer <- function(green_sf, pop_rast, boundary_sf,
-                                   dist_m, local_crs) {
+pct_pop_within_buffer <- function(green_sf, pop_rast, boundary_sf, dist_m, local_crs) {
   green_m    <- st_transform(green_sf, local_crs)
   bnd_m      <- st_transform(boundary_sf, local_crs)
   bnd_pop    <- st_transform(boundary_sf, st_crs(pop_rast))
   buf        <- st_union(st_buffer(green_m, dist_m))
-  buf_pop    <- st_transform(st_sf(geometry = buf, crs = local_crs),
-                              st_crs(pop_rast))
-  clipped    <- tryCatch(st_intersection(bnd_pop, buf_pop),
-                          error = function(e) NULL)
+  buf_pop    <- st_transform(st_sf(geometry = buf, crs = local_crs), st_crs(pop_rast))
+  clipped    <- tryCatch(st_intersection(bnd_pop, buf_pop), error = function(e) NULL)
 
   pop_total  <- exact_extract(pop_rast, bnd_pop,  "sum")
-  pop_within <- if (!is.null(clipped) && nrow(clipped) > 0)
-    exact_extract(pop_rast, clipped, "sum") else 0
+  pop_within <- if (!is.null(clipped) && nrow(clipped) > 0) exact_extract(pop_rast, clipped, "sum") else 0
 
-  round(sum(pop_within, na.rm = TRUE) /
-        sum(pop_total,  na.rm = TRUE) * 100, 1)
+  round(sum(pop_within, na.rm = TRUE) / sum(pop_total,  na.rm = TRUE) * 100, 1)
 }
 
 message("Calculating buffer coverage...")
@@ -123,11 +117,12 @@ saveRDS(buffer_summary,  file.path(OUT_ROOT, "buffer_summary.rds"))
 # Figure 1A: Green space per capita maps (log scale, same for both)
 p1 <- ggplot(yx_sub_access) +
   geom_sf(aes(fill = green_pc_m2)) +
-  scale_fill_viridis_c(
+  scale_fill_gradient(
     name = "m² per person\n(pseudo-log)",
     trans = scales::pseudo_log_trans(sigma = 1),
-    breaks = c(0, 1, 10, 100, 400), # Manually set clear steps
-    option = "G",
+    breaks = c(0, 1, 10, 100, 400),
+    low = "#f7fcf5",
+    high = "#00441b",
     na.value = "grey80") +
   theme_minimal() +
   labs(title = "Green Space per Capita — Yuexiu Jiēdào",
@@ -135,11 +130,12 @@ p1 <- ggplot(yx_sub_access) +
 
 p2 <- ggplot(dl_wijk_access) +
   geom_sf(aes(fill = green_pc_m2)) +
-  scale_fill_viridis_c(
+  scale_fill_gradient(
     name = "m² per person\n(pseudo-log)",
     trans = scales::pseudo_log_trans(sigma = 1),
-    breaks = c(0, 1, 10, 100, 400), # Manually set clear steps
-    option = "G",
+    breaks = c(0, 1, 10, 100, 400),
+    low = "#f7fcf5",
+    high = "#00441b",
     na.value = "grey80") +
   theme_minimal() +
   labs(title = "Green Space per Capita — Delft Wijken",
@@ -151,16 +147,14 @@ ggsave(file.path(OUT_ROOT, "fig_access_per_capita.png"),
 # Figure 1B: Mean nearest green distance maps
 p3 <- ggplot(yx_sub_access) +
   geom_sf(aes(fill = nearest_green_m)) +
-  scale_fill_viridis_c(name = "Distance (m)",
-                        option = "B", direction = -1) +
+  scale_fill_viridis_c(name = "Distance (m)", option = "B", direction = -1) +
   theme_minimal() +
   labs(title = "Mean Distance to Nearest Green Space — Yuexiu",
        subtitle = "From subdistrict centroid")
 
 p4 <- ggplot(dl_wijk_access) +
   geom_sf(aes(fill = nearest_green_m)) +
-  scale_fill_viridis_c(name = "Distance (m)",
-                        option = "B", direction = -1) +
+  scale_fill_viridis_c(name = "Distance (m)", option = "B", direction = -1) +
   theme_minimal() +
   labs(title = "Mean Distance to Nearest Green Space — Delft",
        subtitle = "From wijk centroid")
@@ -179,7 +173,62 @@ p5 <- ggplot(buffer_summary, aes(x = factor(buffer_m), y = pct_pop, fill = city)
        x = "Buffer distance (m)", y = "% of population covered",
        fill = "City")
 
-ggsave(file.path(OUT_ROOT, "fig_buffer_coverage.png"),
-       p5, width = 8, height = 5, dpi = 300)
+ggsave(file.path(OUT_ROOT, "fig_buffer_coverage.png"), p5, width = 8, height = 5, dpi = 300)
 
-message("Script 02 complete — accessibility figures saved.")
+# ── Figure 1D: Network Entry Gates & Multi-Ring Walking Buffers Panel ───────────
+library(sf)
+library(ggplot2)
+library(patchwork)
+
+# 1. Redefine the function completely and correctly
+generate_network_access <- function(green_sf, road_sf, local_crs) {
+  # Create projected spatial datasets sequentially
+  green_m <- st_transform(green_sf, local_crs)
+  road_m  <- st_transform(road_sf, local_crs)
+
+  # Build multi-ring buffers
+  buf_500  <- st_union(st_buffer(green_m, 500))
+  buf_300  <- st_union(st_buffer(green_m, 300))
+  buf_100  <- st_union(st_buffer(green_m, 100))
+
+  # Extract point intersections along the 300m threshold boundary line
+  buf_300_line <- st_cast(buf_300, "MULTILINESTRING")
+  access_pts   <- st_intersection(road_m, buf_300_line)
+  access_pts   <- access_pts[st_geometry_type(access_pts) %in% c("POINT", "MULTIPOINT"), ]
+
+  list(b100 = buf_100, b300 = buf_300, b500 = buf_500, roads = road_m, green = green_m, pts = access_pts)
+}
+
+# 2. Run calculations using the ACTUAL dataset list names (rds instead of roads)
+yx_net <- generate_network_access(d$yx_grn, d$yx_rds, CRS_YX)
+dl_net <- generate_network_access(dl$dl_grn, dl$dl_rds, CRS_DELFT)
+
+# 3. Build the Plots
+p_yx_network <- ggplot() +
+  geom_sf(data = yx_net$roads, color = "grey85", size = 0.3) +
+  geom_sf(data = yx_net$b500, fill = "#238b45", alpha = 0.08, color = NA) +
+  geom_sf(data = yx_net$b300, fill = "#238b45", alpha = 0.15, color = "#238b45", linetype = "dashed", size = 0.4) +
+  geom_sf(data = yx_net$b100, fill = "#238b45", alpha = 0.25, color = NA) +
+  geom_sf(data = yx_net$green, fill = "#00441b", color = NA) +
+  geom_sf(data = yx_net$pts, color = "#d95f02", size = 1.2, alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Network Entry Thresholds — Yuexiu",
+       subtitle = "Orange points indicate road intersections at the 300m buffer boundary")
+
+p_dl_network <- ggplot() +
+  geom_sf(data = dl_net$roads, color = "grey85", size = 0.3) +
+  geom_sf(data = dl_net$b500, fill = "#238b45", alpha = 0.08, color = NA) +
+  geom_sf(data = dl_net$b300, fill = "#238b45", alpha = 0.15, color = "#238b45", linetype = "dashed", size = 0.4) +
+  geom_sf(data = dl_net$b100, fill = "#238b45", alpha = 0.25, color = NA) +
+  geom_sf(data = dl_net$green, fill = "#00441b", color = NA) +
+  geom_sf(data = dl_net$pts, color = "#d95f02", size = 1.2, alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Network Entry Thresholds — Delft",
+       subtitle = "Orange points indicate road intersections at the 300m buffer boundary")
+
+# 4. Save combined map side-by-side
+ggsave(file.path(OUT_ROOT, "fig_network_walk_access.png"),
+       p_yx_network + p_dl_network, width = 14, height = 6, dpi = 300)
+
+message("Figure 1D saved successfully!")
+
