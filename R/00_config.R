@@ -56,3 +56,32 @@ MCDA_WEIGHTS <- c(
   equity        = 0.20
 )
 
+# ── Network Entry Access Helper Function ──────────────────────────────────────
+generate_network_access <- function(green_sf, roads_sf, local_crs) {
+  # 1. Properly project inputs to local CRS so metric distance functions work
+  green_m <- sf::st_transform(green_sf, local_crs)
+  roads_m <- sf::st_transform(roads_sf, local_crs)
+
+  # 2. Extract road intersection points (vertices) to simulate network entry access
+  # (Resolves the 'green_m' not found error by establishing variables sequentially)
+  road_points <- sf::st_cast(roads_m, "POINT")
+
+  # 3. Create the multi-ring walking catchments (100m, 300m, 500m)
+  b100 <- sf::st_union(sf::st_buffer(green_m, 100))
+  b300 <- sf::st_union(sf::st_buffer(green_m, 300))
+  b500 <- sf::st_union(sf::st_buffer(green_m, 500))
+
+  # 4. Filter for access points that intersect along the 300m walking perimeter perimeter
+  intersecting_points <- road_points[sf::st_intersects(road_points, b300, sparse = FALSE), ]
+
+  # Return a structured list matching your main script's expected data bindings
+  list(
+    roads = roads_m,
+    green = green_m,
+    b100  = b100,
+    b300  = b300,
+    b500  = b500,
+    pts   = intersecting_points
+  )
+}
+
