@@ -14,7 +14,7 @@ install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse", "patch
 ## Data
  
 Data files are **not tracked in this repo**. Place them at the paths expected by `R/00_config.R`:
- 
+Download data folder from: [Download link](https://drive.google.com/file/d/1ZwqZ9QyFR51ZMT_FNu4M2gbkrB5Pw6Z9/view?usp=sharing)
 ```
 data/
 ├── delft/
