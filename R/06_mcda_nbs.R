@@ -77,13 +77,16 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
     st_drop_geometry() |>
     mutate(
       equity_score_raw = case_when(
-        pop_class == "High"  & grn_class == "Low"  ~ 1.0,
-        pop_class == "High"  & grn_class == "Mid"  ~ 0.75,
-        pop_class == "Mid"   & grn_class == "Low"  ~ 0.65,
-        pop_class == "Mid"   & grn_class == "Mid"  ~ 0.4,
-        pop_class == "Low"   & grn_class == "Low"  ~ 0.3,
-        pop_class == "High"  & grn_class == "High" ~ 0.15,
-        TRUE                                        ~ 0.1
+        bivar_class == "Low-High"  ~ 1.00,
+        bivar_class == "Mid-High"  ~ 0.75,
+        bivar_class == "Low-Mid"   ~ 0.65,
+        bivar_class == "Mid-Mid"   ~ 0.40,
+        bivar_class == "Low-Low"   ~ 0.30,
+        bivar_class == "High-Mid"  ~ 0.20,
+        bivar_class == "High-High" ~ 0.15,
+        bivar_class == "Mid-Low"   ~ 0.10,
+        bivar_class == "High-Low"  ~ 0.10,
+        TRUE ~ 0.10
       ),
       score_equity = equity_score_raw
     ) |>
@@ -116,7 +119,8 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
 
   score_access  <- pad(acc$score_access,    n)
   score_bio     <- pad(bio$score_bio,       n)
-  score_equity  <- pad(equity$score_equity, n)
+  score_equity  <- pad(replace_na(equity$score_equity, 0.10), n)
+  score_equity  <- replace_na(score_equity, 0.10)
   score_conn    <- pad(conn_scores$score_conn, n)
 
   access_sf |>
