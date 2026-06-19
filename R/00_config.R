@@ -72,7 +72,8 @@ INCLUDED_GREEN_TYPES <- c(
   "Park / Recreation",
   "Forest / Woodland",
   "Grass / Meadow",
-  "Nature Reserve / Scrub"
+  "Nature Reserve / Scrub",
+  "Allotment Garden"
 )
 
 classify_green_type <- function(green_sf) {
@@ -94,7 +95,8 @@ classify_green_type <- function(green_sf) {
         grepl("forest|wood|tree_row", tag_raw, ignore.case = TRUE) ~ "Forest / Woodland",
         grepl("grass|meadow|village_green|common", tag_raw, ignore.case = TRUE) ~ "Grass / Meadow",
         grepl("cemetery|grave", tag_raw, ignore.case = TRUE) ~ "Cemetery",
-        grepl("allotment|farm|farmland", tag_raw, ignore.case = TRUE) ~ "Allotment / Agriculture",
+        grepl("allotment", tag_raw, ignore.case = TRUE) ~ "Allotment Garden",
+        grepl("farm|farmland", tag_raw, ignore.case = TRUE) ~ "Agriculture",
         grepl("nature_reserve|wetland|scrub|heath", tag_raw, ignore.case = TRUE) ~ "Nature Reserve / Scrub",
         grepl("pitch|track|sports_centre", tag_raw, ignore.case = TRUE) ~ "Sports Facility",
         TRUE ~ "Other / Unclassified"
