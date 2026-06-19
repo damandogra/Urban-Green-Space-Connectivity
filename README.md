@@ -105,7 +105,6 @@ APPLIED_SPATIAL_ANALYTICS/
 │
 ├── _quarto.yml                # project config: sets output-dir to docs/
 ├── report.qmd                 # narrative + figures pulled from outputs/
-├── _entire-workflow.R         # runs R/01_… through R/06_… in order
 └── README.md
 ```
 
