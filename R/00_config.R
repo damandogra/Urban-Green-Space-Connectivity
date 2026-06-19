@@ -88,16 +88,23 @@ classify_green_type <- function(green_sf) {
         if ("landuse" %in% cols) .data[["landuse"]] else NA_character_,
         if ("natural" %in% cols) .data[["natural"]] else NA_character_,
         if ("other_tags" %in% cols) .data[["other_tags"]] else NA_character_,
+        if ("fysiek_voorkomen" %in% cols) .data[["fysiek_voorkomen"]] else NA_character_,
         "unknown"
       ),
       green_type = case_when(
+        grepl("groenvoorziening", tag_raw, ignore.case = TRUE) ~ "Park / Recreation",
+        grepl("gemengd bos|loofbos|houtwal", tag_raw, ignore.case = TRUE) ~ "Forest / Woodland",
+        grepl("grasland overig", tag_raw, ignore.case = TRUE) ~ "Grass / Meadow",
+        grepl("struiken|rietland|moeras|transitie", tag_raw, ignore.case = TRUE) ~ "Nature Reserve / Scrub",
+        grepl("grasland agrarisch|bouwland|fruitteelt", tag_raw, ignore.case = TRUE) ~ "Agriculture",
+
         grepl("park|recreation_ground|garden|pleasure_ground", tag_raw, ignore.case = TRUE) ~ "Park / Recreation",
         grepl("forest|wood|tree_row", tag_raw, ignore.case = TRUE) ~ "Forest / Woodland",
         grepl("grass|meadow|village_green|common", tag_raw, ignore.case = TRUE) ~ "Grass / Meadow",
-        grepl("cemetery|grave", tag_raw, ignore.case = TRUE) ~ "Cemetery",
         grepl("allotment", tag_raw, ignore.case = TRUE) ~ "Allotment Garden",
         grepl("farm|farmland", tag_raw, ignore.case = TRUE) ~ "Agriculture",
         grepl("nature_reserve|wetland|scrub|heath", tag_raw, ignore.case = TRUE) ~ "Nature Reserve / Scrub",
+        grepl("cemetery|grave", tag_raw, ignore.case = TRUE) ~ "Cemetery",
         grepl("pitch|track|sports_centre", tag_raw, ignore.case = TRUE) ~ "Sports Facility",
         TRUE ~ "Other / Unclassified"
       )
