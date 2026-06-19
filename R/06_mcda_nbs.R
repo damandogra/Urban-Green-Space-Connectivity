@@ -51,8 +51,8 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
   acc <- access_sf |>
     st_drop_geometry() |>
     mutate(
-      s_green_pc   = norm_minmax(green_pc_m2,   invert = FALSE),
-      s_nearest    = norm_minmax(nearest_green_m, invert = TRUE),   # closer = better
+      s_green_pc   = norm_minmax(green_pc_m2, invert = TRUE),
+      s_nearest    = norm_minmax(nearest_green_m, invert = FALSE),
       score_access = (s_green_pc + s_nearest) / 2
     ) |>
     select(matches("^(name|naam|BU_|WK_|GEO_|jiedao|subdistrict)", ignore.case = TRUE),
