@@ -99,9 +99,6 @@ APPLIED_SPATIAL_ANALYTICS/
 ├── docs/                     # rendered report — index.html + supporting assets
 │                              # this is what GitHub Pages serves
 │
-├── report_files/             # Quarto's own render cache/dependencies only
-│                              # (execute-results/, libs/) — not analysis output
-│
 ├── _entire-workflow.R         # Sources and runs all scripts in order
 ├── _quarto.yml                # project config: sets output-dir to docs/
 ├── report.qmd                 # narrative + figures pulled from outputs/
