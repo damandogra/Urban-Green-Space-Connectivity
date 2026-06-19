@@ -4,11 +4,6 @@
 - [R](https://cran.r-project.org/) ≥ 4.3
 - [RStudio](https://posit.co/download/rstudio-desktop/) or [Quarto CLI](https://quarto.org/docs/get-started/)
 - [Quarto](https://quarto.org/) ≥ 1.4
-Install required R packages once:
- 
-```r
-install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse", "patchwork"))
-```
 ---
 
 ## Data
@@ -38,22 +33,22 @@ git clone https://github.com/Applied-Spatial-Analytics/create-your-report-groupe
 ```
  
 Open `asa2025-report.Rproj` in RStudio.
- 
-### 2. Run the pipeline scripts in order
+
+### 2. Install required R packages once:
  
 ```r
-source("R/00_config.R")               # paths & constants
-source("R/01_load_data.R")            # load & validate layers
-source("R/02_accessibility.R")        # SQ1 — green space access
-source("R/03_typology_biodiversity.R")# SQ2 — typology & NDVI
-source("R/04_spatial_justice.R")      # SQ3 — Gini, equity
-source("R/05_connectivity.R")         # SQ4 — fragmentation & graph
-source("R/06_mcda_nbs.R")             # SQ5 — MCDA & corridors
+install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse", "patchwork"))
+```
+ 
+### 3. Run the pipeline script
+ 
+```r
+source(_entire-workflow.R)  # pipeline that runs all the scripts in order
 ```
  
 Figures are saved automatically to `report_files/`.
  
-### 3. Render the report
+### 4. Render the report
  
 In RStudio: open `report.qmd` and click **Render**, or from the terminal:
  
