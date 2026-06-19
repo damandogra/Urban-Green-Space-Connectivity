@@ -30,7 +30,7 @@ data/
 ---
 
 ## Visualisation settings
-The colour palette used in the project is defined in 'R/00_config.R' under the 'COLORS
+The colour palette used in the project is defined in R/00_config.R under COLORS.
 
 ---
 
