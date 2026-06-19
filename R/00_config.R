@@ -55,7 +55,17 @@ MCDA_WEIGHTS <- c(
   connectivity  = 0.25,
   equity        = 0.20
 )
-
+# - Colour palette ----------------------------------
+COLORS <- list(
+  green_dark = "#5C573E",
+  green = "#A5B452",
+  green_lime = "#C8D96F",
+  green_light = "#C4F7A1",
+  beige = "#CBD0B9",
+  blue = "#BDDBD0",
+  purple = "#9BA7C0"
+  )
+  
 # ── Network Entry Access Helper Function ──────────────────────────────────────
 generate_network_access <- function(green_sf, roads_sf, local_crs) {
   # 1. Properly project inputs to local CRS so metric distance functions work
