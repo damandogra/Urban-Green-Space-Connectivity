@@ -27,3 +27,7 @@ Thumbs.db
 # pipeline_plan.md
 data.zip
 .github
+
+**/*.quarto_ipynb
+outputs
+.github

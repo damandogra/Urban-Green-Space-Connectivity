@@ -1,7 +1,7 @@
 library(here)
 
 # ── Output directory ──────────────────────────────────────────────────────────
-OUT_ROOT <- here("report_files")
+OUT_ROOT <- here("outputs")
 dir.create(OUT_ROOT, showWarnings = FALSE, recursive = TRUE)
 
 DATA_ROOT <- here("data")
