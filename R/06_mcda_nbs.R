@@ -98,19 +98,30 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
   nodes_m  <- st_transform(graph_obj$nodes, local_crs)
   node_cents <- st_centroid(nodes_m)
 
-  joined_conn <- st_join(admin_m, node_cents["betweenness"],
-                          join = st_contains) |>
+  joined_conn <- st_join(admin_m, node_cents["degree"],
+                         join = st_contains) |>
     st_drop_geometry() |>
     group_by(row_number()) |>
-    summarise(mean_betweenness = mean(betweenness, na.rm = TRUE), .groups = "drop")
+    summarise(mean_degree = mean(degree, na.rm = TRUE), .groups = "drop")
 
+  conn_scores <- joined_conn |>
+    mutate(
+      mean_degree = replace_na(mean_degree, 0),
+      score_conn = 1 - norm_minmax(mean_degree)
+    ) |>
+    select(score_conn)
   # Patches with low betweenness in an admin unit → connectivity gap → invert
   conn_scores <- joined_conn |>
     mutate(
-      mean_betweenness = replace_na(mean_betweenness, 0),
-      score_conn = 1 - norm_minmax(mean_betweenness)   # low connectivity = high need
+      mean_degree = replace_na(mean_degree, 0),
+      score_conn = 1 - norm_minmax(mean_degree)   # low connectivity = high need
     ) |>
     select(score_conn)
+  message(city_label, " connectivity mean betweenness:")
+  print(summary(joined_conn$mean_betweenness))
+
+  message(city_label, " connectivity score:")
+  print(summary(conn_scores$score_conn))
 
   # --- Assemble & compute weighted composite ---
   n <- nrow(access_sf)
