@@ -29,5 +29,5 @@ data.zip
 .github
 
 **/*.quarto_ipynb
-outputs
+/outputs
 .github
