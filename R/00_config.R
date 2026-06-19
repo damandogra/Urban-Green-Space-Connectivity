@@ -55,6 +55,67 @@ MCDA_WEIGHTS <- c(
   connectivity  = 0.25,
   equity        = 0.20
 )
+# - Colour palette ----------------------------------
+COLORS <- list(
+  green_dark = "#5C573E",
+  green = "#A5B452",
+  green_lime = "#C8D96F",
+  green_light = "#C4F7A1",
+  beige = "#CBD0B9",
+  blue = "#BDDBD0",
+  purple = "#9BA7C0"
+  )
+
+# — Green space typology filter --------------------------------------------
+
+INCLUDED_GREEN_TYPES <- c(
+  "Park / Recreation",
+  "Forest / Woodland",
+  "Grass / Meadow",
+  "Nature Reserve / Scrub",
+  "Allotment Garden"
+)
+
+classify_green_type <- function(green_sf) {
+  geom_col <- attr(green_sf, "sf_column")
+  cols <- names(green_sf)
+
+  green_sf |>
+    mutate(
+      across(-all_of(geom_col), ~ as.character(.x)),
+      tag_raw = dplyr::coalesce(
+        if ("leisure" %in% cols) .data[["leisure"]] else NA_character_,
+        if ("landuse" %in% cols) .data[["landuse"]] else NA_character_,
+        if ("natural" %in% cols) .data[["natural"]] else NA_character_,
+        if ("other_tags" %in% cols) .data[["other_tags"]] else NA_character_,
+        if ("fysiek_voorkomen" %in% cols) .data[["fysiek_voorkomen"]] else NA_character_,
+        "unknown"
+      ),
+      green_type = case_when(
+        grepl("groenvoorziening", tag_raw, ignore.case = TRUE) ~ "Park / Recreation",
+        grepl("gemengd bos|loofbos|houtwal", tag_raw, ignore.case = TRUE) ~ "Forest / Woodland",
+        grepl("grasland overig", tag_raw, ignore.case = TRUE) ~ "Grass / Meadow",
+        grepl("struiken|rietland|moeras|transitie", tag_raw, ignore.case = TRUE) ~ "Nature Reserve / Scrub",
+        grepl("grasland agrarisch|bouwland|fruitteelt", tag_raw, ignore.case = TRUE) ~ "Agriculture",
+
+        grepl("park|recreation_ground|garden|pleasure_ground", tag_raw, ignore.case = TRUE) ~ "Park / Recreation",
+        grepl("forest|wood|tree_row", tag_raw, ignore.case = TRUE) ~ "Forest / Woodland",
+        grepl("grass|meadow|village_green|common", tag_raw, ignore.case = TRUE) ~ "Grass / Meadow",
+        grepl("allotment", tag_raw, ignore.case = TRUE) ~ "Allotment Garden",
+        grepl("farm|farmland", tag_raw, ignore.case = TRUE) ~ "Agriculture",
+        grepl("nature_reserve|wetland|scrub|heath", tag_raw, ignore.case = TRUE) ~ "Nature Reserve / Scrub",
+        grepl("cemetery|grave", tag_raw, ignore.case = TRUE) ~ "Cemetery",
+        grepl("pitch|track|sports_centre", tag_raw, ignore.case = TRUE) ~ "Sports Facility",
+        TRUE ~ "Other / Unclassified"
+      )
+    )
+}
+
+filter_green_space <- function(green_sf) {
+  green_sf |>
+    classify_green_type() |>
+    filter(green_type %in% INCLUDED_GREEN_TYPES)
+}
 
 # ── Network Entry Access Helper Function ──────────────────────────────────────
 generate_network_access <- function(green_sf, roads_sf, local_crs) {

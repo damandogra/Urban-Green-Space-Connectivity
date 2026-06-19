@@ -126,6 +126,15 @@ classify_green_type <- function(green_sf) {
           TRUE                                                                                ~ "Other / Unclassified"
         )
       )
+    recreational_green_types <- c(
+      "Park / Recreation",
+      "Forest / Woodland",
+      "Grass / Meadow",
+      "Nature Reserve / Scrub"
+    )
+
+    green_sf <- green_sf |>
+      filter(green_type %in% recreational_green_types)
   }
 }
 
@@ -403,8 +412,7 @@ saveRDS(type_summary, file.path(OUT_ROOT, "type_summary.rds"))
 
 # Figure 2A: Fixed assignment pipeline
 type_summary <- type_summary |>
-  dplyr::filter(!green_type %in% c("agriculture", "Allotment / Agriculture"))
-
+  dplyr::filter(green_type != "Other / Unclassified")
 p_type <- ggplot(type_summary,
                  aes(x = city, y = pct_area, fill = green_type)) +
   geom_col(width = 0.6) +

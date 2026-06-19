@@ -51,8 +51,8 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
   acc <- access_sf |>
     st_drop_geometry() |>
     mutate(
-      s_green_pc   = norm_minmax(green_pc_m2,   invert = FALSE),
-      s_nearest    = norm_minmax(nearest_green_m, invert = TRUE),   # closer = better
+      s_green_pc   = norm_minmax(green_pc_m2, invert = TRUE),
+      s_nearest    = norm_minmax(nearest_green_m, invert = FALSE),
       score_access = (s_green_pc + s_nearest) / 2
     ) |>
     select(matches("^(name|naam|BU_|WK_|GEO_|jiedao|subdistrict)", ignore.case = TRUE),
@@ -77,13 +77,16 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
     st_drop_geometry() |>
     mutate(
       equity_score_raw = case_when(
-        pop_class == "High"  & grn_class == "Low"  ~ 1.0,
-        pop_class == "High"  & grn_class == "Mid"  ~ 0.75,
-        pop_class == "Mid"   & grn_class == "Low"  ~ 0.65,
-        pop_class == "Mid"   & grn_class == "Mid"  ~ 0.4,
-        pop_class == "Low"   & grn_class == "Low"  ~ 0.3,
-        pop_class == "High"  & grn_class == "High" ~ 0.15,
-        TRUE                                        ~ 0.1
+        bivar_class == "Low-High"  ~ 1.00,
+        bivar_class == "Mid-High"  ~ 0.75,
+        bivar_class == "Low-Mid"   ~ 0.65,
+        bivar_class == "Mid-Mid"   ~ 0.40,
+        bivar_class == "Low-Low"   ~ 0.30,
+        bivar_class == "High-Mid"  ~ 0.20,
+        bivar_class == "High-High" ~ 0.15,
+        bivar_class == "Mid-Low"   ~ 0.10,
+        bivar_class == "High-Low"  ~ 0.10,
+        TRUE ~ 0.10
       ),
       score_equity = equity_score_raw
     ) |>
@@ -95,19 +98,30 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
   nodes_m  <- st_transform(graph_obj$nodes, local_crs)
   node_cents <- st_centroid(nodes_m)
 
-  joined_conn <- st_join(admin_m, node_cents["betweenness"],
-                          join = st_contains) |>
+  joined_conn <- st_join(admin_m, node_cents["degree"],
+                         join = st_contains) |>
     st_drop_geometry() |>
     group_by(row_number()) |>
-    summarise(mean_betweenness = mean(betweenness, na.rm = TRUE), .groups = "drop")
+    summarise(mean_degree = mean(degree, na.rm = TRUE), .groups = "drop")
 
+  conn_scores <- joined_conn |>
+    mutate(
+      mean_degree = replace_na(mean_degree, 0),
+      score_conn = 1 - norm_minmax(mean_degree)
+    ) |>
+    select(score_conn)
   # Patches with low betweenness in an admin unit → connectivity gap → invert
   conn_scores <- joined_conn |>
     mutate(
-      mean_betweenness = replace_na(mean_betweenness, 0),
-      score_conn = 1 - norm_minmax(mean_betweenness)   # low connectivity = high need
+      mean_degree = replace_na(mean_degree, 0),
+      score_conn = 1 - norm_minmax(mean_degree)   # low connectivity = high need
     ) |>
     select(score_conn)
+  message(city_label, " connectivity mean betweenness:")
+  print(summary(joined_conn$mean_betweenness))
+
+  message(city_label, " connectivity score:")
+  print(summary(conn_scores$score_conn))
 
   # --- Assemble & compute weighted composite ---
   n <- nrow(access_sf)
@@ -116,7 +130,8 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
 
   score_access  <- pad(acc$score_access,    n)
   score_bio     <- pad(bio$score_bio,       n)
-  score_equity  <- pad(equity$score_equity, n)
+  score_equity  <- pad(replace_na(equity$score_equity, 0.10), n)
+  score_equity  <- replace_na(score_equity, 0.10)
   score_conn    <- pad(conn_scores$score_conn, n)
 
   access_sf |>

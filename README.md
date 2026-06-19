@@ -34,6 +34,27 @@ data/
 
 ---
 
+## Visualisation settings
+The colour palette used in the project is defined in R/00_config.R under COLORS.
+
+---
+
+## Green space filter
+
+Green spaces are filtered to include only publicly accessible and ecologically functional urban green spaces.
+Park/Recreation
+Forest/Woodland,
+Grass/Meadow,
+Nature reserve/Scrub
+
+The green areas that are excluded from all analysis are:
+Cemetery
+Allotment/Agriculture
+Sports facility
+Other/Unclassified
+
+---
+
 ## How to run
 
 ### 1. Clone and open
