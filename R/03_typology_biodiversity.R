@@ -418,26 +418,45 @@ p_type <- ggplot(type_summary,
 ggsave(file.path(OUT_ROOT, "fig_green_typology.png"),
        p_type, width = 9, height = 6, dpi = 300)
 
-# Figure 2B–C: NDVI maps
 p_ndvi_yx <- ggplot(yx_sub_ndvi) +
   geom_sf(aes(fill = ndvi_mean)) +
-  scale_fill_viridis_c(name = "Mean NDVI", option = "G",
-                       limits = c(-0.1, 0.8), na.value = "grey80") +
+  scale_fill_gradientn(
+    colours = c(
+      "#8c510a",  # brown
+      "#dfc27d",  # tan
+      "#f6e8c3",  # cream
+      "#80cdc1",  # light green
+      "#018571"   # dark green
+    ),
+    limits = c(-0.1, 0.8),
+    na.value = "grey80",
+    name = "Mean NDVI"
+  ) +
   theme_minimal() +
-  labs(title    = "Mean NDVI per Subdistrict — Yuexiu",
-       subtitle = "Source: Sentinel-2 / Landsat")
+  labs(
+    title = "Mean NDVI per Subdistrict — Yuexiu",
+    subtitle = "Source: Sentinel-2 / Landsat"
+  )
 
 p_ndvi_dl <- ggplot(dl_wijk_ndvi) +
   geom_sf(aes(fill = ndvi_mean)) +
-  scale_fill_viridis_c(name = "Mean NDVI", option = "G",
-                       limits = c(-0.1, 0.8), na.value = "grey80") +
+  scale_fill_gradientn(
+    colours = c(
+      "#8c510a",
+      "#dfc27d",
+      "#f6e8c3",
+      "#80cdc1",
+      "#018571"
+    ),
+    limits = c(-0.1, 0.8),
+    na.value = "grey80",
+    name = "Mean NDVI"
+  ) +
   theme_minimal() +
-  labs(title    = "Mean NDVI per Wijk — Delft",
-       subtitle = "Source: Sentinel-2 / Landsat")
-
-ggsave(file.path(OUT_ROOT, "fig_ndvi_maps.png"),
-       p_ndvi_yx + p_ndvi_dl, width = 14, height = 6, dpi = 300)
-
+  labs(
+    title = "Mean NDVI per Wijk — Delft",
+    subtitle = "Source: Sentinel-2 / Landsat"
+  )
 # Figure 2D: NDVI violin
 ndvi_df <- bind_rows(
   yx_grn_bio |> st_drop_geometry() |> transmute(city = "Yuexiu", ndvi_mean, green_type),

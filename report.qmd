@@ -1,5 +1,6 @@
 ---
 title: "Spatial Justice through Urban Green Space Connectivity"
+bibliography: references.bib
 subtitle: "Project report of Group E"
 author:
   - name: "Roxanne Vuijk"
@@ -10,6 +11,10 @@ author:
     affiliation: "MSc Geomatics"
 format: html
 ---
+
+```{r setup, include=FALSE}
+source("R/00_config.R")
+```
 
 # Introduction
 
@@ -189,34 +194,13 @@ Finally, the network analysis presented on @fig-network displays the access poin
 
 ### 2. Typology diversity & Biodiversity
 
-Assess spatial justice through the relationship between population and access to green space. How equitable are green spaces distributed across administrative units in relation to population demographics?
-
-NVDI species density relationship between connectivity and biodiversity relationship between demographics and biodiversity
-
-which typologies perform best and worst comparison between delft and Guangzhou
+As background context, @fig-green_typology reveal the the green space composition in urban area taken from the Open-Street Map data (e.g. forests, nature reserve, etc) between the two cities. While Delft seem to be dominated by green or meadows, Yuexiu green space composition is dominated by parls/recreation. The difference is consistent with the urban characteristic between the two cities; while Delft is considered a relatively small European city, Yuexiu historical city center pose more dense, urban characteristic, where presence of formal parks are more easily found compared more scarce grassland/meadow-type green spaces.
 
 ```{r}
 #| label: fig-green_typology
 #| fig-cap: "Spatial Distribution of Urban Green Typologies"
 knitr::include_graphics(file.path(OUT_ROOT, "fig_green_typology.png"))
-```
 
-```{r}
-#| label: fig-ndvi-spatial
-#| fig-cap: "NDVI"
-knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_maps.png"))
-```
-
-```{r}
-#| label: fig-gbif
-#| fig-cap: "GBIF density"
-knitr::include_graphics(file.path(OUT_ROOT, "fig_gbif_density.png"))
-```
-
-```{r}
-#| label: fig-bluegreen
-#| fig-cap: "Blue-green ratio"
-knitr::include_graphics(file.path(OUT_ROOT, "fig_blue_green_ratio.png"))
 ```
 
 ```{r}
@@ -225,15 +209,31 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_blue_green_ratio.png"))
 knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_violin.png"))
 ```
 
-As background context, Figure (x) reveal the the green space composition in urban area taken from the Open-Street Map data (e.g. forests, nature reserve, etc) between the two cities. While Delft seem to be dominated by green or meadows, Yuexiu green space composition is dominated by parls/recreation. This makes sense because Delft is a smaller city in comparison to Yuexiu historical city center, that is still surrounded by denser urban areas development.
+The NDVI violin plot can be interpreted as first, high consistency in the specific patch type to be very similar vegetation health scores; indicating good maintenance of urban green areas for narrow/pointy plots, and second, high variance in NDVI value across parks, suggesting possible differences in prioritisation of maintenance of different green areas. Based on these, three following interpretations can be made 1) Delft's forest/woodland patches cluster tightly at NDVI ≈ 0.75 (2) Yuexiu's parks have wider spread between 0.35–0.75, thus green quality is highly variable.​
 
-interpretation NDVI maps: Delft's northwestern wijken are notably greener (high NDVI ≈ 0.7–0.8) while the central station area is lower. Yuexiu shows a patchwork. some subdistricts surprisingly high (remnant green), others very low (dense built fabric). NDVI is a ground-truth check on OSM data: a neighbourhood can have mapped parks but low NDVI (mowed grass) or unmapped tree canopy with high NDVI.
+```{r}
+#| label: fig-ndvi-spatial
+#| fig-cap: "NDVI"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_maps.png"))
+```
 
-interpretation biodiversity observation density vs patch size: Two key patterns here. First, small patches have wildly variable densities, some tiny grass/meadow patches in Delft show 1000+ obs/ha, likely because they're well-surveyed community sites. Second, large patches (10+ ha) consistently show low obs/ha, this is a well-known sampling artefact (observers cluster near entrances). Yuexiu's large park/recreation patches sit in the bottom-right, suggesting under-recording rather than genuinely low biodiversity.
+The Normalised Difference Vegetation Index (NDVI) is a remote sensing metric used to measure and quantify the health, density and greenness of vegetation. The figure @fig-ndvi-spatial, reveals the spatial distribution of NDVI relative within each cities' neighborhoods. Comparing the two cities, Delft's northwestern neighborhoods have relatively higher NDVI (high NDVI ≈ 0.7–0.8), yet lowers as it reached central areas of the city. In contrast, Yuexiu reveals a low to mid-mean NDVI level (NDVI ≈ 0.2–0.6), indicating sparse vegetation, with higher NDVI values observed around the northern neighborhoods. NDVI thus complements OSM's land use data as it measures actual health of vegetation, beyond its land-use mappings.
 
-interpretation blue-green ratio: Delft's canal-rich centre pushes one wijk to a ratio of \~4, reflecting its water-city heritage. Yuexiu has one dramatic outlier (ratio \~9) in the northwest, likely a water park or reservoir, while most subdistricts are near- zero (green-dominated or no water). This matters for NbS planning because blue and green infrastructure together provide better cooling and biodiversity than either alone. \<- review this analysis, doesnt make sense, WIP -\>\> make the blue and green proportional to each other
+```{r}
+#| label: fig-gbif
+#| fig-cap: "GBIF density"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_gbif_density.png"))
+```
 
-interpretation NDVI violin: (1) Delft's forest/woodland patches cluster tightly at NDVI ≈ 0.85, consistently dense canopy.​ (2) Yuexiu's parks have wide spread from 0.35–0.75, meaning quality is highly variable.​ (3) Sports facilities in Yuexiu dip to NDVI \~0.15 (artificial turf / hardstanding). The tight vs wide violin shape is the signal: narrow = consistent quality, wide = uneven management.
+The biodiversity observation density vs patch size suggest an interesting correlation; first, small patches are found to have significantly higher recorded observations per hectare, whereas larger patches are found to have much lower observations per hectare. This phenomenon can also be known as sampling artefact, where more observations are gathered in well-surveyed community sites as community gather near entrances, and not necessarily due to richer biodiversity. A second observation reveals the cluster of high patch area (\>10 ha) found in Yuexiu found to have low number of observations. While it can be attributed to the previous phenomenon, it may also indicate under sampling of the larger green spaces, thus, instead of reflecting low ecological biodiversity, the recorded data is more likely to under-represent their true biodiversity.
+
+```{r}
+#| label: fig-bluegreen
+#| fig-cap: "Blue-green ratio"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_blue_green_ratio.png"))
+```
+
+Blue green balance, calculated by \$\\text{blue-green balance} = \\log(1 + \\text{water per capita}) - \\log(1 + \\text{green per capita})\$ reveal higher abundance of blue space (water) if dominated by positive values, higher abundance of green space if dominated by negative values, and relatively balanced green-blue space with values nearing 0. Comparing the two cities, the range in comparison for Yuexiu suggests much higher green space presence in comparison to water. This is validated by doing summary statistics between total water vs green, in which Yuexiu yielded 192,494m^2^ of mean green space compared to 40,304m^2^ of mean water space. In comparison, Delft yielded a more evenly spread balance between green and blue areas; akin to its canal-rich characteristic, thus reflecting its water-city heritage. The relevance extends as blue and green infratsructure together, can provide better cooling and biodiversity than either alone (@akther2026bgi).
 
 ### 3. Spatial Justice
 
@@ -242,13 +242,36 @@ Compare how strong these relationships are in different cities (Delft vs Guangzh
 gini coefficient green space per capita inequalities relationship between population density and green access income correlation what neighbourhoods are troubled? does this have to do with the heritage core in delft as well as guangzhou (both heritage centres) When a Gini-coefficient is higher, it means there is a more unequal distribution of urban green spaces. Accessibility and spatial justice vary across different neighbourhoods.
 
 ```{r}
+#| label: fig-equity-correlations
+#| fig-cap: "Equity correlations"
+
 knitr::include_graphics(file.path(OUT_ROOT, "fig_equity_correlations.png"))
+```
+
+Studies (@unlit and @unlit2) have revealed that night-time light (VIIRS) can serve as a reliable proxy to examining economic development of certain regional area. To this finding, due to our inability to find the spatial distribution of income in Yuexiu sub-district, China, VIIRS night-light is used in this graph. As for the Netherlands, with data availability on income per neighborhood (Delft: CBS disposable income), the direct metric is used instead. The equity correlation displayed by @fig-equity-correlations, reveal both statistically insignificant finding of green spaces versus indicator of economic status. The correlation of income as direct measure of health is found to be -0.117 for Delft, and -0.122 for Yuexiu. Both exhibit negative, near-zero values, suggesting very little to no significant trend of green spaces favoring wealthier sub-districts or neighborhoods in both compared locations. Relative to income, its distribution is relatively random.
+
+```{r, out.width="30%"}
+#| label: fig_bivariate_legend.png
 knitr::include_graphics(file.path(OUT_ROOT, "fig_bivariate_legend.png"))
+```
+
+```{r}
+#| label: fig-bivariate-choropleth
+#| fig-cap: "Bivariate Choropleth"
+
 knitr::include_graphics(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"))
+```
+
+The bivariate choropleth @fig-bivariate-choropleth displays the interaction between a demographic factor of population density and an environmental factor of green density. Between the two cities, Delft reveals a more balanced spatial transition; of steady balance between areas dominated in high green density with low population (green) and zones characterized by high population density with limited greenery (pink). Yuexiu does not display this characteristic; instead, it reveals less uniform transition of greenery-population density balance amongst its neighborhoods. This suggests that while Delft’s green-population dynamic is more structural, Yuexiu’s landscape is the result of uneven, rapid growth where increase in residential density may have outpaced the provision of ecological infrastructure in the city of Yuexiu.
+
+```{r}
+#| label: fig-gini-coeff
+#| fig-cap: "Gini Coefficient comparison"
+
 knitr::include_graphics(file.path(OUT_ROOT, "fig_lorenz_gini.png"))
 ```
 
-interpretation bivariate: Yuexiu has a cluster of green (Low-High) patches in its central-southern belt — densely populated subdistricts with almost no green. Delft is dominated by pink (High-Low) — low population, high green — which explains why coverage is near 100% but the Gini is still 0.605. The few dense Delft wijken have less green per person.
+Lastly, spatial justice is examined by comparing the behavior of Lorenz gini of the two cities @fig-gini-coeff. The dotted diagonal grey line represents perfect state of equality where green space would have been equally distributed among all its neighborhoods; 0, means perfect equality, whereas 1 represents perfect inequality. Delft (Gini coefficient= 0.605) reveal a more equal distribution of green spaces across the city compared to Yuexiu (Gini coefficient= 0.719). This can be attributed back to the spatial distribution shown on the map of Figure @fig-bivariate-choropleth, displaying how the inequality exists (while being relative to population density), or more simply Figure @fig-access on access to green space per neighborhood.
 
 ### 4. Connectivity
 
