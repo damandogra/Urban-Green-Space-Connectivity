@@ -86,7 +86,6 @@ APPLIED_SPATIAL_ANALYTICS/
 │       └── vector/
 │
 ├── R/
-│   ├── _entire-workflow.R    # Sources all scripts in order
 │   ├── 00_config.R           # ALL paths, CRS constants, thresholds — loaded by every script
 │   ├── 01_load_data.R        # Load + validate all layers, save checked objects to /outputs/
 │   ├── 02_accessibility.R    # SQ1 — green space per capita, buffers, nearest distance
@@ -103,6 +102,7 @@ APPLIED_SPATIAL_ANALYTICS/
 ├── report_files/             # Quarto's own render cache/dependencies only
 │                              # (execute-results/, libs/) — not analysis output
 │
+├── _entire-workflow.R         # Sources and runs all scripts in order
 ├── _quarto.yml                # project config: sets output-dir to docs/
 ├── report.qmd                 # narrative + figures pulled from outputs/
 └── README.md
