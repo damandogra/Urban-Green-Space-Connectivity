@@ -1,3 +1,4 @@
+# install.packages("rsi")
 source("R/00_config.R")
 library(sf)
 library(terra)
