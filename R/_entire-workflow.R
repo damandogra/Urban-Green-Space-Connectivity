@@ -1,0 +1,7 @@
+source("R/00_config.R")
+source("R/01_load_data.R")
+source("R/02_accessibility.R")
+source("R/03_typology_biodiversity.R")
+source("R/04_spatial_justice.R")
+source("R/05_connectivity.R")
+source("R/06_mcda_nbs.R")
