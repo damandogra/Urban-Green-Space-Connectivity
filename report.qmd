@@ -39,9 +39,6 @@ How urban green spaces are distributed across different city districts depends n
 
 Having optimal connectivity between urban green spaces increases quality; it becomes more accessible for humans as well as non-humans, providing better habitat and improving the ecological value of urban green spaces. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity thus plays a role in determining the quality of the UGS (Irvine et al., 2008).
 
-Many studies focus on either ecological connectivity or social accessibility, while fewer integrate both perspectives. Existing assessments often rely on single indicators and do not capture the multidimensional nature of green space quality. Therefore, this study aims to provide an analytical framework that combines accessibility, connectivity, biodiversity, and spatial justice into a single evaluation tool. There is a need for a reproducible method that evaluates urban green space quality in relation to spatial justice across different urban contexts.
-
-By comparing the contrasting urban contexts of Delft and Guangzhou, this study uses different criteria to determine on UGS quality. Delft and Guangzhou represent different geographical and cultural contexts in which urban development takes place. A comparative approach here helps identify both context-specific challenges as well as reproducable decision-making tools. The framework integrates indicators of accessibility, connectivity, biodiversity, and spatial justice within a spatial MCDA (Multi-criteria Decision Analysis). The outcome is a decision-support tool that identifies areas for intervention an provides planning recommendations for improving urban green space quality and connectivity.
 
 ### Literature Review
 
