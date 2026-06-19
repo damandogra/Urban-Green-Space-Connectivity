@@ -15,8 +15,9 @@ format:
 output-dir: docs
 ---
 
+
 ```{r setup, include=FALSE}
-source("R/00_config.R")
+source(here::here("R/00_config.R"))
 ```
 
 # Introduction
@@ -292,7 +293,7 @@ Through applying MCDA, the study provides a method to overlay low-access zones a
 
 Translate analytical findings into strategies for increasing UGS quality. How do the differences between the two cities show how connectivity and accessibility can improve spatial justice? What strategies are suggested to improve spatial justice? Potential interventions: green corridors, linear parks, canal-side ecological networks, pocket parks, urban forest, biodiversity stepping stones, street greening, green roofs and walls. - connect those to a weakness found in the analysis.
 
-### Reproducability
+### Reproducibility
 
 As sources are gathered through globally availbale datasets, methodology can be replicated in other cities/districts. Framework is also available on Github and independent of local planning systems. GIS workflow can be reproduced in QGIS and R indicators depending on local contexts.
 

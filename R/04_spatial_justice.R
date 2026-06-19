@@ -42,7 +42,10 @@ dl$dl_pop  <- unwrap(dl$dl_pop)
 # green_pc_m2 values and must be excluded from all per-capita analyses.
 POP_MIN <- 100   # safe threshold: no real residential wijk has < 100 people
 
-yx_sub_access  <- yx_sub_access  |> filter(pop_count >= POP_MIN)
+yx_sub_access_all <- yx_sub_access
+dl_wijk_access_all <- dl_wijk_access
+
+yx_sub_access <- yx_sub_access |> filter(pop_count >= POP_MIN)
 dl_wijk_access <- dl_wijk_access |> filter(pop_count >= POP_MIN)
 
 message(sprintf("After pop filter — Yuexiu: %d subdistricts | Delft: %d wijken",
@@ -84,29 +87,39 @@ gini_labels <- data.frame(
 
 # ── 3B. Bivariate choropleth ──────────────────────────────────────────────────
 tertile_label <- function(x, labels = c("Low", "Mid", "High")) {
-  brks <- quantile(x, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
-  if (length(unique(brks)) < 4) return(factor(rep(NA, length(x)), levels = labels))
-  cut(x, breaks = brks, labels = labels, include.lowest = TRUE)
+  x_num <- as.numeric(x)
+
+  if (all(is.na(x_num))) {
+    return(factor(rep("Mid", length(x_num)), levels = labels))
+  }
+
+  brks <- quantile(x_num, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
+
+  if (length(unique(brks)) < 4) {
+    return(factor(ifelse(is.na(x_num), "Mid", "Mid"), levels = labels))
+  }
+
+  cut(x_num, breaks = brks, labels = labels, include.lowest = TRUE)
 }
 
-yx_bivar <- yx_sub_access |>
+yx_bivar <- yx_sub_access_all |>
   mutate(
-    admin_area_m2 = as.numeric(st_area(st_transform(yx_sub_access, CRS_YX))),
+    admin_area_m2 = as.numeric(st_area(st_transform(yx_sub_access_all, CRS_YX))),
     green_density = green_area_m2 / admin_area_m2,
-    pop_density   = pop_count / (admin_area_m2 / 10000),
-    grn_class     = tertile_label(green_density),
-    pop_class     = tertile_label(pop_density),
-    bivar_class   = paste(grn_class, pop_class, sep = "-")
+    pop_density = pop_count / (admin_area_m2 / 10000),
+    grn_class = tertile_label(green_density),
+    pop_class = tertile_label(pop_density),
+    bivar_class = paste(grn_class, pop_class, sep = "-")
   )
 
-dl_bivar <- dl_wijk_access |>
+dl_bivar <- dl_wijk_access_all |>
   mutate(
-    admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access, CRS_DELFT))),
+    admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access_all, CRS_DELFT))),
     green_density = green_area_m2 / admin_area_m2,
-    pop_density   = pop_count / (admin_area_m2 / 10000),
-    grn_class     = tertile_label(green_density),
-    pop_class     = tertile_label(pop_density),
-    bivar_class   = paste(grn_class, pop_class, sep = "-")
+    pop_density = pop_count / (admin_area_m2 / 10000),
+    grn_class = tertile_label(green_density),
+    pop_class = tertile_label(pop_density),
+    bivar_class = paste(grn_class, pop_class, sep = "-")
   )
 
 bivar_palette <- c(

@@ -9,7 +9,6 @@
 # Quarto / Reports
 # Ignore the rendered HTML and the folder containing supporting files
 report.html
-report_files/
 site_libs/
 /.quarto/
 
@@ -26,3 +25,8 @@ Thumbs.db
 # extras
 # pipeline_plan.md
 data.zip
+.github
+
+**/*.quarto_ipynb
+/outputs
+.github
