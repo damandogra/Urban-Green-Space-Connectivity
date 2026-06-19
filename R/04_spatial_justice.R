@@ -112,20 +112,37 @@ yx_bivar <- yx_sub_access_all |>
     bivar_class = paste(grn_class, pop_class, sep = "-")
   )
 
-dl_bivar <- dl_wijk_access_all |>
-  mutate(
-    admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access_all, CRS_DELFT))),
-    green_density = green_area_m2 / admin_area_m2,
-    pop_density = pop_count / (admin_area_m2 / 10000),
-    grn_class = tertile_label(green_density),
-    pop_class = tertile_label(pop_density),
-    bivar_class = paste(grn_class, pop_class, sep = "-")
-  )
+yx_bivar$bivar_class <- factor(
+  yx_bivar$bivar_class,
+  levels = names(bivar_palette)
+)
 
+    dl_bivar <- dl_wijk_access_all |>
+      mutate(
+        admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access_all, CRS_DELFT))),
+        green_density = green_area_m2 / admin_area_m2,
+        pop_density = pop_count / (admin_area_m2 / 10000),
+        grn_class = tertile_label(green_density),
+        pop_class = tertile_label(pop_density),
+        bivar_class = paste(grn_class, pop_class, sep = "-")
+      )
+
+    dl_bivar$bivar_class <- factor(
+      dl_bivar$bivar_class,
+      levels = names(bivar_palette)
+    )
 bivar_palette <- c(
-  "Low-Low"   = "#e8f4e8", "Low-Mid"   = "#b8d4b8", "Low-High"  = "#5aaa5a",
-  "Mid-Low"   = "#d4e8f4", "Mid-Mid"   = "#7fb0cc", "Mid-High"  = "#2277aa",
-  "High-Low"  = "#f4d4e8", "High-Mid"  = "#cc7faa", "High-High" = "#8833aa"
+  "Low-Low"   = COLORS$pink_light,
+  "Low-Mid"   = COLORS$pink,
+  "Low-High"  = COLORS$red,
+
+  "Mid-Low"   = COLORS$blue_light,
+  "Mid-Mid"   = COLORS$blue,
+  "Mid-High"  = COLORS$purple,
+
+  "High-Low"  = COLORS$beige,
+  "High-Mid"  = COLORS$lime,
+  "High-High" = COLORS$green_space
 )
 
 # ── 3C. Income / VIIRS correlations ──────────────────────────────────────────
@@ -211,7 +228,7 @@ p_lorenz <- ggplot(lorenz_data, aes(x = cum_pop, y = cum_grn, colour = city)) +
   geom_text(data = gini_labels,
             aes(x = 0.25, y = c(0.82, 0.72), label = label, colour = city),
             size = 4, fontface = "bold", show.legend = FALSE) +
-  scale_colour_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154")) +
+  scale_colour_manual(values = c("Yuexiu" = COLOR$red, "Delft" = COLOR$blue)) +
   scale_x_continuous(labels = label_percent()) +
   scale_y_continuous(labels = label_percent()) +
   theme_minimal(base_size = 12) +

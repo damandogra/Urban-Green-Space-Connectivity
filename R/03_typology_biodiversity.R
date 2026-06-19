@@ -415,8 +415,15 @@ type_summary <- type_summary |>
   dplyr::filter(green_type != "Other / Unclassified")
 p_type <- ggplot(type_summary,
                  aes(x = city, y = pct_area, fill = green_type)) +
-  geom_col(width = 0.6) +
-  scale_fill_brewer(palette = "Set2", name = "Typology") +
+  scale_fill_manual(
+    values = c(
+      "Forest / Woodland" = COLORS$green_space,
+      "Grass / Meadow" = COLORS$lime,
+      "Nature Reserve / Scrub" = COLORS$beige,
+      "Park / Recreation" = COLORS$blue_light
+    ),
+    name = "Typology"
+  ) +
   scale_y_continuous(labels = label_percent(scale = 1)) +
   theme_minimal(base_size = 12) +
   labs(title    = "Green Space Composition by Typology",
@@ -429,13 +436,7 @@ ggsave(file.path(OUT_ROOT, "fig_green_typology.png"),
 p_ndvi_yx <- ggplot(yx_sub_ndvi) +
   geom_sf(aes(fill = ndvi_mean)) +
   scale_fill_gradientn(
-    colours = c(
-      "#8c510a",  # brown
-      "#dfc27d",  # tan
-      "#f6e8c3",  # cream
-      "#80cdc1",  # light green
-      "#018571"   # dark green
-    ),
+    colours = pal_green,
     limits = c(-0.1, 0.8),
     na.value = "grey80",
     name = "Mean NDVI"
@@ -449,13 +450,7 @@ p_ndvi_yx <- ggplot(yx_sub_ndvi) +
 p_ndvi_dl <- ggplot(dl_wijk_ndvi) +
   geom_sf(aes(fill = ndvi_mean)) +
   scale_fill_gradientn(
-    colours = c(
-      "#8c510a",
-      "#dfc27d",
-      "#f6e8c3",
-      "#80cdc1",
-      "#018571"
-    ),
+    colours = pal_green,
     limits = c(-0.1, 0.8),
     na.value = "grey80",
     name = "Mean NDVI"
@@ -473,7 +468,7 @@ ndvi_df <- bind_rows(
 
 p_ndvi_violin <- ggplot(ndvi_df, aes(x = green_type, y = ndvi_mean, fill = city)) +
   geom_violin(alpha = 0.7, position = position_dodge(0.8), draw_quantiles = 0.5) +
-  scale_fill_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154")) +
+  scale_fill_manual(values = c("Yuexiu" = COLORS$red, "Delft" = COLORS$blue)) +
   theme_minimal(base_size = 11) +
   theme(axis.text.x = element_text(angle = 35, hjust = 1)) +
   labs(title    = "NDVI Distribution by Green Typology",
@@ -496,7 +491,14 @@ p_gbif <- ggplot(bio_df, aes(x = area_ha, y = gbif_obs_per_ha,
   geom_point(alpha = 0.6, size = 2) +
   scale_x_log10(labels = label_comma()) +
   scale_y_log10(labels = label_comma()) +
-  scale_colour_brewer(palette = "Set2", name = "Typology") +
+  scale_colour_manual(
+    values = c(
+      "Forest / Woodland" = COLORS$green_space,
+      "Grass / Meadow" = COLORS$lime,
+      "Nature Reserve / Scrub" = COLORS$beige,
+      "Park / Recreation" = COLORS$blue_light
+    )
+  )
   theme_minimal(base_size = 11) +
   labs(title    = "Biodiversity Observation Density vs. Patch Size",
        subtitle = "GBIF occurrences per ha — log-log scale",
@@ -507,16 +509,28 @@ ggsave(file.path(OUT_ROOT, "fig_gbif_density.png"),
 
 p_bg_yx <- ggplot(yx_sub_bg) +
   geom_sf(aes(fill = blue_green_balance)) +
-  scale_fill_distiller(name = "BG Balance\n(log scale)", palette = "BrBG",
-                       direction = 1, na.value = "grey80") +
+  scale_fill_gradient2(
+    low = COLORS$green_space,
+    mid = COLORS$beige,
+    high = COLORS$blue,
+    midpoint = 0,
+    name = "BG Balance\n(log scale)",
+    na.value = "grey80"
+  ) +
   theme_minimal() +
   labs(title    = "Blue-Green Balance — Yuexiu Subdistricts",
        subtitle = "log1p(Water PC) - log1p(Green PC)")
 
 p_bg_dl <- ggplot(dl_wijk_bg) +
   geom_sf(aes(fill = blue_green_balance)) +
-  scale_fill_distiller(name = "BG Balance\n(log scale)", palette = "BrBG",
-                       direction = 1, na.value = "grey80") +
+  scale_fill_gradient2(
+    low = COLORS$green_space,
+    mid = COLORS$beige,
+    high = COLORS$blue,
+    midpoint = 0,
+    name = "BG Balance\n(log scale)",
+    na.value = "grey80"
+  ) +
   theme_minimal() +
   labs(title    = "Blue-Green Balance — Delft Wijken",
        subtitle = "log1p(Water PC) - log1p(Green PC)")

@@ -121,8 +121,8 @@ p1 <- ggplot(yx_sub_access) +
     name = "m² per person\n(pseudo-log)",
     trans = scales::pseudo_log_trans(sigma = 1),
     breaks = c(0, 1, 10, 100, 400),
-    low = "#f7fcf5",
-    high = "#00441b",
+    low = COLORS$beige,
+    high = COLORS$green_space,
     na.value = "grey80") +
   theme_minimal() +
   labs(title = "Green Space per Capita — Yuexiu Jiēdào",
@@ -134,8 +134,8 @@ p2 <- ggplot(dl_wijk_access) +
     name = "m² per person\n(pseudo-log)",
     trans = scales::pseudo_log_trans(sigma = 1),
     breaks = c(0, 1, 10, 100, 400),
-    low = "#f7fcf5",
-    high = "#00441b",
+    low = COLORS$beige,
+    high = COLORS$green_space,
     na.value = "grey80") +
   theme_minimal() +
   labs(title = "Green Space per Capita — Delft Wijken",
@@ -165,7 +165,7 @@ ggsave(file.path(OUT_ROOT, "fig_nearest_green_distance.png"),
 # Figure 1C: Buffer coverage bar chart
 p5 <- ggplot(buffer_summary, aes(x = factor(buffer_m), y = pct_pop, fill = city)) +
   geom_col(position = position_dodge(0.7), width = 0.6) +
-  scale_fill_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154")) +
+  scale_fill_manual(values = c("Yuexiu" = COLORS$blue, "Delft" = COLORS$purple)) +
   scale_y_continuous(limits = c(0, 100), labels = function(x) paste0(x, "%")) +
   theme_minimal(base_size = 12) +
   labs(title = "Population within Walking Distance of Green Space",
@@ -206,25 +206,25 @@ dl_net <- generate_network_access(dl$dl_grn, dl$dl_rds, CRS_DELFT)
 # 3. Build the Plots
 p_yx_network <- ggplot() +
   geom_sf(data = yx_net$roads, color = "grey85", size = 0.3) +
-  geom_sf(data = yx_net$b500, fill = "#238b45", alpha = 0.08, color = NA) +
-  geom_sf(data = yx_net$b300, fill = "#238b45", alpha = 0.15, color = "#238b45", linetype = "dashed", size = 0.4) +
-  geom_sf(data = yx_net$b100, fill = "#238b45", alpha = 0.25, color = NA) +
-  geom_sf(data = yx_net$green, fill = "#00441b", color = NA) +
-  geom_sf(data = yx_net$pts, color = "#d95f02", size = 1.2, alpha = 0.7) +
+  geom_sf(data = yx_net$b500, fill = COLORS$beige, alpha = 0.08, color = NA) +
+  geom_sf(data = yx_net$b300, fill = COLORS$blue_light, alpha = 0.15, color = COLORS$beige, linetype = "dashed", size = 0.4) +
+  geom_sf(data = yx_net$b100, fill = COLORS$blue, alpha = 0.25, color = NA) +
+  geom_sf(data = yx_net$green, fill = COLORS$green_space, color = NA) +
+  geom_sf(data = yx_net$pts, color = COLORS$red, size = 1.2, alpha = 0.7) +
   theme_minimal() +
   labs(title = "Network Entry Thresholds — Yuexiu",
-       subtitle = "Orange points indicate road intersections at the 300m buffer boundary")
+       subtitle = "Red points indicate road intersections at the 300m buffer boundary")
 
 p_dl_network <- ggplot() +
   geom_sf(data = dl_net$roads, color = "grey85", size = 0.3) +
-  geom_sf(data = dl_net$b500, fill = "#238b45", alpha = 0.08, color = NA) +
-  geom_sf(data = dl_net$b300, fill = "#238b45", alpha = 0.15, color = "#238b45", linetype = "dashed", size = 0.4) +
-  geom_sf(data = dl_net$b100, fill = "#238b45", alpha = 0.25, color = NA) +
-  geom_sf(data = dl_net$green, fill = "#00441b", color = NA) +
-  geom_sf(data = dl_net$pts, color = "#d95f02", size = 1.2, alpha = 0.7) +
+  geom_sf(data = dl_net$b500, fill = COLORS$beige, alpha = 0.08, color = NA) +
+  geom_sf(data = dl_net$b300, fill = COLORS$blue_light, alpha = 0.15, color = COLORS$beige, linetype = "dashed", size = 0.4) +
+  geom_sf(data = dl_net$b100, fill = COLORS$blue, alpha = 0.25, color = NA) +
+  geom_sf(data = dl_net$green, fill = COLORS$green_space, color = NA) +
+  geom_sf(data = dl_net$pts, color = COLORS$red, size = 1.2, alpha = 0.7) +
   theme_minimal() +
   labs(title = "Network Entry Thresholds — Delft",
-       subtitle = "Orange points indicate road intersections at the 300m buffer boundary")
+       subtitle = "Red points indicate road intersections at the 300m buffer boundary")
 
 # 4. Save combined map side-by-side
 ggsave(file.path(OUT_ROOT, "fig_network_walk_access.png"),

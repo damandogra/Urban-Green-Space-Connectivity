@@ -57,14 +57,23 @@ MCDA_WEIGHTS <- c(
 )
 # - Colour palette ----------------------------------
 COLORS <- list(
-  green_dark = "#5C573E",
-  green = "#A5B452",
-  green_lime = "#C8D96F",
-  green_light = "#C4F7A1",
-  beige = "#CBD0B9",
-  blue = "#BDDBD0",
-  purple = "#9BA7C0"
+  green_space = "#5C6046",
+  lime = "#BBBE64",
+  beige = "#EAF0CE",
+  blue_light = "#B8D5D8",
+  blue = "#8A99BC",
+  purple = "#5E5172",
+  pink_light  = "#ceb7c3",
+  pink  = "#aa6581",
+  red = "#931948"
   )
+pal_blue <- c(COLORS$beige, COLORS$blue_light, COLORS$blue)
+
+pal_green <- c(COLORS$blue, COLORS$blue_light, COLORS$beige, COLORS$lime, COLORS$green_space)
+
+pal_purple <- c(COLORS$beige, COLORS$blue_light, COLORS$blue, COLORS$purple)
+
+pal_mcda <- c(COLORS$beige, COLORS$lime, COLORS$blue, COLORS$purple, COLORS$red)
 
 # — Green space typology filter --------------------------------------------
 
