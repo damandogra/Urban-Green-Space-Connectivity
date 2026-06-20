@@ -34,27 +34,6 @@ data/
 
 ---
 
-## Visualisation settings
-The colour palette used in the project is defined in R/00_config.R under COLORS.
-
----
-
-## Green space filter
-
-Green spaces are filtered to include only publicly accessible and ecologically functional urban green spaces.
-Park/Recreation
-Forest/Woodland,
-Grass/Meadow,
-Nature reserve/Scrub
-
-The green areas that are excluded from all analysis are:
-Cemetery
-Allotment/Agriculture
-Sports facility
-Other/Unclassified
-
----
-
 ## How to run
 
 ### 1. Clone and open
@@ -94,6 +73,27 @@ Output: `docs/index.html` (the `output-dir: docs` setting lives in `_quarto.yml`
 at the project root). This is also the folder GitHub Pages serves the live
 report from — no manual renaming or copying needed.
 
+
+---
+
+## Visualisation settings
+The colour palette used in the project is defined in R/00_config.R under COLORS.
+
+---
+
+## Green space filter
+
+Green spaces are filtered to include only publicly accessible and ecologically functional urban green spaces.
+1. Park/Recreation
+2. Forest/Woodland,
+3. Grass/Meadow,
+4. Nature reserve/Scrub
+
+The green areas that are excluded from all analysis are:
+1. Cemetery
+2. Allotment/Agriculture
+3. Sports facility
+4. Other/Unclassified
 ---
 
 ## File structure
@@ -135,5 +135,5 @@ APPLIED_SPATIAL_ANALYTICS/
 - All file paths live in `R/00_config.R` — no hardcoded paths elsewhere.
 - Uses only open, globally available datasets (OSM, WorldPop, GBIF, VIIRS, NDVI).
 - The workflow is fully reproducible in any city/district by updating `00_config.R`.
-- The report is published via GitHub Pages directly from the `docs/` folder on `main` —
-  every render-and-push updates the live version automatically.
+- The report is published via GitHub Pages directly from the `docs/` folder on `main`.
+  Every render-and-push automatically updates the live version.
