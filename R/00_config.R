@@ -57,23 +57,33 @@ MCDA_WEIGHTS <- c(
 )
 # - Colour palette ----------------------------------
 COLORS <- list(
-  green_space = "#5C6046",
-  lime = "#BBBE64",
-  beige = "#EAF0CE",
-  blue_light = "#B8D5D8",
-  blue = "#8A99BC",
-  purple = "#5E5172",
-  pink_light  = "#ceb7c3",
-  pink  = "#aa6581",
-  red = "#931948"
+  green_dark = "#434930",
+  green_mid = "#6b6e43",
+  green_light = "#a3a479",
+  beige = "#f4ebcc",
+  pink_light  = "#e5c6ad",
+  pink  = "#c3877e",
+  red_light  = "#96554d",
+  red = "#67262d",
+  orange_light = "#cc9768",
+  orange = "#b8682e",
+  blue_light = "#b8d5d9",
+  blue = "#8a99bc",
+  grey85 = "#D9D9D9"
   )
+pal_green <- c(COLORS$beige, COLORS$green_light, COLORS$green_mid, COLORS$green_dark)
+
 pal_blue <- c(COLORS$beige, COLORS$blue_light, COLORS$blue)
 
-pal_green <- c(COLORS$blue, COLORS$blue_light, COLORS$beige, COLORS$lime, COLORS$green_space)
+pal_red <-  c(COLORS$beige, COLORS$pink_light, COLORS$pink, COLORS$red_light, COLORS$red)
 
-pal_purple <- c(COLORS$beige, COLORS$blue_light, COLORS$blue, COLORS$purple)
+pal_orange <- c(COLORS$beige, COLORS$orange_light, COLORS$orange)
 
-pal_mcda <- c(COLORS$beige, COLORS$lime, COLORS$blue, COLORS$purple, COLORS$red)
+pal_green_blue <- c(COLORS$green_dark, COLORS$green_mid, COLORS$green_light, COLORS$beige, COLORS$blue_light, COLORS$blue)
+
+pal_green_orange <- c(COLORS$green_dark, COLORS$green_mid, COLORS$green_light, COLORS$beige, COLORS$orange_light, COLORS$orange)
+
+pal_full <- c(COLORS$green_dark, COLORS$green_mid, COLORS$green_light, COLORS$beige, COLORS$pink_light, COLORS$pink, COLORS$red_light, COLORS$red)
 
 # — Green space typology filter --------------------------------------------
 
