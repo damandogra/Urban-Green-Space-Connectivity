@@ -134,15 +134,15 @@ yx_bivar$bivar_class <- factor(
 bivar_palette <- c(
   "Low-Low"   = COLORS$pink_light,
   "Low-Mid"   = COLORS$pink,
-  "Low-High"  = COLORS$red,
+  "Low-High"  = COLORS$red_light,
 
-  "Mid-Low"   = COLORS$blue_light,
-  "Mid-Mid"   = COLORS$blue,
-  "Mid-High"  = COLORS$purple,
+  "Mid-Low"   = COLORS$beige,
+  "Mid-Mid"   = COLORS$blue_light,
+  "Mid-High"  = COLORS$blue,
 
-  "High-Low"  = COLORS$beige,
-  "High-Mid"  = COLORS$lime,
-  "High-High" = COLORS$green_space
+  "High-Low"  = COLORS$green_light,
+  "High-Mid"  = COLORS$green_mid,
+  "High-High" = COLORS$green_dark
 )
 
 # ── 3C. Income / VIIRS correlations ──────────────────────────────────────────
@@ -254,13 +254,27 @@ dl_bivar <- dl_bivar |>
   mutate(bivar_class = factor(bivar_class, levels = all_classes))
 
 shared_fill <- scale_fill_manual(
-  values   = bivar_palette,
-  breaks   = all_classes,
-  na.value = "grey80",
-  name     = "Green–Population\nmatrix",
-  drop     = FALSE
+  values = bivar_palette,
+  breaks = rev(bivar_order),
+  limits = rev(bivar_order),
+  name = "Green–Population\nmatrix",
+  drop = FALSE
+)
+bivar_order <- c(
+  "Low-Low", "Low-Mid", "Low-High",
+  "Mid-Low", "Mid-Mid", "Mid-High",
+  "High-Low", "High-Mid", "High-High"
 )
 
+yx_bivar$bivar_class <- factor(
+  yx_bivar$bivar_class,
+  levels = rev(bivar_order)
+)
+
+dl_bivar$bivar_class <- factor(
+  dl_bivar$bivar_class,
+  levels = rev(bivar_order)
+)
 p_bv_yx <- ggplot(yx_bivar) +
   geom_sf(aes(fill = bivar_class), colour = "white", linewidth = 0.3) +
   shared_fill +
