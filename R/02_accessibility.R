@@ -47,16 +47,20 @@ calc_green_per_capita <- function(admin_sf, green_sf, pop_rast, local_crs) {
   })
 
   # 2. Project the admin layer ONCE before extracting to avoid issues inside mutate
-  admin_for_extract <- st_transform(admin_sf, st_crs(pop_rast))
+  admin_for_extract <- st_transform(admin_sf, local_crs)
 
   admin_sf |>
     mutate(
       green_area_m2 = unlist(results),
-      pop_count     = exact_extract(pop_rast, admin_for_extract, "sum"), # Use the pre-transformed layer
+      pop_count     = exact_extract(pop_rast, admin_for_extract, "sum"),
       pop_count     = pmax(pop_count, 1, na.rm = TRUE),
       green_pc_m2   = green_area_m2 / pop_count
     )
 }
+
+# Unpack population rasters after loading
+d$yx_pop <- terra::rast(d$yx_pop)
+dl$dl_pop <- terra::rast(dl$dl_pop)
 
 message("Calculating Yuexiu green per capita...")
 yx_sub_access <- calc_green_per_capita(d$yx_sub, d$yx_grn, d$yx_pop, CRS_YX)
@@ -122,7 +126,7 @@ p1 <- ggplot(yx_sub_access) +
     trans = scales::pseudo_log_trans(sigma = 1),
     breaks = c(0, 1, 10, 100, 400),
     low = COLORS$beige,
-    high = COLORS$green_space,
+    high = COLORS$green_mid,
     na.value = "grey80") +
   theme_minimal() +
   labs(title = "Green Space per Capita — Yuexiu Jiēdào",
@@ -135,7 +139,7 @@ p2 <- ggplot(dl_wijk_access) +
     trans = scales::pseudo_log_trans(sigma = 1),
     breaks = c(0, 1, 10, 100, 400),
     low = COLORS$beige,
-    high = COLORS$green_space,
+    high = COLORS$green_dark,
     na.value = "grey80") +
   theme_minimal() +
   labs(title = "Green Space per Capita — Delft Wijken",
@@ -165,7 +169,7 @@ ggsave(file.path(OUT_ROOT, "fig_nearest_green_distance.png"),
 # Figure 1C: Buffer coverage bar chart
 p5 <- ggplot(buffer_summary, aes(x = factor(buffer_m), y = pct_pop, fill = city)) +
   geom_col(position = position_dodge(0.7), width = 0.6) +
-  scale_fill_manual(values = c("Yuexiu" = COLORS$blue, "Delft" = COLORS$purple)) +
+  scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
   scale_y_continuous(limits = c(0, 100), labels = function(x) paste0(x, "%")) +
   theme_minimal(base_size = 12) +
   labs(title = "Population within Walking Distance of Green Space",
@@ -241,10 +245,10 @@ dl_net <- generate_network_access(dl$dl_grn, dl$dl_rds, CRS_DELFT)
 # 3. Build the Plots
 p_yx_network <- ggplot() +
   geom_sf(data = yx_net$roads, color = "grey85", size = 0.3) +
-  geom_sf(data = yx_net$b500, fill = COLORS$beige, alpha = 0.08, color = NA) +
+  geom_sf(data = yx_net$b500, fill = COLORS$pink_light, alpha = 0.08, color = NA) +
   geom_sf(data = yx_net$entry_buffer, fill = COLORS$blue_light, alpha = 0.25, color = COLORS$beige, linetype = "dashed", size = 0.4) +
-  geom_sf(data = yx_net$b100, fill = COLORS$blue, alpha = 0.25, color = NA) +
-  geom_sf(data = yx_net$green, fill = COLORS$green_space, color = NA) +
+  geom_sf(data = yx_net$b100, fill = COLORS$pink, alpha = 0.25, color = NA) +
+  geom_sf(data = yx_net$green, fill = COLORS$green_dark, color = NA) +
   geom_sf(data = yx_net$pts, color = COLORS$red, size = 0.4, alpha = 0.7) +
   theme_minimal() +
   labs(title = "Network Entry Thresholds — Yuexiu",
@@ -253,10 +257,10 @@ p_yx_network <- ggplot() +
 
 p_dl_network <- ggplot() +
   geom_sf(data = dl_net$roads, color = "grey85", size = 0.3) +
-  geom_sf(data = dl_net$b500, fill = COLORS$beige, alpha = 0.08, color = NA) +
+  geom_sf(data = dl_net$b500, fill = COLORS$pink_light, alpha = 0.08, color = NA) +
   geom_sf(data = dl_net$entry_buffer, fill = COLORS$blue_light, alpha = 0.25, color = COLORS$beige, linetype = "dashed", size = 0.4) +
-  geom_sf(data = dl_net$b100, fill = COLORS$blue, alpha = 0.25, color = NA) +
-  geom_sf(data = dl_net$green, fill = COLORS$green_space, color = NA) +
+  geom_sf(data = dl_net$b100, fill = COLORS$pink, alpha = 0.25, color = NA) +
+  geom_sf(data = dl_net$green, fill = COLORS$green_dark, color = NA) +
   geom_sf(data = dl_net$pts, color = COLORS$red, size = 0.4, alpha = 0.7) +
   theme_minimal() +
   labs(title = "Network Entry Thresholds — Delft",
