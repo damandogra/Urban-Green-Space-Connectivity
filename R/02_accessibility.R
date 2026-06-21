@@ -191,12 +191,47 @@ generate_network_access <- function(green_sf, road_sf, local_crs) {
   buf_300  <- st_union(st_buffer(green_m, 300))
   buf_100  <- st_union(st_buffer(green_m, 100))
 
-  # Extract point intersections along the 300m threshold boundary line
-  buf_300_line <- st_cast(buf_300, "MULTILINESTRING")
-  access_pts   <- st_intersection(road_m, buf_300_line)
-  access_pts   <- access_pts[st_geometry_type(access_pts) %in% c("POINT", "MULTIPOINT"), ]
+  # Entry points: roads near green-space boundaries
+  entry_buffer <- st_buffer(st_boundary(green_m), 3)
 
-  list(b100 = buf_100, b300 = buf_300, b500 = buf_500, roads = road_m, green = green_m, pts = access_pts)
+  road_m_filtered <- road_m[
+    road_m$highway %in% c(
+      "primary", "secondary", "tertiary",
+      "residential", "living_street", "unclassified",
+      "service",
+      "pedestrian", "cycleway", "footway"
+    ),
+  ]
+
+  # Remove only deep interior park paths, but keep edge paths
+  green_core <- st_buffer(st_union(green_m), -10)
+
+  roads_outside_green <- st_difference(road_m_filtered, green_core)
+
+  # Road segments close to green-space boundary
+  entry_segments <- st_intersection(roads_outside_green, entry_buffer)
+
+  # Convert candidate edge road segments to points
+  access_pts_raw <- st_centroid(entry_segments)
+
+  # Cluster nearby candidate points into representative entry points
+  access_pts <- access_pts_raw |>
+    st_buffer(35) |>
+    st_union() |>
+    st_cast("POLYGON") |>
+    st_centroid() |>
+    st_as_sf()
+
+  list(
+    b100 = buf_100,
+    b300 = buf_300,
+    b500 = buf_500,
+    entry_buffer = entry_buffer,
+    entry_segments = entry_segments,
+    roads = road_m,
+    green = green_m,
+    pts = access_pts
+  )
 }
 
 # 2. Run calculations using the ACTUAL dataset list names (rds instead of roads)
@@ -207,28 +242,29 @@ dl_net <- generate_network_access(dl$dl_grn, dl$dl_rds, CRS_DELFT)
 p_yx_network <- ggplot() +
   geom_sf(data = yx_net$roads, color = "grey85", size = 0.3) +
   geom_sf(data = yx_net$b500, fill = COLORS$beige, alpha = 0.08, color = NA) +
-  geom_sf(data = yx_net$b300, fill = COLORS$blue_light, alpha = 0.15, color = COLORS$beige, linetype = "dashed", size = 0.4) +
+  geom_sf(data = yx_net$entry_buffer, fill = COLORS$blue_light, alpha = 0.25, color = COLORS$beige, linetype = "dashed", size = 0.4) +
   geom_sf(data = yx_net$b100, fill = COLORS$blue, alpha = 0.25, color = NA) +
   geom_sf(data = yx_net$green, fill = COLORS$green_space, color = NA) +
-  geom_sf(data = yx_net$pts, color = COLORS$red, size = 1.2, alpha = 0.7) +
+  geom_sf(data = yx_net$pts, color = COLORS$red, size = 0.4, alpha = 0.7) +
   theme_minimal() +
   labs(title = "Network Entry Thresholds — Yuexiu",
-       subtitle = "Red points indicate road intersections at the 300m buffer boundary")
+       subtitle = "Red points indicate clustered road-boundary intersections as potential green-space entry points"
+  )
 
 p_dl_network <- ggplot() +
   geom_sf(data = dl_net$roads, color = "grey85", size = 0.3) +
   geom_sf(data = dl_net$b500, fill = COLORS$beige, alpha = 0.08, color = NA) +
-  geom_sf(data = dl_net$b300, fill = COLORS$blue_light, alpha = 0.15, color = COLORS$beige, linetype = "dashed", size = 0.4) +
+  geom_sf(data = dl_net$entry_buffer, fill = COLORS$blue_light, alpha = 0.25, color = COLORS$beige, linetype = "dashed", size = 0.4) +
   geom_sf(data = dl_net$b100, fill = COLORS$blue, alpha = 0.25, color = NA) +
   geom_sf(data = dl_net$green, fill = COLORS$green_space, color = NA) +
-  geom_sf(data = dl_net$pts, color = COLORS$red, size = 1.2, alpha = 0.7) +
+  geom_sf(data = dl_net$pts, color = COLORS$red, size = 0.4, alpha = 0.7) +
   theme_minimal() +
   labs(title = "Network Entry Thresholds — Delft",
-       subtitle = "Red points indicate road intersections at the 300m buffer boundary")
+       subtitle = "Red points indicate clustered road-boundary intersections as potential green-space entry points"
+  )
 
 # 4. Save combined map side-by-side
 ggsave(file.path(OUT_ROOT, "fig_network_walk_access.png"),
        p_yx_network + p_dl_network, width = 14, height = 6, dpi = 300)
 
 message("Figure 1D saved successfully!")
-
