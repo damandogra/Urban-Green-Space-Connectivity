@@ -193,11 +193,11 @@ enn_df <- bind_rows(
 p_enn <- ggplot(enn_df, aes(x = enn_m, fill = city)) +
   geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
   geom_vline(xintercept = DISPERSAL_THRESH_M, linetype = "dashed",
-             colour = "red", linewidth = 0.8) +
+             colour = COLORS$red, linewidth = 0.8) +
   annotate("text", x = DISPERSAL_THRESH_M + 5, y = Inf,
            label = paste0("Dispersal\nthreshold\n", DISPERSAL_THRESH_M, " m"),
-           hjust = 0, vjust = 1.2, size = 3.5, colour = "red") +
-  scale_fill_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154")) +
+           hjust = 0, vjust = 1.2, size = 3.5, colour = COLORS$red) +
+  scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
   facet_wrap(~city, scales = "free_y") +
   theme_minimal(base_size = 12) +
   labs(title = "Euclidean Nearest-Neighbour Distance Between Green Patches",
@@ -220,7 +220,7 @@ frag_long <- frag_summary |>
 
 p_frag <- ggplot(frag_long, aes(x = city, y = value, fill = city)) +
   geom_col(width = 0.55) +
-  scale_fill_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154"),
+  scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue),
                     guide = "none") +
   facet_wrap(~metric, scales = "free_y", ncol = 2) +
   theme_minimal(base_size = 11) +
@@ -237,19 +237,27 @@ plot_connectivity_map <- function(graph_obj, bnd_sf, local_crs, city_label) {
   bnd   <- st_transform(bnd_sf, local_crs)
 
   p <- ggplot() +
-    geom_sf(data = bnd, fill = "grey95", colour = "grey70", linewidth = 0.5)
+    geom_sf(data = bnd, fill = COLORS$beige, colour = COLORS$grey85, linewidth = 0.5)
 
   if (!is.null(graph_obj$edges_sf) && nrow(graph_obj$edges_sf) > 0) {
     edges <- st_transform(graph_obj$edges_sf, local_crs)
-    p <- p + geom_sf(data = edges, colour = "grey60", linewidth = 0.3, alpha = 0.5)
+    p <- p + geom_sf(data = edges, colour = COLORS$blue_light, linewidth = 0.35, alpha = 0.7)
   }
 
   p +
-    geom_sf(data = nodes,
-            aes(fill = betweenness, size = area_ha),
-            shape = 21, colour = "white", alpha = 0.85) +
-    scale_fill_viridis_c(name = "Betweenness\ncentrality",
-                          option = "C", direction = -1, na.value = "grey80") +
+    geom_sf(
+      data = nodes,
+      aes(fill = area_ha, size = area_ha),
+      shape = 21,
+      colour = COLORS$green_dark,
+      linewidth = 0.25,
+      alpha = 0.9
+    ) +
+    scale_fill_gradientn(
+      colours = pal_green,
+      name = "Patch size\n(ha)",
+      na.value = COLORS$grey85
+    ) +
     scale_size_continuous(name = "Patch size (ha)", range = c(1, 8)) +
     theme_minimal(base_size = 11) +
     labs(title = paste("Functional Connectivity Graph —", city_label),
@@ -275,7 +283,7 @@ p_bw <- ggplot(conn_df, aes(x = area_ha, y = betweenness, colour = city)) +
   geom_point(alpha = 0.6, size = 2) +
   geom_smooth(method = "loess", se = FALSE, linewidth = 1) +
   scale_x_log10(labels = label_comma()) +
-  scale_colour_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154")) +
+  scale_colour_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
   theme_minimal(base_size = 12) +
   labs(title = "Patch Area vs. Betweenness Centrality",
        subtitle = "High betweenness = stepping-stone patch critical for connectivity",
