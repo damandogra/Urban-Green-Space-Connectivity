@@ -1,6 +1,8 @@
 # not debugged and ran
 
 source("R/00_config.R")
+report_files <- "report_files"
+dir.create(report_files, showWarnings = FALSE)
 library(sf)
 library(terra)
 library(dplyr)
@@ -234,8 +236,11 @@ message("MCDA weights saved to mcda_weights.csv")
 # Figure 5A: MCDA composite score maps
 p_mcda_yx <- ggplot(yx_mcda) +
   geom_sf(aes(fill = mcda_composite), colour = "white", linewidth = 0.3) +
-  scale_fill_viridis_c(name = "MCDA score\n(0–1)", option = "A",
-                        direction = -1, na.value = "grey80") +
+  scale_fill_gradientn(
+    colours = pal_full,
+    name = "MCDA score\n(0–1)",
+    na.value = COLORS$grey85
+  ) +
   theme_minimal(base_size = 11) +
   labs(title = "MCDA Composite Score — Yuexiu Subdistricts",
        subtitle = sprintf("Weights: Acc %.0f%% | Bio %.0f%% | Conn %.0f%% | Eq %.0f%%",
@@ -244,21 +249,24 @@ p_mcda_yx <- ggplot(yx_mcda) +
 
 p_mcda_dl <- ggplot(dl_mcda) +
   geom_sf(aes(fill = mcda_composite), colour = "white", linewidth = 0.3) +
-  scale_fill_viridis_c(name = "MCDA score\n(0–1)", option = "A",
-                        direction = -1, na.value = "grey80") +
+  scale_fill_gradientn(
+    colours = pal_full,
+    name = "MCDA score\n(0–1)",
+    na.value = COLORS$grey85
+  ) +
   theme_minimal(base_size = 11) +
   labs(title = "MCDA Composite Score — Delft Wijken",
        subtitle = sprintf("Weights: Acc %.0f%% | Bio %.0f%% | Conn %.0f%% | Eq %.0f%%",
                           w["accessibility"]*100, w["biodiversity"]*100,
                           w["connectivity"]*100, w["equity"]*100))
 
-ggsave(file.path(OUT_ROOT, "fig_mcda_maps.png"),
+ggsave(file.path(report_files, "fig_mcda_maps.png"),
        p_mcda_yx + p_mcda_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 5B: Priority tier maps
-tier_colours <- c("High priority"   = "#d73027",
-                   "Medium priority" = "#fee090",
-                   "Low priority"    = "#EBF6F9")
+tier_colours <- c("High priority"   = COLORS$red,
+                   "Medium priority" = COLORS$beige,
+                   "Low priority"    = COLORS$green_light)
 
 p_tier_yx <- ggplot(yx_mcda) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
@@ -274,7 +282,7 @@ p_tier_dl <- ggplot(dl_mcda) +
   labs(title = "NbS Intervention Priority — Delft",
        subtitle = "Tertile classification of MCDA composite score")
 
-ggsave(file.path(OUT_ROOT, "fig_priority_tiers.png"),
+ggsave(file.path(report_files, "fig_priority_tiers.png"),
        p_tier_yx + p_tier_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 5C: NbS corridor maps (isolated patches + proposed links)
@@ -284,17 +292,17 @@ plot_nbs_map <- function(nbs_obj, bnd_sf, local_crs, city_label) {
   p <- ggplot() +
     geom_sf(data = bnd, fill = "grey95", colour = "grey60", linewidth = 0.5) +
     geom_sf(data = st_transform(nbs_obj$high_priority, local_crs),
-            fill = "#d73027", alpha = 0.25, colour = NA)
+            fill = COLORS$red, alpha = 0.25, colour = NA)
 
   if (!is.null(nbs_obj$corridor_lines) && nrow(nbs_obj$corridor_lines) > 0) {
     p <- p +
       geom_sf(data = st_transform(nbs_obj$corridor_lines, local_crs),
-              colour = "#e6550d", linewidth = 0.7, linetype = "dashed", alpha = 0.8)
+              colour = COLORS$pink, linewidth = 0.7, linetype = "dashed", alpha = 0.8)
   }
 
   p +
     geom_sf(data = nbs_obj$isolated_patches,
-            fill = "#74c476", colour = "white", alpha = 0.85, linewidth = 0.2) +
+            fill = COLORS$green_mid, colour = "white", alpha = 0.85, linewidth = 0.2) +
     theme_minimal(base_size = 11) +
     labs(title = paste("NbS Corridor Prioritisation —", city_label),
          subtitle = paste0("Red fill = high-priority admin zones | ",
@@ -304,7 +312,7 @@ plot_nbs_map <- function(nbs_obj, bnd_sf, local_crs, city_label) {
 p_nbs_yx <- plot_nbs_map(yx_nbs, d$yx_bnd, CRS_YX,    "Yuexiu")
 p_nbs_dl <- plot_nbs_map(dl_nbs, dl$dl_bnd, CRS_DELFT, "Delft")
 
-ggsave(file.path(OUT_ROOT, "fig_nbs_corridors.png"),
+ggsave(file.path(report_files, "fig_nbs_corridors.png"),
        p_nbs_yx + p_nbs_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 5D: Sub-score radar / spider chart (city-level means)
@@ -327,7 +335,7 @@ score_means <- bind_rows(
 p_radar_bar <- ggplot(score_means, aes(x = criterion, y = score, fill = city)) +
   geom_col(position = position_dodge(0.7), width = 0.6) +
   geom_hline(yintercept = c(0.25, 0.5, 0.75), linetype = "dotted", colour = "grey70") +
-  scale_fill_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154")) +
+  scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
   scale_y_continuous(limits = c(0, 1), labels = label_percent()) +
   coord_polar() +
   theme_minimal(base_size = 12) +
@@ -335,7 +343,7 @@ p_radar_bar <- ggplot(score_means, aes(x = criterion, y = score, fill = city)) +
        subtitle = "Mean normalised score (0=worst, 1=best) across admin units",
        x = NULL, y = NULL, fill = "City")
 
-ggsave(file.path(OUT_ROOT, "fig_mcda_radar.png"),
+ggsave(file.path(report_files, "fig_mcda_radar.png"),
        p_radar_bar, width = 7, height = 7, dpi = 300)
 
 # Figure 5E: MCDA score distribution comparison
@@ -347,15 +355,15 @@ score_dist <- bind_rows(
 p_dist <- ggplot(score_dist, aes(x = mcda_composite, fill = city)) +
   geom_density(alpha = 0.6) +
   geom_rug(aes(colour = city), alpha = 0.6) +
-  scale_fill_manual(values  = c("Yuexiu" = "#21918c", "Delft" = "#440154")) +
-  scale_colour_manual(values = c("Yuexiu" = "#21918c", "Delft" = "#440154"),
+  scale_fill_manual(values  = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
+  scale_colour_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue),
                       guide = "none") +
   theme_minimal(base_size = 12) +
   labs(title = "Distribution of MCDA Composite Scores",
        subtitle = "Density plot — all admin units",
        x = "MCDA composite score (0–1)", y = "Density", fill = "City")
 
-ggsave(file.path(OUT_ROOT, "fig_mcda_distribution.png"),
+ggsave(file.path(report_files, "fig_mcda_distribution.png"),
        p_dist, width = 8, height = 5, dpi = 300)
 
 message("Script 06 complete — MCDA & NbS figures saved.")
