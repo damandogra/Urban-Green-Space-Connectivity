@@ -316,9 +316,9 @@ ggsave(file.path(OUT_ROOT, "fig_bivariate_legend.png"),
 # Figure 3C: Scatter plots
 p_corr_dl <- ggplot(dl_inc_joined |> st_drop_geometry(),
                     aes(x = income_wijk, y = green_pc_m2)) +
-  geom_point(colour = "#440154", size = 3, alpha = 0.8) +
-  geom_smooth(method = "lm", se = TRUE, colour = "#440154",
-              fill = "#440154", alpha = 0.15) +
+  geom_point(colour = COLORS$blue, size = 3, alpha = 0.8) +
+  geom_smooth(method = "lm", se = TRUE, colour = COLORS$blue,
+              fill = COLORS$blue, alpha = 0.15) +
   annotate("text", x = Inf, y = Inf,
            label = sprintf("r = %.3f\n(n = %d)", dl_corr, n_income),
            hjust = 1.1, vjust = 1.5, size = 4.5, fontface = "bold") +
@@ -333,9 +333,9 @@ p_corr_dl <- ggplot(dl_inc_joined |> st_drop_geometry(),
 n_yx <- sum(!is.na(yx_viirs_zonal$viirs_mean))
 p_corr_yx <- ggplot(yx_viirs_zonal |> st_drop_geometry(),
                     aes(x = viirs_mean, y = green_pc_m2)) +
-  geom_point(colour = "#21918c", size = 3, alpha = 0.8) +
-  geom_smooth(method = "lm", se = TRUE, colour = "#21918c",
-              fill = "#21918c", alpha = 0.15) +
+  geom_point(colour = COLORS$orange, size = 3, alpha = 0.8) +
+  geom_smooth(method = "lm", se = TRUE, colour = COLORS$orange,
+              fill = COLORS$orange, alpha = 0.15) +
   annotate("text", x = Inf, y = Inf,
            label = sprintf("r = %.3f\n(n = %d)", yx_corr, n_yx),
            hjust = 1.1, vjust = 1.5, size = 4.5, fontface = "bold") +
