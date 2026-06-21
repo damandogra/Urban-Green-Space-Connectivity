@@ -1,6 +1,8 @@
 # not debugged and ran
 
 source("R/00_config.R")
+report_files <- "report_files"
+dir.create(report_files, showWarnings = FALSE)
 library(sf)
 library(terra)
 library(dplyr)
@@ -204,7 +206,7 @@ p_enn <- ggplot(enn_df, aes(x = enn_m, fill = city)) +
        subtitle = "Dashed line = dispersal threshold for connectivity graph",
        x = "Distance to nearest patch (m)", y = "Count", fill = "City")
 
-ggsave(file.path(OUT_ROOT, "fig_enn_distribution.png"),
+ggsave(file.path(report_files, "fig_enn_distribution.png"),
        p_enn, width = 12, height = 5, dpi = 300)
 
 # Figure 4B: Fragmentation metrics comparison table-chart
@@ -228,7 +230,7 @@ p_frag <- ggplot(frag_long, aes(x = city, y = value, fill = city)) +
        subtitle = "Computed from OSM green patch vectors",
        x = NULL, y = NULL)
 
-ggsave(file.path(OUT_ROOT, "fig_fragmentation_metrics.png"),
+ggsave(file.path(report_files, "fig_fragmentation_metrics.png"),
        p_frag, width = 10, height = 7, dpi = 300)
 
 # Figure 4C: Connectivity maps — betweenness centrality of patches
@@ -268,7 +270,7 @@ plot_connectivity_map <- function(graph_obj, bnd_sf, local_crs, city_label) {
 p_conn_yx <- plot_connectivity_map(yx_graph, d$yx_bnd, CRS_YX,    "Yuexiu")
 p_conn_dl <- plot_connectivity_map(dl_graph, dl$dl_bnd, CRS_DELFT, "Delft")
 
-ggsave(file.path(OUT_ROOT, "fig_connectivity_maps.png"),
+ggsave(file.path(report_files, "fig_connectivity_maps.png"),
        p_conn_yx + p_conn_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 4D: Patch size vs. betweenness scatter
@@ -290,7 +292,7 @@ p_bw <- ggplot(conn_df, aes(x = area_ha, y = betweenness, colour = city)) +
        x = "Patch area (ha, log)", y = "Betweenness centrality (normalised)",
        colour = "City")
 
-ggsave(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"),
+ggsave(file.path(report_files, "fig_betweenness_vs_area.png"),
        p_bw, width = 9, height = 6, dpi = 300)
 
 message("Script 05 complete — connectivity figures saved.")
