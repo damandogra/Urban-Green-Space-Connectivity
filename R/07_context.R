@@ -1,5 +1,5 @@
 # Context maps for presentation and report introduction
-# Setup -----------------------------------------------------
+# Setup ------------------------------------------------------
 source("R/00_config.R")
 
 library(sf)
