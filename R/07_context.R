@@ -277,7 +277,7 @@ p_ugs_yx <- ggplot() +
 p_ugs_dl + p_ugs_yx
 
 ggsave(
-  file.path(report_files, "context_urban_green_space.png"),
+  file.path(OUT_ROOT, "context_urban_green_space.png"),
   p_ugs_dl + p_ugs_yx,
   width = 14,
   height = 7,
