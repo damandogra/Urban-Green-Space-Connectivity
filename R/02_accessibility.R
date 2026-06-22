@@ -205,7 +205,7 @@ p_den_dl <- ggplot(dl_wijk_access) +
 
 ggsave(
   file.path(OUT_ROOT, "fig_population_density.png"),
-  p0_yx + p0_dl,
+  p_den_yx + p_den_dl,
   width = 14,
   height = 6,
   dpi = 300

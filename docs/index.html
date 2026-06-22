@@ -61,7 +61,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="report_files/libs/clipboard/clipboard.min.js"></script>
@@ -178,8 +197,6 @@ window.Quarto = {
 <p>Municipalities and planners are looking for ways to improve not only the amount, but also the quality of these urban green spaces. Understanding how accessibility identifies opportunities to improve spatial justice.</p>
 <p>How urban green spaces are distributed across different city districts depends not only on factors such as accessibility and proximity, but also neighbourhood profile differences, such as density and income. Residents may live close to green areas, but have limited access due to fragmentation or poor connectivity (source3). -&gt; redundant?</p>
 <p>Having optimal connectivity between urban green spaces increases quality; it becomes more accessible for humans as well as non-humans, providing better habitat and improving the ecological value of urban green spaces. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity thus plays a role in determining the quality of the UGS (Irvine et al., 2008).</p>
-<p>Many studies focus on either ecological connectivity or social accessibility, while fewer integrate both perspectives. Existing assessments often rely on single indicators and do not capture the multidimensional nature of green space quality. Therefore, this study aims to provide an analytical framework that combines accessibility, connectivity, biodiversity, and spatial justice into a single evaluation tool. There is a need for a reproducible method that evaluates urban green space quality in relation to spatial justice across different urban contexts.</p>
-<p>By comparing the contrasting urban contexts of Delft and Guangzhou, this study uses different criteria to determine on UGS quality. Delft and Guangzhou represent different geographical and cultural contexts in which urban development takes place. A comparative approach here helps identify both context-specific challenges as well as reproducable decision-making tools. The framework integrates indicators of accessibility, connectivity, biodiversity, and spatial justice within a spatial MCDA (Multi-criteria Decision Analysis). The outcome is a decision-support tool that identifies areas for intervention an provides planning recommendations for improving urban green space quality and connectivity.</p>
 </section>
 <section id="literature-review" class="level3">
 <h3 class="anchored" data-anchor-id="literature-review">Literature Review</h3>
@@ -391,9 +408,7 @@ Figure&nbsp;4: Access Points identification via Network Buffer Intersection
 </section>
 <section id="typology-diversity-biodiversity" class="level3">
 <h3 class="anchored" data-anchor-id="typology-diversity-biodiversity">2. Typology diversity &amp; Biodiversity</h3>
-<p>Assess spatial justice through the relationship between population and access to green space. How equitable are green spaces distributed across administrative units in relation to population demographics?</p>
-<p>NVDI species density relationship between connectivity and biodiversity relationship between demographics and biodiversity</p>
-<p>which typologies perform best and worst comparison between delft and Guangzhou</p>
+<p>As background context, <a href="#fig-green_typology" class="quarto-xref">Figure&nbsp;5</a> reveal the the green space composition in urban area taken from the Open-Street Map data (e.g.&nbsp;forests, nature reserve, etc) between the two cities. While Delft seem to be dominated by green or meadows, Yuexiu green space composition is dominated by parls/recreation. The difference is consistent with the urban characteristic between the two cities; while Delft is considered a relatively small European city, Yuexiu historical city center pose more dense, urban characteristic, where presence of formal parks are more easily found compared more scarce grassland/meadow-type green spaces.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_green_typology.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
@@ -410,52 +425,7 @@ Figure&nbsp;5: Spatial Distribution of Urban Green Typologies
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_ndvi_maps.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div id="fig-ndvi-spatial" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ndvi-spatial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="outputs/fig_ndvi_maps.png" class="img-fluid figure-img" width="2100">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ndvi-spatial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: NDVI
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_gbif_density.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div id="fig-gbif" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-gbif-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="outputs/fig_gbif_density.png" class="img-fluid figure-img" width="1500">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gbif-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: GBIF density
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_blue_green_ratio.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div id="fig-bluegreen" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-bluegreen-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="outputs/fig_blue_green_ratio.png" class="img-fluid figure-img" width="2100">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bluegreen-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8: Blue-green ratio
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_ndvi_violin.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_ndvi_violin.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-ndvi-violin" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -463,17 +433,61 @@ Figure&nbsp;8: Blue-green ratio
 <img src="outputs/fig_ndvi_violin.png" class="img-fluid figure-img" width="1800">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ndvi-violin-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9: NDVI Violin
+Figure&nbsp;6: NDVI Violin
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>As background context, Figure (x) reveal the the green space composition in urban area taken from the Open-Street Map data (e.g.&nbsp;forests, nature reserve, etc) between the two cities. While Delft seem to be dominated by green or meadows, Yuexiu green space composition is dominated by parls/recreation. This makes sense because Delft is a smaller city in comparison to Yuexiu historical city center, that is still surrounded by denser urban areas development.</p>
-<p>interpretation NDVI maps: Delft’s northwestern wijken are notably greener (high NDVI ≈ 0.7–0.8) while the central station area is lower. Yuexiu shows a patchwork. some subdistricts surprisingly high (remnant green), others very low (dense built fabric). NDVI is a ground-truth check on OSM data: a neighbourhood can have mapped parks but low NDVI (mowed grass) or unmapped tree canopy with high NDVI.</p>
-<p>interpretation biodiversity observation density vs patch size: Two key patterns here. First, small patches have wildly variable densities, some tiny grass/meadow patches in Delft show 1000+ obs/ha, likely because they’re well-surveyed community sites. Second, large patches (10+ ha) consistently show low obs/ha, this is a well-known sampling artefact (observers cluster near entrances). Yuexiu’s large park/recreation patches sit in the bottom-right, suggesting under-recording rather than genuinely low biodiversity.</p>
-<p>interpretation blue-green ratio: Delft’s canal-rich centre pushes one wijk to a ratio of ~4, reflecting its water-city heritage. Yuexiu has one dramatic outlier (ratio ~9) in the northwest, likely a water park or reservoir, while most subdistricts are near- zero (green-dominated or no water). This matters for NbS planning because blue and green infrastructure together provide better cooling and biodiversity than either alone. &lt;- review this analysis, doesnt make sense, WIP -&gt;&gt; make the blue and green proportional to each other</p>
-<p>interpretation NDVI violin: (1) Delft’s forest/woodland patches cluster tightly at NDVI ≈ 0.85, consistently dense canopy.​ (2) Yuexiu’s parks have wide spread from 0.35–0.75, meaning quality is highly variable.​ (3) Sports facilities in Yuexiu dip to NDVI ~0.15 (artificial turf / hardstanding). The tight vs wide violin shape is the signal: narrow = consistent quality, wide = uneven management.</p>
+<p>The NDVI violin plot can be interpreted as first, high consistency in the specific patch type to be very similar vegetation health scores; indicating good maintenance of urban green areas for narrow/pointy plots, and second, high variance in NDVI value across parks, suggesting possible differences in prioritisation of maintenance of different green areas. Based on these, three following interpretations can be made 1) Delft’s forest/woodland patches cluster tightly at NDVI ≈ 0.75 (2) Yuexiu’s parks have wider spread between 0.35–0.75, thus green quality is highly variable.​</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_ndvi_maps.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-ndvi-spatial" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ndvi-spatial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outputs/fig_ndvi_maps.png" class="img-fluid figure-img" width="2100">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ndvi-spatial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: NDVI
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The Normalised Difference Vegetation Index (NDVI) is a remote sensing metric used to measure and quantify the health, density and greenness of vegetation. The figure <a href="#fig-ndvi-spatial" class="quarto-xref">Figure&nbsp;7</a>, reveals the spatial distribution of NDVI relative within each cities’ neighborhoods. Comparing the two cities, Delft’s northwestern neighborhoods have relatively higher NDVI (high NDVI ≈ 0.7–0.8), yet lowers as it reached central areas of the city. In contrast, Yuexiu reveals a low to mid-mean NDVI level (NDVI ≈ 0.2–0.6), indicating sparse vegetation, with higher NDVI values observed around the northern neighborhoods. NDVI thus complements OSM’s land use data as it measures actual health of vegetation, beyond its land-use mappings.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_gbif_density.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-gbif" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gbif-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outputs/fig_gbif_density.png" class="img-fluid figure-img" width="1500">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gbif-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: GBIF density
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The biodiversity observation density vs patch size suggest an interesting correlation; first, small patches are found to have significantly higher recorded observations per hectare, whereas larger patches are found to have much lower observations per hectare. This phenomenon can also be known as sampling artefact, where more observations are gathered in well-surveyed community sites as community gather near entrances, and not necessarily due to richer biodiversity. A second observation reveals the cluster of high patch area (&gt;10 ha) found in Yuexiu found to have low number of observations. While it can be attributed to the previous phenomenon, it may also indicate under sampling of the larger green spaces, thus, instead of reflecting low ecological biodiversity, the recorded data is more likely to under-represent their true biodiversity.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_blue_green_ratio.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bluegreen" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bluegreen-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outputs/fig_blue_green_ratio.png" class="img-fluid figure-img" width="2100">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bluegreen-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Blue-green ratio
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Blue green balance, calculated by $\text{blue-green balance} = \log(1 + \text{water per capita}) - \log(1 + \text{green per capita})$ reveal higher abundance of blue space (water) if dominated by positive values, higher abundance of green space if dominated by negative values, and relatively balanced green-blue space with values nearing 0. Comparing the two cities, the range in comparison for Yuexiu suggests much higher green space presence in comparison to water. This is validated by doing summary statistics between total water vs green, in which Yuexiu yielded 192,494m<sup>2</sup> of mean green space compared to 40,304m<sup>2</sup> of mean water space. In comparison, Delft yielded a more evenly spread balance between green and blue areas; akin to its canal-rich characteristic, thus reflecting its water-city heritage. The relevance extends as blue and green infratsructure together, can provide better cooling and biodiversity than either alone (<span class="citation" data-cites="akther2026bgi">Akther and Abu Afifeh (<a href="#ref-akther2026bgi" role="doc-biblioref">2026</a>)</span>).</p>
 </section>
 <section id="spatial-justice" class="level3">
 <h3 class="anchored" data-anchor-id="spatial-justice">3. Spatial Justice</h3>
@@ -482,38 +496,61 @@ Figure&nbsp;9: NDVI Violin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_equity_correlations.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="outputs/fig_equity_correlations.png" class="img-fluid figure-img" width="2100"></p>
+<div id="fig-equity-correlations" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-equity-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outputs/fig_equity_correlations.png" class="img-fluid figure-img" width="2100">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-equity-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Equity correlations
+</figcaption>
 </figure>
 </div>
 </div>
+</div>
+<p>Studies (<span class="citation" data-cites="unlit">McCallum et al. (<a href="#ref-unlit" role="doc-biblioref">2022</a>)</span> and <span class="citation" data-cites="unlit2">Pérez-Sindín et al. (<a href="#ref-unlit2" role="doc-biblioref">2021</a>)</span>) have revealed that night-time light (VIIRS) can serve as a reliable proxy to examining economic development of certain regional area. To this finding, due to our inability to find the spatial distribution of income in Yuexiu sub-district, China, VIIRS night-light is used in this graph. As for the Netherlands, with data availability on income per neighborhood (Delft: CBS disposable income), the direct metric is used instead. The equity correlation displayed by <a href="#fig-equity-correlations" class="quarto-xref">Figure&nbsp;10</a>, reveal both statistically insignificant finding of green spaces versus indicator of economic status. The correlation of income as direct measure of health is found to be -0.117 for Delft, and -0.122 for Yuexiu. Both exhibit negative, near-zero values, suggesting very little to no significant trend of green spaces favoring wealthier sub-districts or neighborhoods in both compared locations. Relative to income, its distribution is relatively random.</p>
+<div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_bivariate_legend.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="outputs/fig_bivariate_legend.png" class="img-fluid figure-img" width="525"></p>
+<p><img src="outputs/fig_bivariate_legend.png" class="img-fluid figure-img" style="width:30.0%"></p>
 </figure>
 </div>
 </div>
+</div>
+<div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_bivariate_choropleth.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="outputs/fig_bivariate_choropleth.png" class="img-fluid figure-img" width="2100"></p>
+<div id="fig-bivariate-choropleth" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bivariate-choropleth-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outputs/fig_bivariate_choropleth.png" class="img-fluid figure-img" width="2100">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bivariate-choropleth-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Bivariate Choropleth
+</figcaption>
 </figure>
 </div>
 </div>
+</div>
+<p>The bivariate choropleth <a href="#fig-bivariate-choropleth" class="quarto-xref">Figure&nbsp;11</a> displays the interaction between a demographic factor of population density and an environmental factor of green density. Between the two cities, Delft reveals a more balanced spatial transition; of steady balance between areas dominated in high green density with low population (green) and zones characterized by high population density with limited greenery (pink). Yuexiu does not display this characteristic; instead, it reveals less uniform transition of greenery-population density balance amongst its neighborhoods. This suggests that while Delft’s green-population dynamic is more structural, Yuexiu’s landscape is the result of uneven, rapid growth where increase in residential density may have outpaced the provision of ecological infrastructure in the city of Yuexiu.</p>
+<div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">file.path</span>(OUT_ROOT, <span class="st">"fig_lorenz_gini.png"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="outputs/fig_lorenz_gini.png" class="img-fluid figure-img" width="1200"></p>
+<div id="fig-gini-coeff" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gini-coeff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="outputs/fig_lorenz_gini.png" class="img-fluid figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gini-coeff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: Gini Coefficient comparison
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>interpretation bivariate: Yuexiu has a cluster of green (Low-High) patches in its central-southern belt — densely populated subdistricts with almost no green. Delft is dominated by pink (High-Low) — low population, high green — which explains why coverage is near 100% but the Gini is still 0.605. The few dense Delft wijken have less green per person.</p>
+<p>Lastly, spatial justice is examined by comparing the behavior of Lorenz gini of the two cities <a href="#fig-gini-coeff" class="quarto-xref">Figure&nbsp;12</a>. The dotted diagonal grey line represents perfect state of equality where green space would have been equally distributed among all its neighborhoods; 0, means perfect equality, whereas 1 represents perfect inequality. Delft (Gini coefficient= 0.605) reveal a more equal distribution of green spaces across the city compared to Yuexiu (Gini coefficient= 0.719). This can be attributed back to the spatial distribution shown on the map of Figure <a href="#fig-bivariate-choropleth" class="quarto-xref">Figure&nbsp;11</a>, displaying how the inequality exists (while being relative to population density), or more simply Figure <a href="#fig-access" class="quarto-xref">Figure&nbsp;1</a> on access to green space per neighborhood.</p>
 </section>
 <section id="connectivity" class="level3">
 <h3 class="anchored" data-anchor-id="connectivity">4. Connectivity</h3>
@@ -577,10 +614,21 @@ Figure&nbsp;9: NDVI Violin
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>Spatial justice is not only determined by the quality of green space, but by how well green spaces are connected, accessible, and ecologically functional.</p>
+
 </section>
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-akther2026bgi" class="csl-entry" role="listitem">
+Akther, Roshan, and Abeer Abu Afifeh. 2026. <em>Blue-Green Infrastructure: The Global Standards Shaping Resilient Cities</em>. Terra Nexus. <a href="https://terranexus.co/blogs/blue-green-infrastructure/">https://terranexus.co/blogs/blue-green-infrastructure/</a>.
+</div>
+<div id="ref-unlit" class="csl-entry" role="listitem">
+McCallum, Ian, CCM Kyba, JCL Bayas, et al. 2022. <em>Estimating Global Economic Well-Being with Unlit Settlements</em>. PMC PubMed Central.
+</div>
+<div id="ref-unlit2" class="csl-entry" role="listitem">
+Pérez-Sindín, Xaquín S., Tzu-Hsin Karen Chen, and Alexander V. Prishchepov. 2021. <span>“Are Night-Time Lights a Good Proxy of Economic Activity in Rural Areas in Middle and Low-Income Countries? Examining the Empirical Evidence from Colombia.”</span> <em>Remote Sensing Applications: Society and Environment</em> 24: 100647. https://doi.org/<a href="https://doi.org/10.1016/j.rsase.2021.100647">https://doi.org/10.1016/j.rsase.2021.100647</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

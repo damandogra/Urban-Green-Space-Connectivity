@@ -1,8 +1,6 @@
 # not debugged and ran
 
 source("R/00_config.R")
-report_files <- "report_files"
-dir.create(report_files, showWarnings = FALSE)
 library(sf)
 library(terra)
 library(dplyr)
@@ -260,7 +258,7 @@ p_mcda_dl <- ggplot(dl_mcda) +
                           w["accessibility"]*100, w["biodiversity"]*100,
                           w["connectivity"]*100, w["equity"]*100))
 
-ggsave(file.path(report_files, "fig_mcda_maps.png"),
+ggsave(file.path(OUT_ROOT, "fig_mcda_maps.png"),
        p_mcda_yx + p_mcda_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 5B: Priority tier maps
@@ -282,7 +280,7 @@ p_tier_dl <- ggplot(dl_mcda) +
   labs(title = "NbS Intervention Priority — Delft",
        subtitle = "Tertile classification of MCDA composite score")
 
-ggsave(file.path(report_files, "fig_priority_tiers.png"),
+ggsave(file.path(OUT_ROOT, "fig_priority_tiers.png"),
        p_tier_yx + p_tier_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 5C: NbS corridor maps (isolated patches + proposed links)
@@ -312,7 +310,7 @@ plot_nbs_map <- function(nbs_obj, bnd_sf, local_crs, city_label) {
 p_nbs_yx <- plot_nbs_map(yx_nbs, d$yx_bnd, CRS_YX,    "Yuexiu")
 p_nbs_dl <- plot_nbs_map(dl_nbs, dl$dl_bnd, CRS_DELFT, "Delft")
 
-ggsave(file.path(report_files, "fig_nbs_corridors.png"),
+ggsave(file.path(OUT_ROOT, "fig_nbs_corridors.png"),
        p_nbs_yx + p_nbs_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 5D: Sub-score radar / spider chart (city-level means)
@@ -343,7 +341,7 @@ p_radar_bar <- ggplot(score_means, aes(x = criterion, y = score, fill = city)) +
        subtitle = "Mean normalised score (0=worst, 1=best) across admin units",
        x = NULL, y = NULL, fill = "City")
 
-ggsave(file.path(report_files, "fig_mcda_radar.png"),
+ggsave(file.path(OUT_ROOT, "fig_mcda_radar.png"),
        p_radar_bar, width = 7, height = 7, dpi = 300)
 
 # Figure 5E: MCDA score distribution comparison
@@ -363,7 +361,7 @@ p_dist <- ggplot(score_dist, aes(x = mcda_composite, fill = city)) +
        subtitle = "Density plot — all admin units",
        x = "MCDA composite score (0–1)", y = "Density", fill = "City")
 
-ggsave(file.path(report_files, "fig_mcda_distribution.png"),
+ggsave(file.path(OUT_ROOT, "fig_mcda_distribution.png"),
        p_dist, width = 8, height = 5, dpi = 300)
 
 message("Script 06 complete — MCDA & NbS figures saved.")

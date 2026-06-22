@@ -445,7 +445,7 @@ geom_col() +
        x = NULL, y = "% of total green area")
 
 ggsave(
-  "report_files/fig_green_typology.png",
+  file.path(OUT_ROOT, "fig_green_typology.png"),
   p_type,
   width = 9,
   height = 6,
@@ -495,7 +495,7 @@ p_ndvi_violin <- ggplot(ndvi_df, aes(x = green_type, y = ndvi_mean, fill = city)
        x = "Green Type", y = "Mean NDVI", fill = "City")
 
 ggsave(
-  "report_files/fig_ndvi_violin.png",
+  file.path(OUT_ROOT, "fig_ndvi_violin.png"),
   p_type,
   width = 12,
   height = 6,
@@ -529,7 +529,7 @@ p_gbif <- ggplot(bio_df, aes(x = area_ha, y = gbif_obs_per_ha,
        x = "Patch area (ha, log)", y = "Obs. per ha (log)", shape = "City")
 
 ggsave(
-  "report_files/fig_gbif_density.png",
+  file.path(OUT_ROOT, "fig_gbif_density.png"),
   p_type,
   width = 10,
   height = 6,
@@ -569,7 +569,7 @@ p_bg_dl <- ggplot(dl_wijk_bg) +
        subtitle = "log1p(Water PC) - log1p(Green PC)")
 
 ggsave(
-  "report_files/fig_blue_green_ratio.png",
+  file.path(OUT_ROOT, "fig_blue_green_ratio.png"),
   p_type,
   width = 14,
   height = 6,
@@ -577,4 +577,3 @@ ggsave(
 )
 
 message("Script 03 complete — typology & biodiversity figures saved.")
-

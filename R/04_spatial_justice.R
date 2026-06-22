@@ -40,13 +40,13 @@ dl$dl_pop  <- unwrap(dl$dl_pop)
 # WorldPop assigns pop_count = 1 where the raster has no signal (parks,
 # military zones, water bodies). These units produce artificially huge
 # green_pc_m2 values and must be excluded from all per-capita analyses.
-POP_MIN <- 100   # safe threshold: no real residential wijk has < 100 people
+# POP_MIN <- 100   # safe threshold: no real residential wijk has < 100 people
 
-yx_sub_access_all <- yx_sub_access
+yx_sub_access_all  <- yx_sub_access
 dl_wijk_access_all <- dl_wijk_access
 
-yx_sub_access <- yx_sub_access |> filter(pop_count >= POP_MIN)
-dl_wijk_access <- dl_wijk_access |> filter(pop_count >= POP_MIN)
+yx_sub_access  <- yx_sub_access  |> filter(!is.na(pop_count) & pop_count > 0)
+dl_wijk_access <- dl_wijk_access |> filter(!is.na(pop_count) & pop_count > 0)
 
 message(sprintf("After pop filter — Yuexiu: %d subdistricts | Delft: %d wijken",
                 nrow(yx_sub_access), nrow(dl_wijk_access)))
@@ -86,19 +86,34 @@ gini_labels <- data.frame(
 )
 
 # ── 3B. Bivariate choropleth ──────────────────────────────────────────────────
+
+bivar_palette <- c(
+  "Low-Low"   = COLORS$pink_light,
+  "Low-Mid"   = COLORS$pink,
+  "Low-High"  = COLORS$red_light,
+  "Mid-Low"   = COLORS$beige,
+  "Mid-Mid"   = COLORS$blue_light,
+  "Mid-High"  = COLORS$blue,
+  "High-Low"  = COLORS$green_light,
+  "High-Mid"  = COLORS$green_mid,
+  "High-High" = COLORS$green_dark
+)
+
+bivar_order <- c(
+  "Low-Low", "Low-Mid", "Low-High",
+  "Mid-Low", "Mid-Mid", "Mid-High",
+  "High-Low", "High-Mid", "High-High"
+)
+
 tertile_label <- function(x, labels = c("Low", "Mid", "High")) {
   x_num <- as.numeric(x)
-
   if (all(is.na(x_num))) {
     return(factor(rep("Mid", length(x_num)), levels = labels))
   }
-
   brks <- quantile(x_num, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
-
   if (length(unique(brks)) < 4) {
     return(factor(ifelse(is.na(x_num), "Mid", "Mid"), levels = labels))
   }
-
   cut(x_num, breaks = brks, labels = labels, include.lowest = TRUE)
 }
 
@@ -106,44 +121,23 @@ yx_bivar <- yx_sub_access_all |>
   mutate(
     admin_area_m2 = as.numeric(st_area(st_transform(yx_sub_access_all, CRS_YX))),
     green_density = green_area_m2 / admin_area_m2,
-    pop_density = pop_count / (admin_area_m2 / 10000),
-    grn_class = tertile_label(green_density),
-    pop_class = tertile_label(pop_density),
-    bivar_class = paste(grn_class, pop_class, sep = "-")
+    pop_density   = pop_count / (admin_area_m2 / 10000),
+    grn_class     = tertile_label(green_density),
+    pop_class     = tertile_label(pop_density),
+    bivar_class   = factor(paste(grn_class, pop_class, sep = "-"),
+                           levels = names(bivar_palette))
   )
 
-yx_bivar$bivar_class <- factor(
-  yx_bivar$bivar_class,
-  levels = names(bivar_palette)
-)
-
-    dl_bivar <- dl_wijk_access_all |>
-      mutate(
-        admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access_all, CRS_DELFT))),
-        green_density = green_area_m2 / admin_area_m2,
-        pop_density = pop_count / (admin_area_m2 / 10000),
-        grn_class = tertile_label(green_density),
-        pop_class = tertile_label(pop_density),
-        bivar_class = paste(grn_class, pop_class, sep = "-")
-      )
-
-    dl_bivar$bivar_class <- factor(
-      dl_bivar$bivar_class,
-      levels = names(bivar_palette)
-    )
-bivar_palette <- c(
-  "Low-Low"   = COLORS$pink_light,
-  "Low-Mid"   = COLORS$pink,
-  "Low-High"  = COLORS$red_light,
-
-  "Mid-Low"   = COLORS$beige,
-  "Mid-Mid"   = COLORS$blue_light,
-  "Mid-High"  = COLORS$blue,
-
-  "High-Low"  = COLORS$green_light,
-  "High-Mid"  = COLORS$green_mid,
-  "High-High" = COLORS$green_dark
-)
+dl_bivar <- dl_wijk_access_all |>
+  mutate(
+    admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access_all, CRS_DELFT))),
+    green_density = green_area_m2 / admin_area_m2,
+    pop_density   = pop_count / (admin_area_m2 / 10000),
+    grn_class     = tertile_label(green_density),
+    pop_class     = tertile_label(pop_density),
+    bivar_class   = factor(paste(grn_class, pop_class, sep = "-"),
+                           levels = names(bivar_palette))
+  )
 
 # ── 3C. Income / VIIRS correlations ──────────────────────────────────────────
 
@@ -228,7 +222,7 @@ p_lorenz <- ggplot(lorenz_data, aes(x = cum_pop, y = cum_grn, colour = city)) +
   geom_text(data = gini_labels,
             aes(x = 0.25, y = c(0.82, 0.72), label = label, colour = city),
             size = 4, fontface = "bold", show.legend = FALSE) +
-  scale_colour_manual(values = c("Yuexiu" = COLOR$red, "Delft" = COLOR$blue)) +
+  scale_colour_manual(values = c("Yuexiu" = COLORS$red, "Delft" = COLORS$blue)) +
   scale_x_continuous(labels = label_percent()) +
   scale_y_continuous(labels = label_percent()) +
   theme_minimal(base_size = 12) +
@@ -260,11 +254,7 @@ shared_fill <- scale_fill_manual(
   name = "Green–Population\nmatrix",
   drop = FALSE
 )
-bivar_order <- c(
-  "Low-Low", "Low-Mid", "Low-High",
-  "Mid-Low", "Mid-Mid", "Mid-High",
-  "High-Low", "High-Mid", "High-High"
-)
+
 
 yx_bivar$bivar_class <- factor(
   yx_bivar$bivar_class,
