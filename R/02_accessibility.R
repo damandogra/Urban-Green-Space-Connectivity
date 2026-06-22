@@ -121,12 +121,27 @@ saveRDS(buffer_summary,  file.path(OUT_ROOT, "buffer_summary.rds"))
 # Figure 1A: Green space per capita maps (log scale, same for both)
 p1 <- ggplot(yx_sub_access) +
   geom_sf(aes(fill = green_pc_m2)) +
-  scale_fill_steps(
+  scale_fill_stepsn(
     name = "m² per person",
-    breaks = c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25),
-    limits = c(0, 25),
-    low = COLORS$beige,
-    high = COLORS$green_dark,
+
+    colours = c(
+      "#f4ecd0",  # 0–0.1
+      "#e6dfbb",  # 0.1–0.5
+      "#d5d0a5",  # 0.5–1
+      "#c3c193",  # 1–2.5
+      "#b1b181",  # 2.5–5
+      "#92975f",  # 5–10
+      "#5c612f",  # 10–25
+      "#252f18",  # 25–100
+      "#111809"   # 100–500
+    ),
+
+    values = scales::rescale(
+      c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25, 100, 500)
+    ),
+
+    breaks = c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25, 100, 500),
+    limits = c(0, 500),
     na.value = "grey85"
   ) +
   theme_minimal() +
@@ -135,12 +150,27 @@ p1 <- ggplot(yx_sub_access) +
 
 p2 <- ggplot(dl_wijk_access) +
   geom_sf(aes(fill = green_pc_m2)) +
-  scale_fill_steps(
+  scale_fill_stepsn(
     name = "m² per person",
-    breaks = c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25),
-    limits = c(0, 25),
-    low = COLORS$beige,
-    high = COLORS$green_dark,
+
+    colours = c(
+      "#f4ecd0",  # 0–0.1
+      "#e6dfbb",  # 0.1–0.5
+      "#d5d0a5",  # 0.5–1
+      "#c3c193",  # 1–2.5
+      "#b1b181",  # 2.5–5
+      "#92975f",  # 5–10
+      "#5c612f",  # 10–25
+      "#252f18",  # 25–100
+      "#111809"   # 100–500
+    ),
+
+    values = scales::rescale(
+      c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25, 100, 500)
+    ),
+
+    breaks = c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25, 100, 500),
+    limits = c(0, 500),
     na.value = "grey85"
   ) +
   theme_minimal() +
