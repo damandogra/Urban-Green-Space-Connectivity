@@ -118,6 +118,99 @@ saveRDS(buffer_summary,  file.path(OUT_ROOT, "buffer_summary.rds"))
 
 # ── Figures ───────────────────────────────────────────────────────────────────
 
+# Figure 0: Population density maps
+# Residents per km², calculated from extracted population and polygon area
+
+yx_sub_access <- yx_sub_access %>%
+  mutate(
+    area_km2 = as.numeric(st_area(.)) / 1e6,
+    pop_density_km2 = pop_count / area_km2
+  )
+
+dl_wijk_access <- dl_wijk_access %>%
+  mutate(
+    area_km2 = as.numeric(st_area(.)) / 1e6,
+    pop_density_km2 = pop_count / area_km2
+  )
+
+density_breaks <- c(0, 1000, 2500, 5000, 10000, 20000, 40000, 80000)
+
+density_labels <- c(
+  "0–1k",
+  "1k–2.5k",
+  "2.5k–5k",
+  "5k–10k",
+  "10k–20k",
+  "20k–40k",
+  "40k–80k"
+)
+
+density_cols <- c(
+  COLORS$beige,
+  "#e7d6bc",
+  "#d8b48a",
+  "#c98f5f",
+  COLORS$red_light,
+  "#7f3f3e",
+  COLORS$red
+)
+
+yx_sub_access$pop_density_class <- cut(
+  yx_sub_access$pop_density_km2,
+  breaks = density_breaks,
+  labels = density_labels,
+  include.lowest = TRUE,
+  right = TRUE
+)
+
+dl_wijk_access$pop_density_class <- cut(
+  dl_wijk_access$pop_density_km2,
+  breaks = density_breaks,
+  labels = density_labels,
+  include.lowest = TRUE,
+  right = TRUE
+)
+
+p_den_yx <- ggplot(yx_sub_access) +
+  geom_sf(aes(fill = pop_density_class), show.legend = TRUE) +
+  scale_fill_manual(
+    name = "residents/km²",
+    values = setNames(density_cols, density_labels),
+    limits = density_labels,
+    drop = FALSE,
+    na.value = COLORS$grey85,
+    guide = guide_legend(reverse = TRUE)
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Population Density – Yuexiu Jiēdào",
+    subtitle = "Source: WorldPop + administrative polygons"
+  )
+
+p_den_dl <- ggplot(dl_wijk_access) +
+  geom_sf(aes(fill = pop_density_class), show.legend = TRUE) +
+  scale_fill_manual(
+    name = "residents/km²",
+    values = setNames(density_cols, density_labels),
+    limits = density_labels,
+    drop = FALSE,
+    na.value = COLORS$grey85,
+    guide = guide_legend(reverse = TRUE)
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Population Density – Delft Wijken",
+    subtitle = "Source: WorldPop + wijk polygons"
+  )
+
+ggsave(
+  file.path(OUT_ROOT, "fig_population_density.png"),
+  p0_yx + p0_dl,
+  width = 14,
+  height = 6,
+  dpi = 300
+)
+
 # Figure 1A: Green space per capita maps (log scale, same for both)
 p1 <- ggplot(yx_sub_access) +
   geom_sf(aes(fill = green_pc_m2)) +
