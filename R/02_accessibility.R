@@ -121,26 +121,28 @@ saveRDS(buffer_summary,  file.path(OUT_ROOT, "buffer_summary.rds"))
 # Figure 1A: Green space per capita maps (log scale, same for both)
 p1 <- ggplot(yx_sub_access) +
   geom_sf(aes(fill = green_pc_m2)) +
-  scale_fill_gradient(
-    name = "m² per person\n(pseudo-log)",
-    trans = scales::pseudo_log_trans(sigma = 1),
-    breaks = c(0, 1, 10, 100, 400),
+  scale_fill_steps(
+    name = "m² per person",
+    breaks = c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25),
+    limits = c(0, 25),
     low = COLORS$beige,
-    high = COLORS$green_mid,
-    na.value = "grey80") +
+    high = COLORS$green_dark,
+    na.value = "grey85"
+  ) +
   theme_minimal() +
   labs(title = "Green Space per Capita — Yuexiu Jiēdào",
        subtitle = "Source: OSM green polygons + WorldPop")
 
 p2 <- ggplot(dl_wijk_access) +
   geom_sf(aes(fill = green_pc_m2)) +
-  scale_fill_gradient(
-    name = "m² per person\n(pseudo-log)",
-    trans = scales::pseudo_log_trans(sigma = 1),
-    breaks = c(0, 1, 10, 100, 400),
+  scale_fill_steps(
+    name = "m² per person",
+    breaks = c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25),
+    limits = c(0, 25),
     low = COLORS$beige,
     high = COLORS$green_dark,
-    na.value = "grey80") +
+    na.value = "grey85"
+  ) +
   theme_minimal() +
   labs(title = "Green Space per Capita — Delft Wijken",
        subtitle = "Source: OSM green polygons + WorldPop")
