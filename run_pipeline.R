@@ -5,3 +5,4 @@ source("R/03_typology_biodiversity.R")  # SQ2 — typology & NDVI
 source("R/04_spatial_justice.R")        # SQ3 — Gini, equity
 source("R/05_connectivity.R")           # SQ4 — fragmentation & graph
 source("R/06_mcda_nbs.R")               # SQ5 — MCDA & corridors
+source("R/07_context.R")                # SQ6 — context

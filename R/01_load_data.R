@@ -38,13 +38,11 @@ dl_grn <- filter_green_space(dl_grn)
 dl_rds   <- read_sf(DL$roads)
 dl_water <- read_sf(DL$water)
 dl_gbif  <- read_sf(DL$gbif)
-dl_viirs_pts <- read_sf(DL$viirs_pts)
 
 # ── Delft rasters ─────────────────────────────────────────────────────────────
 dl_pop   <- rast(DL$worldpop)
 dl_ndvi  <- rast(DL$ndvi)
 dl_cover <- rast(DL$worldcover)
-dl_viirs <- rast(DL$viirs_rast)
 
 message("Validating geometries and CRS...")
 
@@ -102,8 +100,6 @@ saveRDS(
     dl_rds       = dl_rds,
     dl_water     = dl_water,
     dl_gbif      = dl_gbif,
-    dl_viirs_pts = dl_viirs_pts,
-    dl_viirs     = wrap(dl_viirs), # Ensure this variable is the SpatRaster!
     dl_pop       = wrap(dl_pop),
     dl_ndvi      = wrap(dl_ndvi),
     dl_cover     = wrap(dl_cover)

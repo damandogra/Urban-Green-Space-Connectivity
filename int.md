@@ -47,7 +47,7 @@ Open `asa2025-report.Rproj` in RStudio, or open the folder in VS Code.
 ### 2. Install required R packages once
 
 ```r
-install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse", "patchwork", "here"))
+install.packages(c("sf", "ggplot2", "dplyr", "ineq", "tiff", "tidyverse", "patchwork", "here", "ggspatial"))
 ```
 
 ### 3. Run the pipeline scripts
