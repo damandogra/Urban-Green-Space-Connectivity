@@ -276,14 +276,22 @@ ggsave(file.path(OUT_ROOT, "fig_access_per_capita.png"),
 # Figure 1B: Mean nearest green distance maps
 p3 <- ggplot(yx_sub_access) +
   geom_sf(aes(fill = nearest_green_m)) +
-  scale_fill_viridis_c(name = "Distance (m)", option = "B", direction = -1) +
+  scale_fill_gradient(
+    name = "Distance (m)",
+    low  = COLORS$pink_light,
+    high = COLORS$red
+  ) +
   theme_minimal() +
   labs(title = "Mean Distance to Nearest Green Space — Yuexiu",
        subtitle = "From subdistrict centroid")
 
 p4 <- ggplot(dl_wijk_access) +
   geom_sf(aes(fill = nearest_green_m)) +
-  scale_fill_viridis_c(name = "Distance (m)", option = "B", direction = -1) +
+  scale_fill_gradient(
+    name = "Distance (m)",
+    low  = COLORS$pink_light,
+    high = COLORS$red
+  ) +
   theme_minimal() +
   labs(title = "Mean Distance to Nearest Green Space — Delft",
        subtitle = "From wijk centroid")
