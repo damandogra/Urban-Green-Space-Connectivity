@@ -479,6 +479,13 @@ p_ndvi_dl <- ggplot(dl_wijk_ndvi) +
     title = "Mean NDVI per Wijk — Delft",
     subtitle = "Source: Sentinel-2 / Landsat"
   )
+
+ggsave(
+  file.path(OUT_ROOT, "fig_ndvi_zonal.png"),
+  p_ndvi_yx + p_ndvi_dl,
+  width = 14, height = 6, dpi = 300
+)
+
 # Figure 2D: NDVI violin
 ndvi_df <- bind_rows(
   yx_grn_bio |> st_drop_geometry() |> transmute(city = "Yuexiu", ndvi_mean, green_type),
@@ -494,12 +501,11 @@ p_ndvi_violin <- ggplot(ndvi_df, aes(x = green_type, y = ndvi_mean, fill = city)
        subtitle = "Patch-level mean NDVI (vegetation health proxy)",
        x = "Green Type", y = "Mean NDVI", fill = "City")
 
+# Figure 2D: NDVI violin
 ggsave(
   file.path(OUT_ROOT, "fig_ndvi_violin.png"),
-  p_type,
-  width = 12,
-  height = 6,
-  dpi = 300
+  p_ndvi_violin,        # was p_type
+  width = 12, height = 6, dpi = 300
 )
 
 # Figure 2E: GBIF species density
@@ -528,12 +534,11 @@ p_gbif <- ggplot(bio_df, aes(x = area_ha, y = gbif_obs_per_ha,
        subtitle = "GBIF occurrences per ha — log-log scale",
        x = "Patch area (ha, log)", y = "Obs. per ha (log)", shape = "City")
 
+# Figure 2E: GBIF species density
 ggsave(
   file.path(OUT_ROOT, "fig_gbif_density.png"),
-  p_type,
-  width = 10,
-  height = 6,
-  dpi = 300
+  p_gbif,               # was p_type
+  width = 10, height = 6, dpi = 300
 )
 
 p_bg_yx <- ggplot(yx_sub_bg) +
@@ -570,10 +575,8 @@ p_bg_dl <- ggplot(dl_wijk_bg) +
 
 ggsave(
   file.path(OUT_ROOT, "fig_blue_green_ratio.png"),
-  p_type,
-  width = 14,
-  height = 6,
-  dpi = 300
+  p_bg_yx + p_bg_dl,    # was p_type
+  width = 14, height = 6, dpi = 300
 )
 
 message("Script 03 complete — typology & biodiversity figures saved.")
