@@ -1,5 +1,0 @@
-"Criterion","Weight","Sub_scores"
-"Accessibility",0.3,"Green pc + nearest distance"
-"Biodiversity / NDVI",0.25,"Mean NDVI per unit"
-"Connectivity",0.25,"Inverse mean betweenness"
-"Equity",0.2,"Pop × green density matrix"
