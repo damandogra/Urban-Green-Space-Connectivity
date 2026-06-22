@@ -29,25 +29,30 @@ sf_use_s2(FALSE)
 d  <- readRDS(file.path(OUT_ROOT, "yuexiu_data.rds"))
 dl <- readRDS(file.path(OUT_ROOT, "delft_data.rds"))
 
-yx_sub_access  <- readRDS(file.path(OUT_ROOT, "yx_sub_access.rds"))
-dl_wijk_access <- readRDS(file.path(OUT_ROOT, "dl_wijk_access.rds"))
 
 d$yx_pop   <- unwrap(d$yx_pop)
 d$yx_viirs <- unwrap(d$yx_viirs)
 dl$dl_pop  <- unwrap(dl$dl_pop)
 
-# ── FIX 8: Remove placeholder-population units ───────────────────────────────
-# WorldPop assigns pop_count = 1 where the raster has no signal (parks,
-# military zones, water bodies). These units produce artificially huge
-# green_pc_m2 values and must be excluded from all per-capita analyses.
-# POP_MIN <- 100   # safe threshold: no real residential wijk has < 100 people
+# ── FIX :
+# Threshold catches Yuexiu's pop_count == 1 jiēdào (genuine WorldPop floor
+# artifacts on parks/water/non-residential zones — confirmed via sorted
+# pop_count inspection: next value above 1 jumps to 28,253, a hard cliff).
+#
+# NOTE: Delft's equivalent pop==1 rows (sliver polygons from neighbouring
+# municipalities, e.g. Schipluiden/Delfgauw) are now fixed upstream in
+# script 01 via the gemeentecode == "GM0503" filter, applied immediately
+# after dl_wijk is read. This POP_MIN filter is no longer acting as a
+# backstop for Delft — there should be zero rows left for it to catch
+# on that side. It remains necessary for Yuexiu.
+
+POP_MIN <- 100
 
 yx_sub_access_all  <- yx_sub_access
 dl_wijk_access_all <- dl_wijk_access
 
-yx_sub_access  <- yx_sub_access  |> filter(!is.na(pop_count) & pop_count > 0)
-dl_wijk_access <- dl_wijk_access |> filter(!is.na(pop_count) & pop_count > 0)
-
+yx_sub_access  <- yx_sub_access  |> filter(!is.na(pop_count) & pop_count >= POP_MIN)
+dl_wijk_access <- dl_wijk_access |> filter(!is.na(pop_count) & pop_count >= POP_MIN)
 message(sprintf("After pop filter — Yuexiu: %d subdistricts | Delft: %d wijken",
                 nrow(yx_sub_access), nrow(dl_wijk_access)))
 
@@ -117,9 +122,9 @@ tertile_label <- function(x, labels = c("Low", "Mid", "High")) {
   cut(x_num, breaks = brks, labels = labels, include.lowest = TRUE)
 }
 
-yx_bivar <- yx_sub_access_all |>
+yx_bivar <- yx_sub_access |>
   mutate(
-    admin_area_m2 = as.numeric(st_area(st_transform(yx_sub_access_all, CRS_YX))),
+    admin_area_m2 = as.numeric(st_area(st_transform(yx_sub_access, CRS_YX))),
     green_density = green_area_m2 / admin_area_m2,
     pop_density   = pop_count / (admin_area_m2 / 10000),
     grn_class     = tertile_label(green_density),
@@ -128,9 +133,9 @@ yx_bivar <- yx_sub_access_all |>
                            levels = names(bivar_palette))
   )
 
-dl_bivar <- dl_wijk_access_all |>
+dl_bivar <- dl_wijk_access |>
   mutate(
-    admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access_all, CRS_DELFT))),
+    admin_area_m2 = as.numeric(st_area(st_transform(dl_wijk_access, CRS_DELFT))),
     green_density = green_area_m2 / admin_area_m2,
     pop_density   = pop_count / (admin_area_m2 / 10000),
     grn_class     = tertile_label(green_density),
@@ -180,6 +185,7 @@ if (nrow(park_wijken) > 0) {
   print(park_wijken)
 }
 
+if (n_income < 3) stop("Too few Delft wijken with income data (n = ", n_income, ") — check CBS join.")
 dl_corr <- cor(dl_inc_joined$green_pc_m2, dl_inc_joined$income_wijk,
                use = "complete.obs", method = "pearson")
 message(sprintf("Delft Pearson r (green pc ~ income): %.3f  [n = %d]",
@@ -187,7 +193,7 @@ message(sprintf("Delft Pearson r (green pc ~ income): %.3f  [n = %d]",
 
 # --- Yuexiu VIIRS ---
 yx_viirs_rast <- d$yx_viirs
-yx_sub_reproj <- st_transform(yx_sub_access, crs(yx_viirs_rast))
+yx_sub_reproj <- st_transform(yx_sub_access, terra::crs(yx_viirs_rast))
 
 yx_viirs_zonal <- yx_sub_access |>
   mutate(viirs_mean = exact_extract(yx_viirs_rast, yx_sub_reproj, "mean"))
@@ -284,28 +290,21 @@ ggsave(file.path(OUT_ROOT, "fig_lorenz_gini.png"),
 all_classes <- sort(names(bivar_palette))   # all 9 possible cells, always same order
 
 yx_bivar <- yx_bivar |>
-  mutate(bivar_class = factor(bivar_class, levels = all_classes))
+  mutate(bivar_class = factor(paste(grn_class, pop_class, sep = "-"),
+                     levels = bivar_order))
 dl_bivar <- dl_bivar |>
-  mutate(bivar_class = factor(bivar_class, levels = all_classes))
+  mutate(bivar_class = factor(paste(grn_class, pop_class, sep = "-"),
+                     levels = bivar_order))
 
 shared_fill <- scale_fill_manual(
   values = bivar_palette,
-  breaks = rev(bivar_order),
-  limits = rev(bivar_order),
-  name = "Green–Population\nmatrix",
-  drop = FALSE
+  breaks = bivar_order,   # was rev(bivar_order)
+  limits = bivar_order,   # was rev(bivar_order)
+  name   = "Green–Population\nmatrix",
+  drop   = FALSE
 )
 
 
-yx_bivar$bivar_class <- factor(
-  yx_bivar$bivar_class,
-  levels = rev(bivar_order)
-)
-
-dl_bivar$bivar_class <- factor(
-  dl_bivar$bivar_class,
-  levels = rev(bivar_order)
-)
 p_bv_yx <- ggplot(yx_bivar) +
   geom_sf(aes(fill = bivar_class), colour = "white", linewidth = 0.3) +
   shared_fill +

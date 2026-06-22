@@ -28,9 +28,24 @@ yx_viirs <- rast(YX$viirs_rast)
 
 message("Loading Delft data...")
 
+
 # ── Delft vector layers ───────────────────────────────────────────────────────
 dl_bnd   <- read_sf(DL$boundary)
 dl_wijk  <- read_sf(DL$wijken)
+
+# ── FIX: drop sliver polygons from neighbouring municipalities ──────────────
+# dl_wijk as loaded contains sliver polygons from neighbouring municipalities
+# (e.g. Midden-Delfland: "Schipluiden", "Delfgauw") that leak in at the
+# boundary clip. Confirmed via area check: these slivers are ~10-40 m²
+# (vs. hundreds of km² for genuine Delft wijken) and carry wijkcode prefixes
+# outside the real Delft range (WK0503xx). Previously this filter only
+# existed in script 02, AFTER dl_wijk_access.rds (used by script 04) had
+# already been computed on the unfiltered data. Filtering here, immediately
+# after read_sf(), ensures every downstream script inherits clean geometry.
+message(sprintf("Delft wijken before gemeentecode filter: %d", nrow(dl_wijk)))
+dl_wijk  <- dl_wijk[dl_wijk$gemeentecode == "GM0503", ]
+message(sprintf("Delft wijken after gemeentecode filter:  %d", nrow(dl_wijk)))
+
 dl_brt   <- read_sf(DL$buurten)
 dl_inc   <- read_sf(DL$income)
 dl_grn   <- read_sf(DL$green)
@@ -38,11 +53,6 @@ dl_grn <- filter_green_space(dl_grn)
 dl_rds   <- read_sf(DL$roads)
 dl_water <- read_sf(DL$water)
 dl_gbif  <- read_sf(DL$gbif)
-
-# ── Delft rasters ─────────────────────────────────────────────────────────────
-dl_pop   <- rast(DL$worldpop)
-dl_ndvi  <- rast(DL$ndvi)
-dl_cover <- rast(DL$worldcover)
 
 message("Validating geometries and CRS...")
 
