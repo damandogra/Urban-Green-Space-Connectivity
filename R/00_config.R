@@ -34,7 +34,8 @@ DL <- list(
   gbif       = file.path(DATA_ROOT, "delft/vector/delft_gbif_proj.gpkg"),
   worldpop   = file.path(DATA_ROOT, "delft/raster/delft_worldpop_proj.tif"),
   worldcover = file.path(DATA_ROOT, "delft/raster/delft_worldcover_proj.tif"),
-  ndvi       = file.path(DATA_ROOT, "delft/raster/ndvi_delft_proj.tif")
+  ndvi       = file.path(DATA_ROOT, "delft/raster/ndvi_delft_proj.tif"),
+  viirs_rast = file.path(DATA_ROOT, "delft/raster/delft_viirs.tif")
 )
 
 # ── CRS ───────────────────────────────────────────────────────────────────────

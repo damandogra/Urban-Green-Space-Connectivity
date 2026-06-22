@@ -397,3 +397,4 @@ ggsave(file.path(OUT_ROOT, "fig_network_walk_access.png"),
        p_yx_network + p_dl_network, width = 14, height = 6, dpi = 300)
 
 message("Figure 1D saved successfully!")
+

@@ -197,6 +197,47 @@ yx_corr <- cor(yx_viirs_zonal$green_pc_m2, yx_viirs_zonal$viirs_mean,
 message(sprintf("Yuexiu Pearson r (green pc ~ VIIRS): %.3f  [n = %d]",
                 yx_corr, sum(!is.na(yx_viirs_zonal$viirs_mean))))
 
+# --- Delft VIIRS ---
+
+# Fetch from the list and immediately unwrap it
+dl_viirs_raster_final <- unwrap(dl$dl_viirs)
+
+# Validate that it is a SpatRaster
+if (!inherits(dl_viirs_raster_final, "SpatRaster")) {
+  stop("The object is still not a SpatRaster. Please check dl$dl_viirs content.")
+}
+
+# Set CRS if missing
+if (is.na(terra::crs(dl_viirs_raster_final))) {
+  terra::crs(dl_viirs_raster_final) <- "EPSG:4326"
+}
+
+# Project the polygons
+dl_sub_reproj <- st_transform(dl_wijk_access, terra::crs(dl_viirs_raster_final))
+
+# Perform the extraction
+dl_wijk_access$viirs_mean <- exact_extract(dl_viirs_raster_final, dl_sub_reproj, "mean")
+# 1. Access the raster object from the 'dl' list, unwrap it, and check it
+dl_viirs_rast <- unwrap(dl$dl_viirs)
+
+if(is.na(terra::crs(dl_viirs_rast))) {
+  terra::crs(dl_viirs_rast) <- "EPSG:4326"
+}
+
+# 2. Project your vector data to match the raster's CRS
+dl_sub_reproj <- st_transform(dl_wijk_access, terra::crs(dl_viirs_rast))
+
+# 3. Now run the extraction on the confirmed SpatRaster
+dl_wijk_access$viirs_mean <- exact_extract(dl_viirs_rast, dl_sub_reproj, "mean")
+
+# 4. Calculate correlation
+dl_viirs_zonal <- dl_wijk_access
+dl_corr <- cor(dl_viirs_zonal$green_pc_m2, dl_viirs_zonal$viirs_mean,
+               use = "complete.obs", method = "pearson")
+
+message(sprintf("Delft Pearson r (green pc ~ VIIRS): %.3f  [n = %d]",
+                dl_corr, sum(!is.na(dl_viirs_zonal$viirs_mean))))
+
 # ── Save outputs ──────────────────────────────────────────────────────────────
 saveRDS(lorenz_data,    file.path(OUT_ROOT, "lorenz_data.rds"))
 saveRDS(gini_labels,    file.path(OUT_ROOT, "gini_labels.rds"))
