@@ -25,8 +25,19 @@ dl_bivar       <- readRDS(file.path(OUT_ROOT, "dl_bivar.rds"))
 yx_graph       <- readRDS(file.path(OUT_ROOT, "yx_graph.rds"))
 dl_graph       <- readRDS(file.path(OUT_ROOT, "dl_graph.rds"))
 
+# ── FIX: pop-floor-artifact filter (see comment from earlier) ──
+POP_MIN <- 100
+
+yx_sub_access  <- yx_sub_access  |> filter(!is.na(pop_count) & pop_count >= POP_MIN)
+dl_wijk_access <- dl_wijk_access |> filter(!is.na(pop_count) & pop_count >= POP_MIN)
+message(sprintf("MCDA input after pop filter — Yuexiu: %d | Delft: %d",
+                nrow(yx_sub_access), nrow(dl_wijk_access)))
+
+yx_sub_ndvi <- yx_sub_ndvi |> filter(full_id %in% yx_sub_access$full_id)
+
 # MCDA weights from config
-w <- MCDA_WEIGHTS   # accessibility=0.30, biodiversity=0.25, connectivity=0.25, equity=0.20
+w <- MCDA_WEIGHTS
+
 
 # ── Helper: min-max normalise to [0, 1] ───────────────────────────────────────
 norm_minmax <- function(x, invert = FALSE) {
@@ -64,7 +75,8 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
   # Use mean NDVI per admin unit as proxy (already computed in 03)
   bio <- ndvi_sf |>
     st_drop_geometry() |>
-    mutate(score_bio = norm_minmax(ndvi_mean, invert = FALSE)) |>
+    # invert: high NDVI = already vegetated = low intervention urgency
+    mutate(score_bio = norm_minmax(ndvi_mean, invert = TRUE)) |>
     select(score_bio)
 
   # --- Equity sub-score ---
@@ -96,30 +108,25 @@ build_mcda <- function(access_sf, ndvi_sf, bivar_sf, graph_obj,
   nodes_m  <- st_transform(graph_obj$nodes, local_crs)
   node_cents <- st_centroid(nodes_m)
 
+  # Betweenness is ~0 for >75% of patches in both cities — too sparse to
+  # produce meaningful per-admin-unit variation after averaging. Degree
+  # (number of patch connections within dispersal threshold) varies more
+  # continuously and is a better proxy for local connectivity density.
   joined_conn <- st_join(admin_m, node_cents["degree"],
-                         join = st_contains) |>
+                        join = st_contains) |>
     st_drop_geometry() |>
     group_by(row_number()) |>
     summarise(mean_degree = mean(degree, na.rm = TRUE), .groups = "drop")
 
+  # Invert: low mean degree = poorly connected patches = high intervention need.
   conn_scores <- joined_conn |>
     mutate(
       mean_degree = replace_na(mean_degree, 0),
       score_conn = 1 - norm_minmax(mean_degree)
     ) |>
     select(score_conn)
-  # Patches with low betweenness in an admin unit → connectivity gap → invert
-  conn_scores <- joined_conn |>
-    mutate(
-      mean_degree = replace_na(mean_degree, 0),
-      score_conn = 1 - norm_minmax(mean_degree)   # low connectivity = high need
-    ) |>
-    select(score_conn)
-  message(city_label, " connectivity mean betweenness:")
-  print(summary(joined_conn$mean_betweenness))
-
-  message(city_label, " connectivity score:")
-  print(summary(conn_scores$score_conn))
+  message(city_label, " connectivity mean degree:")
+  print(summary(joined_conn$mean_degree))
 
   # --- Assemble & compute weighted composite ---
   n <- nrow(access_sf)
@@ -184,9 +191,14 @@ identify_nbs_corridors <- function(mcda_sf, graph_obj, local_crs, thresh_m = DIS
   # Potential corridors: lines from each isolated patch to its nearest neighbour
   # regardless of threshold — showing the gap that needs bridging
   cents <- st_centroid(isolated_patches)
-  all_cents <- st_centroid(st_transform(graph_obj$nodes, local_crs))
 
-  nearest_idx  <- st_nearest_feature(cents, all_cents)
+  # Exclude isolated patches from targets so each patch finds a *different* neighbour
+  connected_patches <- graph_obj$nodes |>
+    st_transform(local_crs) |>
+    filter(enn_m <= thresh_m)
+
+  all_cents <- st_centroid(connected_patches)
+  nearest_idx <- st_nearest_feature(cents, all_cents)
   corridor_lines <- lapply(seq_len(nrow(cents)), function(i) {
     a <- st_coordinates(cents[i, ])
     b <- st_coordinates(all_cents[nearest_idx[i], ])
@@ -261,19 +273,21 @@ ggsave(file.path(OUT_ROOT, "fig_mcda_maps.png"),
 
 # Figure 5B: Priority tier maps
 tier_colours <- c("High priority"   = COLORS$red,
-                   "Medium priority" = COLORS$beige,
+                   "Medium priority" = COLORS$orange_light,
                    "Low priority"    = COLORS$green_light)
 
 p_tier_yx <- ggplot(yx_mcda) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
-  scale_fill_manual(values = tier_colours, name = "NbS Priority") +
+  scale_fill_manual(values = tier_colours, name = "NbS Priority",
+                  breaks = c("High priority", "Medium priority", "Low priority")) + 
   theme_minimal(base_size = 11) +
   labs(title = "NbS Intervention Priority — Yuexiu",
        subtitle = "Tertile classification of MCDA composite score")
 
 p_tier_dl <- ggplot(dl_mcda) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
-  scale_fill_manual(values = tier_colours, name = "NbS Priority") +
+  scale_fill_manual(values = tier_colours, name = "NbS Priority",
+                  breaks = c("High priority", "Medium priority", "Low priority")) + 
   theme_minimal(base_size = 11) +
   labs(title = "NbS Intervention Priority — Delft",
        subtitle = "Tertile classification of MCDA composite score")
@@ -283,26 +297,34 @@ ggsave(file.path(OUT_ROOT, "fig_priority_tiers.png"),
 
 # Figure 5C: NbS corridor maps (isolated patches + proposed links)
 plot_nbs_map <- function(nbs_obj, bnd_sf, local_crs, city_label) {
-  bnd <- st_transform(bnd_sf, local_crs)
+  # Pre-transform all layers to local_crs before passing to ggplot.
+  # Without this, ggplot inherits the CRS of the first geom_sf layer (bnd in
+  # WGS84) and renders subsequent layers — especially corridor lines already
+  # in UTM/RD New — outside the map extent, making them invisible.
+  bnd           <- st_transform(bnd_sf, local_crs)
+  high_priority <- st_transform(nbs_obj$high_priority, local_crs)
+  isolated      <- st_transform(nbs_obj$isolated_patches, local_crs)
+  corridors     <- if (!is.null(nbs_obj$corridor_lines))
+                     st_transform(nbs_obj$corridor_lines, local_crs) else NULL
 
   p <- ggplot() +
-    geom_sf(data = bnd, fill = "grey95", colour = "grey60", linewidth = 0.5) +
-    geom_sf(data = st_transform(nbs_obj$high_priority, local_crs),
-            fill = COLORS$red, alpha = 0.25, colour = NA)
+    geom_sf(data = bnd, fill = "#e8e4dc", colour = "grey50", linewidth = 0.5) +
+    geom_sf(data = high_priority, fill = COLORS$red_light, alpha = 0.55, colour = NA)
 
-  if (!is.null(nbs_obj$corridor_lines) && nrow(nbs_obj$corridor_lines) > 0) {
+  if (!is.null(corridors) && nrow(corridors) > 0) {
     p <- p +
-      geom_sf(data = st_transform(nbs_obj$corridor_lines, local_crs),
-              colour = COLORS$pink, linewidth = 0.7, linetype = "dashed", alpha = 0.8)
+      geom_sf(data = corridors,
+        colour = COLORS$blue, linewidth = 1.4,
+        linetype = "11", alpha = 1.0)
   }
 
   p +
-    geom_sf(data = nbs_obj$isolated_patches,
-            fill = COLORS$green_mid, colour = "white", alpha = 0.85, linewidth = 0.2) +
+    geom_sf(data = isolated,
+        fill = COLORS$green_light, colour = COLORS$green_mid,
+        alpha = 1.0, linewidth = 0.1) +
     theme_minimal(base_size = 11) +
     labs(title = paste("NbS Corridor Prioritisation —", city_label),
-         subtitle = paste0("Red fill = high-priority admin zones | ",
-                           "Green = isolated patches | Dashed = proposed corridors"))
+         subtitle = "Red = high priority | Green = isolated patches | Dashed = proposed corridors")
 }
 
 p_nbs_yx <- plot_nbs_map(yx_nbs, d$yx_bnd, CRS_YX,    "Yuexiu")
@@ -328,19 +350,26 @@ score_means <- bind_rows(
     "score_conn"    = "Connectivity"
   ))
 
+# coord_polar() removed: polar layout compresses small differences between
+# cities and makes directional comparison (which city scores higher on each
+# criterion) very difficult to read. Standard dodged bar chart shows the
+# same information clearly with readable absolute values on the y-axis.
 p_radar_bar <- ggplot(score_means, aes(x = criterion, y = score, fill = city)) +
   geom_col(position = position_dodge(0.7), width = 0.6) +
   geom_hline(yintercept = c(0.25, 0.5, 0.75), linetype = "dotted", colour = "grey70") +
+  geom_text(aes(label = sprintf("%.2f", score)),
+            position = position_dodge(0.7), vjust = -0.4, size = 3.5) +
   scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
-  scale_y_continuous(limits = c(0, 1), labels = label_percent()) +
-  coord_polar() +
+  scale_y_continuous(limits = c(0, 1.05), labels = label_percent()) +
   theme_minimal(base_size = 12) +
   labs(title = "MCDA Sub-score Profile — City Comparison",
-       subtitle = "Mean normalised score (0=worst, 1=best) across admin units",
-       x = NULL, y = NULL, fill = "City")
+       subtitle = "Mean normalised intervention urgency score (higher = greater need)",
+       x = NULL, y = "Mean normalised score", fill = "City")
 
+# Wider aspect ratio suits a horizontal bar comparison better than the
+# square format used for the polar chart.
 ggsave(file.path(OUT_ROOT, "fig_mcda_radar.png"),
-       p_radar_bar, width = 7, height = 7, dpi = 300)
+       p_radar_bar, width = 10, height = 6, dpi = 300)
 
 # Figure 5E: MCDA score distribution comparison
 score_dist <- bind_rows(

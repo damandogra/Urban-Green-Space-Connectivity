@@ -107,12 +107,15 @@ build_connectivity_graph <- function(green_sf, local_crs,
   # If igraph is available, use it; else fall back to degree as proxy
   betw <- tryCatch({
     if (!requireNamespace("igraph", quietly = TRUE)) stop("no igraph")
-    g <- igraph::graph_from_edgelist(edges, directed = FALSE)
-
-    betw_tmp <- igraph::betweenness(g, normalized = TRUE)
-    betw_full <- rep(0, n)
-    betw_full[as.integer(igraph::V(g)$name)] <- betw_tmp
-    betw_full
+    # Build graph with explicit vertex count so isolated patches are retained.
+    # graph_from_edgelist only creates vertices it sees in edges — any patch
+    # with no neighbours within DISPERSAL_THRESH_M gets dropped, causing a
+    # length mismatch with betweenness output (n_vertices != n_patches).
+    g <- igraph::make_empty_graph(n = n, directed = FALSE)
+    g <- igraph::add_edges(g, t(edges))
+    # graph_from_edgelist creates vertices 1..n in input order — no $name attribute.
+    # Assign directly; no index mapping needed.
+    igraph::betweenness(g, normalized = TRUE)
 
   }, error = function(e) {
     message("  igraph not available – using degree as betweenness proxy")
@@ -138,7 +141,8 @@ build_connectivity_graph <- function(green_sf, local_crs,
         if (visited[v]) next
         visited[v]  <- TRUE
         comp_id[v]  <- n_comp
-        queue <- c(queue, adj[[v]][!visited[adj[[v]]]])
+        # unique() prevents duplicate queue entries if parallel edges exist
+        queue <- c(queue, unique(adj[[v]][!visited[adj[[v]]]]))
       }
     }
   }
@@ -233,48 +237,55 @@ ggsave(file.path(OUT_ROOT, "fig_fragmentation_metrics.png"),
 plot_connectivity_map <- function(graph_obj, bnd_sf, local_crs, city_label) {
   nodes <- st_transform(graph_obj$nodes, local_crs)
   bnd   <- st_transform(bnd_sf, local_crs)
+  has_edges <- !is.null(graph_obj$edges_sf) && nrow(graph_obj$edges_sf) > 0
 
   p <- ggplot() +
     geom_sf(data = bnd, fill = COLORS$beige, colour = COLORS$grey85, linewidth = 0.5)
 
-  if (!is.null(graph_obj$edges_sf) && nrow(graph_obj$edges_sf) > 0) {
+  if (has_edges) {
     edges <- st_transform(graph_obj$edges_sf, local_crs)
-    p <- p + geom_sf(data = edges, colour = COLORS$blue_light, linewidth = 0.35, alpha = 0.7)
+    p <- p + geom_sf(data = edges, aes(colour = "Dispersal edge"),
+                     linewidth = 0.6, alpha = 0.8)
   }
 
   p +
-    geom_sf(
-      data = nodes,
-      aes(fill = area_ha, size = area_ha),
-      shape = 21,
-      colour = COLORS$green_dark,
-      linewidth = 0.25,
-      alpha = 0.9
+    geom_sf(data = nodes, aes(fill = area_ha, size = area_ha),
+            shape = 21, colour = COLORS$green_dark, linewidth = 0.25, alpha = 0.9) +
+    scale_colour_manual(name = NULL, values = c("Dispersal edge" = COLORS$orange)) +
+    scale_fill_gradientn(colours = pal_green, name = "Patch size (ha)", na.value = COLORS$grey85) +
+    scale_size_continuous(range = c(1, 8)) +
+    guides(
+      fill = guide_legend(title = "Patch size (ha)"),
+      colour = guide_legend(override.aes = list(linewidth = 1.5)),
+      size = "none"
     ) +
-    scale_fill_gradientn(
-      colours = pal_green,
-      name = "Patch size\n(ha)",
-      na.value = COLORS$grey85
-    ) +
-    scale_size_continuous(name = "Patch size (ha)", range = c(1, 8)) +
     theme_minimal(base_size = 11) +
-    labs(title = paste("Functional Connectivity Graph —", city_label),
-         subtitle = sprintf("Dispersal threshold: %d m | Nodes sized by patch area",
-                            DISPERSAL_THRESH_M))
+    labs(title = paste("Green Patch Network —", city_label),
+         subtitle = sprintf("Dispersal threshold: %d m | Nodes sized by patch area", DISPERSAL_THRESH_M))
 }
 
-p_conn_yx <- plot_connectivity_map(yx_graph, d$yx_bnd, CRS_YX,    "Yuexiu")
-p_conn_dl <- plot_connectivity_map(dl_graph, dl$dl_bnd, CRS_DELFT, "Delft")
+library(patchwork)
+
+p_conn_yx <- plot_connectivity_map(yx_graph, d$yx_bnd, CRS_YX, "Yuexiu") +
+  guides(colour = "none",
+         fill = guide_legend(title = "Patch size (ha)\nYuexiu"),
+         size = "none")
+
+p_conn_dl <- plot_connectivity_map(dl_graph, dl$dl_bnd, CRS_DELFT, "Delft") +
+  guides(fill = guide_legend(title = "Patch size (ha)\nDelft"),
+         size = "none")
+
+combined <- p_conn_yx + p_conn_dl
 
 ggsave(file.path(OUT_ROOT, "fig_connectivity_maps.png"),
-       p_conn_yx + p_conn_dl, width = 14, height = 7, dpi = 300)
+       combined, width = 14, height = 7, dpi = 300)
 
 # Figure 4D: Patch size vs. betweenness scatter
 conn_df <- bind_rows(
   yx_graph$nodes |> st_drop_geometry() |>
-    transmute(city = "Yuexiu", area_ha, betweenness, degree, enn_m),
+    transmute(city = "Yuexiu", area_ha, betweenness, degree),
   dl_graph$nodes |> st_drop_geometry() |>
-    transmute(city = "Delft",  area_ha, betweenness, degree, enn_m)
+    transmute(city = "Delft",  area_ha, betweenness, degree)
 )
 
 p_bw <- ggplot(conn_df, aes(x = area_ha, y = betweenness, colour = city)) +

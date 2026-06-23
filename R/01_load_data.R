@@ -1,9 +1,7 @@
-# install.packages("rsi")
 source("R/00_config.R")
 library(sf)
 library(terra)
 library(dplyr)
-library(rsi)
 
 sf_use_s2(FALSE)
 
@@ -53,6 +51,11 @@ dl_grn <- filter_green_space(dl_grn)
 dl_rds   <- read_sf(DL$roads)
 dl_water <- read_sf(DL$water)
 dl_gbif  <- read_sf(DL$gbif)
+
+# Load Delft rasters
+dl_pop   <- rast(DL$worldpop)
+dl_ndvi  <- rast(DL$ndvi)
+dl_cover <- rast(DL$worldcover)
 
 message("Validating geometries and CRS...")
 

@@ -317,13 +317,17 @@ p_bv_dl <- ggplot(dl_bivar) +
   theme_minimal() +
   labs(title = "Delft", subtitle = "3×3 tertile classification")
 
+
+p_combined <- (p_bv_yx + p_bv_dl) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "right")
+
 ggsave(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"),
-       p_bv_yx + p_bv_dl +
+       p_combined +
          plot_annotation(
            title = "Bivariate: Green Density × Population Density",
            theme = theme(plot.title = element_text(size = 14, face = "bold"))
-         ) +
-         plot_layout(guides = "collect"),
+         ),
        width = 14, height = 6, dpi = 300)
 
 # 3×3 legend tile
