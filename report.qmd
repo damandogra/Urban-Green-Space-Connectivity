@@ -59,11 +59,17 @@ High levels of ecological connectivity within an urban landscape enables animals
 
 The aim of the research is to develop a spatial analytical tool for evaluating urban green space quality by investigating the relationship between accessibility, connectivity, biodiversity, and ultimately, spatial justice. This relationship is compared in two contrasting urban contexts: Delft (The Netherlands) and Guangzhou (China). The framework identifies areas where interventions can improve urban green space quality and translates findings into planning recommendations for increasing this quality.
 
+### Spatial context
+
+Study sites: Delft, The Netherlands and historic center district of Yuexiu in Guangzhou, China.
+
+Methodology aims to be reproducible for either small cities or city districts. It concludes with providing a strategy for nature-based solutions to improve the relationship between spatial justice and green space connectivity.
+
 ## Research Questions
 
 ### Research objectives
 
-### Objective 1: Spatial Distribution & Accessibility
+#### Objective 1: Spatial Distribution & Accessibility
 
 Quantify the spatial distribution and accessibility of urban green spaces.
 
@@ -71,7 +77,7 @@ Quantify the spatial distribution and accessibility of urban green spaces.
 **SQ1:** How accessible are green spaces for residents?
 :::
 
-### Objective 2: Connectivity & Typologies
+#### Objective 2: Connectivity & Typologies
 
 Evaluate connectivity between different urban green spaces.
 
@@ -79,7 +85,7 @@ Evaluate connectivity between different urban green spaces.
 **SQ2:** What are the different typologies of urban green spaces and their access?
 :::
 
-### Objective 3: Spatial Justice & Demographics
+#### Objective 3: Spatial Justice & Demographics
 
 Assess spatial justice through the relationship between population and access to green space.
 
@@ -87,7 +93,7 @@ Assess spatial justice through the relationship between population and access to
 **SQ3:** How equitable are green spaces distributed across administrative units in relation to population demographics?
 :::
 
-### Objective 4: Comparative Analysis
+#### Objective 4: Comparative Analysis
 
 Compare how strong these relationships are in different cities (Delft vs Guangzhou).
 
@@ -95,7 +101,7 @@ Compare how strong these relationships are in different cities (Delft vs Guangzh
 **SQ4:** How does urban green space relate to spatial justice in Delft compared to Guangzhou?
 :::
 
-### Objective 5: Strategic Translation
+#### Objective 5: Strategic Translation
 
 Translate analytical findings into strategies for increasing UGS quality
 
@@ -106,12 +112,6 @@ Translate analytical findings into strategies for increasing UGS quality
 ### Research questions
 
 How does Quality and Connectivity of Urban Green Spaces Contribute to Spatial Justice in Delft and Guangzhou? How does connectivity in between urban green spaces contribute to spatial justice in the cities Delft and Guangzhou?
-
-### Spatial context
-
-Study sites: Delft, The Netherlands and historic center district of Yuexiu in Guangzhou, China.
-
-Methodology aims to be reproducible for either small cities or city districts. It concludes with providing a strategy for nature-based solutions to improve the relationship between spatial justice and green space connectivity.
 
 ## Methods
 
@@ -152,8 +152,6 @@ Urban green space quality cannot be defined by a single indicator and there are 
 ### Data collection
 
 ### Spatial unit
-
-Describe what a spatial unit is - see literature references. describe Modifiable Areal Unit Problem (MAUP)
 
 Spatial analysis outcomes depend on a chosen spatial unit. To ensure comparability, the study uses administrative neighbourhood units. However due to a scale difference, the comparison is done on scale of the entire city of Delft and the Yuexiu district in Guangzhou. These are comparable in surface (mention surface km2) and amount of neighbourhoods (mention #). The administrative units are wijken for Delft, and jiedao for Guanghzhou. Using administrative units increases policy relevance and reproducability through different scales (from neighbourhood to municipality) - difference in scale of Guangzhou and Delft, allows us to find comparable city districts and also allows planners/municipalities to work with the distinctive characters of city districts, makes it applicable in small cities as well as large cities.
 
@@ -285,8 +283,8 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"))
 
 interpretation mean nearest distance to green patch: Delft \~10m vs Yuexiu \~200m. Delft's green space is essentially continuous — patches are almost touching. Yuexiu's patches are isolated islands separated by \~200m of built fabric on average. This is the connectivity crisis that drives our NbS corridor proposals. From a wildlife/biodiversity perspective, a 200m gap is a hard barrier for most invertebrates and small mammals.
 
-### conclusion analysis 5: NBS corridor prioritisation
-
+### 5. MCDA
+conclusion MCDA & NBS corridor prioritisation
 Through applying MCDA, the study provides a method to overlay low-access zones and disconnected patches, which allows the planner/user (tbd) to map priority intervention areas.
 
 ## Discussion
