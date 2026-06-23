@@ -272,14 +272,14 @@ ggsave(file.path(OUT_ROOT, "fig_mcda_maps.png"),
        p_mcda_yx + p_mcda_dl, width = 14, height = 7, dpi = 300)
 
 # Figure 5B: Priority tier maps
-tier_colours <- c("High priority"   = COLORS$red,
-                   "Medium priority" = COLORS$orange_light,
-                   "Low priority"    = COLORS$green_light)
+tier_colours <- c("High priority"   = COLORS$red_light,
+                   "Medium priority" = COLORS$beige,
+                   "Low priority"    = COLORS$green_mid)
 
 p_tier_yx <- ggplot(yx_mcda) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
   scale_fill_manual(values = tier_colours, name = "NbS Priority",
-                  breaks = c("High priority", "Medium priority", "Low priority")) + 
+                  breaks = c("High priority", "Medium priority", "Low priority")) +
   theme_minimal(base_size = 11) +
   labs(title = "NbS Intervention Priority — Yuexiu",
        subtitle = "Tertile classification of MCDA composite score")
@@ -287,7 +287,7 @@ p_tier_yx <- ggplot(yx_mcda) +
 p_tier_dl <- ggplot(dl_mcda) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
   scale_fill_manual(values = tier_colours, name = "NbS Priority",
-                  breaks = c("High priority", "Medium priority", "Low priority")) + 
+                  breaks = c("High priority", "Medium priority", "Low priority")) +
   theme_minimal(base_size = 11) +
   labs(title = "NbS Intervention Priority — Delft",
        subtitle = "Tertile classification of MCDA composite score")
@@ -308,13 +308,13 @@ plot_nbs_map <- function(nbs_obj, bnd_sf, local_crs, city_label) {
                      st_transform(nbs_obj$corridor_lines, local_crs) else NULL
 
   p <- ggplot() +
-    geom_sf(data = bnd, fill = "#e8e4dc", colour = "grey50", linewidth = 0.5) +
+    geom_sf(data = bnd, fill = COLORS$beige, colour = "grey50", linewidth = 0.5) +
     geom_sf(data = high_priority, fill = COLORS$red_light, alpha = 0.55, colour = NA)
 
   if (!is.null(corridors) && nrow(corridors) > 0) {
     p <- p +
       geom_sf(data = corridors,
-        colour = COLORS$blue, linewidth = 1.4,
+        colour = COLORS$green_dark, linewidth = 1.4,
         linetype = "11", alpha = 1.0)
   }
 
@@ -359,7 +359,7 @@ p_radar_bar <- ggplot(score_means, aes(x = criterion, y = score, fill = city)) +
   geom_hline(yintercept = c(0.25, 0.5, 0.75), linetype = "dotted", colour = "grey70") +
   geom_text(aes(label = sprintf("%.2f", score)),
             position = position_dodge(0.7), vjust = -0.4, size = 3.5) +
-  scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
+  scale_fill_manual(values = c("Yuexiu" = COLORS$orange_light, "Delft" = COLORS$blue_light)) +
   scale_y_continuous(limits = c(0, 1.05), labels = label_percent()) +
   theme_minimal(base_size = 12) +
   labs(title = "MCDA Sub-score Profile — City Comparison",
@@ -380,8 +380,8 @@ score_dist <- bind_rows(
 p_dist <- ggplot(score_dist, aes(x = mcda_composite, fill = city)) +
   geom_density(alpha = 0.6) +
   geom_rug(aes(colour = city), alpha = 0.6) +
-  scale_fill_manual(values  = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
-  scale_colour_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue),
+  scale_fill_manual(values  = c("Yuexiu" = COLORS$orange_light, "Delft" = COLORS$blue_light)) +
+  scale_colour_manual(values = c("Yuexiu" = COLORS$orange_light, "Delft" = COLORS$blue_light),
                       guide = "none") +
   theme_minimal(base_size = 12) +
   labs(title = "Distribution of MCDA Composite Scores",
