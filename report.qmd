@@ -214,8 +214,8 @@ The NDVI violin plot can be interpreted as first, high consistency in the specif
 
 ```{r}
 #| label: fig-ndvi-spatial
-#| fig-cap: "NDVI"
-knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_maps.png"))
+#| fig-cap: "NDVI Spatial Distribution and Zonal Means"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_zonal.png"))
 ```
 
 The Normalised Difference Vegetation Index (NDVI) is a remote sensing metric used to measure and quantify the health, density and greenness of vegetation. The figure @fig-ndvi-spatial, reveals the spatial distribution of NDVI relative within each cities' neighborhoods. Comparing the two cities, Delft's northwestern neighborhoods have relatively higher NDVI (high NDVI ≈ 0.7–0.8), yet lowers as it reached central areas of the city. In contrast, Yuexiu reveals a low to mid-mean NDVI level (NDVI ≈ 0.2–0.6), indicating sparse vegetation, with higher NDVI values observed around the northern neighborhoods. NDVI thus complements OSM's land use data as it measures actual health of vegetation, beyond its land-use mappings.
