@@ -167,10 +167,11 @@ dl_wijk_access <- dl_wijk_access %>%
     )
   )
 
-# use projected CRS in metres
+# transform both maps to metre-based CRS
 yx_plot <- st_transform(yx_sub_access, CRS_YX)
 dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
 
+# calculate real maps widths
 yx_bb <- st_bbox(yx_plot)
 dl_bb <- st_bbox(dl_plot)
 
