@@ -168,40 +168,71 @@ dl_wijk_access <- dl_wijk_access %>%
   )
 
 p_den_yx <- ggplot(yx_sub_access) +
-  geom_sf(aes(fill = pop_density_class)) +
+  geom_sf(aes(fill = pop_density_class), linewidth = 0.25, color = "white")  +
+  geom_sf(
+    data = legend_dummy,
+    aes(fill = pop_density_class),
+    color = NA,
+    alpha = 0.001,
+    show.legend = TRUE
+  ) +
   scale_fill_manual(
     name = "residents/km²",
     values = setNames(density_cols, density_labels),
+    limits = density_labels,
+    breaks = density_labels,
     drop = FALSE,
     na.value = COLORS$grey85,
-    guide = guide_legend(reverse = TRUE)
+    guide = guide_legend(
+      reverse = TRUE,
+      override.aes = list(
+        fill = rev(density_cols),
+        alpha = 1,
+        color = NA
+      )
+    )
   ) +
-  theme_minimal() +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
   labs(
-    title = "Population Density – Yuexiu Jiēdào",
+    title = "Yuexiu",
     subtitle = "Source: WorldPop + administrative polygons"
   )
 
 p_den_dl <- ggplot(dl_wijk_access) +
-  geom_sf(aes(fill = pop_density_class)) +
+  geom_sf(aes(fill = pop_density_class), linewidth = 0.25, color = "white") +
   scale_fill_manual(
     name = "residents/km²",
     values = setNames(density_cols, density_labels),
+    breaks = density_labels,
     drop = FALSE,
     na.value = COLORS$grey85,
-    guide = guide_legend(reverse = TRUE)
+    guide = "none"
   ) +
-  theme_minimal() +
+  coord_sf(expand = FALSE, datum = NA) +
+theme_map_clean() +
   labs(
-    title = "Population Density – Delft Wijken",
+    title = "Delft",
     subtitle = "Source: CBS wijk data"
   )
 
-p_den_yx + p_den_dl
+fig_population_density <- p_den_yx + p_den_dl +
+  plot_layout(widths = c(1, 1), guides = "collect", axes = "collect") +
+  plot_annotation(
+    title = "Population Density",
+    theme = theme(
+      plot.title = element_text(face = "bold", size = 14)
+    )
+  ) &
+  theme(
+    legend.position = "right"
+  )
+
+fig_population_density
 
 ggsave(
   file.path(OUT_ROOT, "fig_population_density.png"),
-  p_den_yx + p_den_dl,
+  fig_population_density,
   width = 14,
   height = 6,
   dpi = 300
