@@ -167,7 +167,18 @@ dl_wijk_access <- dl_wijk_access %>%
     )
   )
 
-p_den_yx <- ggplot(yx_sub_access) +
+# use projected CRS in metres
+yx_plot <- st_transform(yx_sub_access, CRS_YX)
+dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
+
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+
+p_den_yx <- ggplot(yx_plot) +
   geom_sf(aes(fill = pop_density_class), linewidth = 0.25, color = "white")  +
   geom_sf(
     data = legend_dummy,
@@ -175,6 +186,13 @@ p_den_yx <- ggplot(yx_sub_access) +
     color = NA,
     alpha = 0.001,
     show.legend = TRUE
+  ) +
+  annotation_scale(
+    location = "bl",
+    style = "ticks",
+    width_hint = 0.25,
+    text_cex = 0.7,
+    line_width = 0.4
   ) +
   scale_fill_manual(
     name = "residents/km²",
@@ -199,7 +217,7 @@ p_den_yx <- ggplot(yx_sub_access) +
     subtitle = "Source: WorldPop + administrative polygons"
   )
 
-p_den_dl <- ggplot(dl_wijk_access) +
+p_den_dl <- ggplot(dl_plot) +
   geom_sf(aes(fill = pop_density_class), linewidth = 0.25, color = "white") +
   scale_fill_manual(
     name = "residents/km²",
@@ -217,7 +235,10 @@ theme_map_clean() +
   )
 
 fig_population_density <- p_den_yx + p_den_dl +
-  plot_layout(widths = c(1, 1), guides = "collect", axes = "collect") +
+  plot_layout(
+    widths = c(yx_w, dl_w),
+    guides = "collect"
+  )+
   plot_annotation(
     title = "Population Density",
     theme = theme(
