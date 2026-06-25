@@ -143,31 +143,19 @@ build_connectivity_graph <- function(green_sf, local_crs,
         comp_id[v]  <- n_comp
         # unique() prevents duplicate queue entries if parallel edges exist
         queue <- c(queue, unique(adj[[v]][!visited[adj[[v]]]]))
-      }
-    }
-  }
+      }}}
 
   # Build edge lines for visualisation
   edge_lines <- lapply(seq_len(nrow(edges)), function(k) {
     i <- edges[k, 1]; j <- edges[k, 2]
     st_linestring(rbind(coords[i, ], coords[j, ]))
   })
-  edges_sf <- st_sf(
-    from   = edges[, 1],
-    to     = edges[, 2],
-    length_m = as.numeric(dist_mat[edges]),
-    geometry = st_sfc(edge_lines, crs = local_crs)
-  )
+  edges_sf <- st_sf( from   = edges[, 1], to     = edges[, 2], length_m = as.numeric(dist_mat[edges]), geometry = st_sfc(edge_lines, crs = local_crs))
 
   nodes_out <- grn_m |>
-    mutate(
-      degree       = deg,
-      betweenness  = betw,
-      component_id = comp_id
-    )
+    mutate( degree       = deg, betweenness  = betw, component_id = comp_id)
 
-  list(nodes = nodes_out, edges_sf = edges_sf,
-       n_components = n_comp, n_edges = nrow(edges))
+  list(nodes = nodes_out, edges_sf = edges_sf, n_components = n_comp, n_edges = nrow(edges))
 }
 
 message(sprintf("Building connectivity graph — Yuexiu (threshold: %d m)...", DISPERSAL_THRESH_M))
@@ -190,12 +178,11 @@ saveRDS(dl_graph,        file.path(OUT_ROOT, "dl_graph.rds"))
 # Figure 4A: ENN distribution — how isolated are patches?
 enn_df <- bind_rows(
   yx_grn_conn |> st_drop_geometry() |> transmute(city = "Yuexiu", enn_m, area_ha),
-  dl_grn_conn |> st_drop_geometry() |> transmute(city = "Delft",  enn_m, area_ha)
-)
+  dl_grn_conn |> st_drop_geometry() |> transmute(city = "Delft",  enn_m, area_ha))
+
 p_enn <- ggplot(enn_df, aes(x = enn_m, fill = city)) +
   geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
-  geom_vline(xintercept = DISPERSAL_THRESH_M, linetype = "dashed",
-             colour = COLORS$red, linewidth = 0.8) +
+  geom_vline(xintercept = DISPERSAL_THRESH_M, linetype = "dashed", colour = COLORS$red, linewidth = 0.8) +
   annotate("text", x = DISPERSAL_THRESH_M + 5, y = Inf,
            label = paste0("Dispersal\nthreshold\n", DISPERSAL_THRESH_M, " m"),
            hjust = 0, vjust = 1.2, size = 3.5, colour = COLORS$red) +
@@ -218,8 +205,7 @@ frag_long <- frag_summary |>
     "n_patches"          = "No. of patches",
     "mean_patch_ha"      = "Mean patch size (ha)",
     "mean_enn_m"         = "Mean ENN (m)",
-    "pct_large_patches"  = "% patches ≥ 1 ha"
-  ))
+    "pct_large_patches"  = "% patches ≥ 1 ha"))
 
 p_frag <- ggplot(frag_long, aes(x = city, y = value, fill = city)) +
   geom_col(width = 0.55) +
@@ -228,12 +214,10 @@ p_frag <- ggplot(frag_long, aes(x = city, y = value, fill = city)) +
   facet_wrap(~metric, scales = "free_y", ncol = 2) +
   theme_minimal(base_size = 11) +
   labs(title = "Landscape Fragmentation Metrics",
-       subtitle = "Computed from OSM green patch vectors",
-       x = NULL, y = NULL) +
+       subtitle = "Computed from OSM green patch vectors", x = NULL, y = NULL) +
   theme(plot.title = element_text(face = "bold"))
 
-ggsave(file.path(OUT_ROOT, "fig_fragmentation_metrics.png"),
-       p_frag, width = 10, height = 7, dpi = 300)
+ggsave(file.path(OUT_ROOT, "fig_fragmentation_metrics.png"), p_frag, width = 10, height = 7, dpi = 300)
 
 # Figure 4C: Connectivity maps — betweenness centrality of patches
 
@@ -245,102 +229,35 @@ plot_connectivity_map <- function(graph_obj, bnd_sf, local_crs, city_label, show
   has_edges <- !is.null(graph_obj$edges_sf) && nrow(graph_obj$edges_sf) > 0
 
   p <- ggplot() +
-    geom_sf(
-      data = bnd,
-      fill = COLORS$beige,
-      colour = COLORS$grey85,
-      linewidth = 0.5
-    )
+    geom_sf(data = bnd, fill = COLORS$beige, colour = COLORS$grey85, linewidth = 0.5)
 
   if (has_edges) {
     edges <- st_transform(graph_obj$edges_sf, local_crs)
 
     p <- p +
-      geom_sf(
-        data = edges,
-        aes(colour = "Dispersal edge"),
-        linewidth = 0.6,
-        alpha = 0.8
-      )
-  }
+      geom_sf( data = edges, aes(colour = "Dispersal edge"), linewidth = 0.6, alpha = 0.8)}
 
   p <- p +
-    geom_sf(
-      data = nodes,
-      aes(fill = area_ha),
-      shape = 21,
-      size = 3,
-      colour = COLORS$green_dark,
-      linewidth = 0.25,
-      alpha = 0.9
-    ) +
-    scale_colour_manual(
-      name = NULL,
-      values = c("Dispersal edge" = COLORS$orange)
-    ) +
-    scale_fill_gradientn(
-      colours = pal_green,
-      name = "Patch size (ha)",
-      na.value = COLORS$grey85
-    ) +
-    guides(
-      fill = guide_legend(title = "Patch size (ha)"),
-      colour = guide_legend(
-        override.aes = list(linewidth = 1.5)
-      )
-    ) +
+    geom_sf( data = nodes, aes(fill = area_ha), shape = 21, size = 3, colour = COLORS$green_dark, linewidth = 0.25, alpha = 0.9) +
+    scale_colour_manual( name = NULL, values = c("Dispersal edge" = COLORS$orange)) +
+    scale_fill_gradientn(colours = pal_green, name = "Patch size (ha)", na.value = COLORS$grey85) +
+    guides(fill = guide_legend(title = "Patch size (ha)"), colour = guide_legend(override.aes = list(linewidth = 1.5))) +
     coord_sf(expand = FALSE, datum = NA) +
     theme_map_clean() +
-    labs(
-      title = city_label,
-      subtitle = sprintf(
-        "Dispersal threshold: %d m | Nodes coloured by patch area",
-        DISPERSAL_THRESH_M
-      )
-    )
+    labs( title = city_label, subtitle = sprintf("Dispersal threshold: %d m | Nodes coloured by patch area", DISPERSAL_THRESH_M))
 
   if (show_scale) {
     p <- p +
-      annotation_scale(
-        location = "bl",
-        style = "ticks",
-        width_hint = 0.25,
-        text_cex = 0.7,
-        line_width = 0.4
-      )
-  }
-
-  p
-}
+      annotation_scale(location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4)}
+p}
 
 # Create plots
 p_conn_yx <- plot_connectivity_map(
-  yx_graph, d$yx_bnd, CRS_YX, "Yuexiu", show_scale = TRUE
-) +
-  guides(
-    fill = guide_legend(
-      title = "Patch size (ha)\nYuexiu",
-      order = 1
-    ),
-    colour = guide_legend(
-      title = "Network connection",
-      order = 2
-    )
-  )
+  yx_graph, d$yx_bnd, CRS_YX, "Yuexiu", show_scale = TRUE) +
+  guides(fill = guide_legend(title = "Patch size (ha)\nYuexiu", order = 1), colour = guide_legend(title = "Network connection", order = 2))
 
-p_conn_dl <- plot_connectivity_map(
-  dl_graph, dl$dl_bnd, CRS_DELFT, "Delft", show_scale = FALSE
-) +
-  guides(
-    fill = guide_legend(
-      title = "Patch size (ha)\nDelft",
-      order = 1
-    ),
-    colour = guide_legend(
-      title = "Network connection",
-      order = 2
-    )
-  )
+p_conn_dl <- plot_connectivity_map(dl_graph, dl$dl_bnd, CRS_DELFT, "Delft", show_scale = FALSE) +
+  guides(fill = guide_legend(title = "Patch size (ha)\nDelft", order = 1), colour = guide_legend(title = "Network connection", order = 2))
 
 # Calculate real map widths
 yx_conn_bb <- st_bbox(st_transform(d$yx_bnd, CRS_YX))
@@ -351,32 +268,20 @@ dl_conn_w <- dl_conn_bb$xmax - dl_conn_bb$xmin
 
 # Combine
 fig_connectivity_maps <- p_conn_yx + p_conn_dl +
-  plot_layout(
-    widths = c(yx_conn_w, dl_conn_w)
-  ) +
-  plot_annotation(
-    title = "Green Patch Network Connectivity",
-    theme = theme(plot.title = element_text(face = "bold", size = 14))
-  ) &
+  plot_layout(widths = c(yx_conn_w, dl_conn_w)) +
+  plot_annotation(title = "Green Patch Network Connectivity", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
   theme(legend.position = "right")
 
 fig_connectivity_maps
 
-ggsave(
-  file.path(OUT_ROOT, "fig_connectivity_maps.png"),
-  fig_connectivity_maps,
-  width = 14,
-  height = 7,
-  dpi = 300
-)
+ggsave(file.path(OUT_ROOT, "fig_connectivity_maps.png"), fig_connectivity_maps, width = 14, height = 7, dpi = 300)
 
 # Figure 4D: Patch size vs. betweenness scatter
 conn_df <- bind_rows(
   yx_graph$nodes |> st_drop_geometry() |>
     transmute(city = "Yuexiu", area_ha, betweenness, degree),
   dl_graph$nodes |> st_drop_geometry() |>
-    transmute(city = "Delft",  area_ha, betweenness, degree)
-)
+    transmute(city = "Delft",  area_ha, betweenness, degree))
 
 p_bw <- ggplot(conn_df, aes(x = area_ha, y = betweenness, colour = city)) +
   geom_point(alpha = 0.6, size = 2) +
@@ -384,13 +289,9 @@ p_bw <- ggplot(conn_df, aes(x = area_ha, y = betweenness, colour = city)) +
   scale_x_log10(labels = label_comma()) +
   scale_colour_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
   theme_minimal(base_size = 12) +
-  labs(title = "Patch Area vs. Betweenness Centrality",
-       subtitle = "High betweenness = stepping-stone patch critical for connectivity",
-       x = "Patch area (ha, log)", y = "Betweenness centrality (normalised)",
-       colour = "City") +
+  labs(title = "Patch Area vs. Betweenness Centrality", subtitle = "High betweenness = stepping-stone patch critical for connectivity", x = "Patch area (ha, log)", y = "Betweenness centrality (normalised)", colour = "City") +
   theme(plot.title = element_text(face = "bold"))
 
-ggsave(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"),
-       p_bw, width = 9, height = 6, dpi = 300)
+ggsave(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"), p_bw, width = 9, height = 6, dpi = 300)
 
 message("Script 05 complete — connectivity figures saved.")
