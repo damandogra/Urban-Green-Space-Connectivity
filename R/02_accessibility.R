@@ -160,7 +160,7 @@ dl_w <- dl_bb$xmax - dl_bb$xmin
 
 p_den_yx <- ggplot(yx_plot) +
   geom_sf(aes(fill = pop_density_class), linewidth = 0.25, color = "white")  +
-  geom_sf(data = legend_dummy, aes(fill = pop_density_class), color = NA, alpha = 0.001, show.legend = TRUE) +
+  geom_sf(aes(fill = pop_density_class), color = NA, alpha = 0.001, show.legend = TRUE) +
   annotation_scale( location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4 ) +
   scale_fill_manual( name = "residents/km²", values = setNames(density_cols, density_labels), limits = density_labels, breaks = density_labels, drop = FALSE, na.value = COLORS$grey85, guide = guide_legend( reverse = TRUE, override.aes = list( fill = rev(density_cols), alpha = 1,color = NA))) +
   coord_sf(expand = FALSE, datum = NA) +
