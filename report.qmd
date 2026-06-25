@@ -299,14 +299,14 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"))
 ### 5. MCDA
 
 ```{r}
-#| label: fig-connectmaps
-#| fig-cap: "Green patch connectivity maps for Yuexiu and Delft."
+#| label: fig-mcdamap
+#| fig-cap: "MCDA map"
 
-knitr::include_graphics(file.path(OUT_ROOT, "fig_connectivity_maps.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_mcda_maps.png"))
 
 ```
 
-@fig-connectmaps visualizes a normalized figure of the level of grene infrastyructure urgency needs to be implemented (0-1). Dark green suggests low urgency for the need of more intervention, while dark red suggesting high urgency. In Yuexiu, the spatial pattern is more fragmented due to its historical characteristic context. On the other hand, Delft's high uregncy zone is less fragmented and more concentrated in the central-north strip. This finding aligns with @fig-meandist, which reveal how isolated these neighborhoods are with other existing green patches. Moreover, assigning higher priority to these areas is justified as there needs spatial equity to be addressed, consequently fostering better connectivity in the broader urban network.
+@fig-mcdamap visualizes a normalized figure of the level of grene infrastyructure urgency needs to be implemented (0-1). Dark green suggests low urgency for the need of more intervention, while dark red suggesting high urgency. In Yuexiu, the spatial pattern is more fragmented due to its historical characteristic context. On the other hand, Delft's high uregncy zone is less fragmented and more concentrated in the central-north strip. This finding aligns with @fig-meandist, which reveal how isolated these neighborhoods are with other existing green patches. Moreover, assigning higher priority to these areas is justified as there needs spatial equity to be addressed, consequently fostering better connectivity in the broader urban network.
 
 ```{r}
 #| label: fig-mcdaradar
@@ -315,13 +315,13 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_connectivity_maps.png"))
 knitr::include_graphics(file.path(OUT_ROOT, "fig_mcda_radar.png"))
 ```
 
-For each of the four criteria, the city-wide mean of the normalized urgency scores (@fig-connectmaps) is calculated and displayed on @fig-mcdaradar. Thus, higher bar indicate greater average urgency compared to other dimensions. In both cities, connectivity pose higher relative urgency compared to other dimensions, opposing to equity/spatial justice, achieving lowest need for intervention. This is an interesting observation as connectivity is both central to the discussion of nature-based solution and efforts seemed to have been made to ensure connectivity of green patches in Delft, however, it still seems to need most urgent care compared to other metrics. The finding thus suggests the need for explicit connectivity effort through establishments of green corridor between green patches in both cities as part of further effort to our focus; nature-based solutions.
+For each of the four criteria, the city-wide mean of the normalized urgency scores (@fig-mcdamape) is calculated and displayed on @fig-mcdaradar. Thus, higher bar indicate greater average urgency compared to other dimensions. In both cities, connectivity pose higher relative urgency compared to other dimensions, opposing to equity/spatial justice, achieving lowest need for intervention. This is an interesting observation as connectivity is both central to the discussion of nature-based solution and efforts seemed to have been made to ensure connectivity of green patches in Delft, however, it still seems to need most urgent care compared to other metrics. The finding thus suggests the need for explicit connectivity effort through establishments of green corridor between green patches in both cities as part of further effort to our focus; nature-based solutions.
 
 ```{r}
 #| label: fig-prioritytiers
 #| fig-cap: "Green patch connectivity maps for Yuexiu and Delft."
 #|
-knitr::include_graphics(file.path(OUT_ROOT, "fig_priority_tiers"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_priority_tiers.png"))
 ```
 
 The priority tier (@fig-prioritytiers) divides the range of tiers equally to three groups (tertile classification). This is a choice of classification, which does not aim to exactly set 33% of a city to genuinely needs more urgent intervention as our choice of normalization also does not take into account the within group value difference to really determine the amount of urgent care actually required. Consistent with previous figures, Yuexiu's high priority zones are scattered, reflecting more fragmented planning scheme in terms of urban green infrastructure, compared to Delft where its high-priority zones are more concentrated, that may suggest a more underlying systematic issue around the area.
@@ -345,11 +345,11 @@ As sources are gathered through globally availbale datasets, methodology can be 
 
 ### Limitations
 
-OSM data completeness differs between cities and is a crowd-sourced data. This means that data gathered is not the most up-to-date nor accurate. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Moreover, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. <!-- what does this mean ya; NDVI does not directly measure biodiversity different city scales influence comparability administrative boundaries introduce MAUP effects.--> more... High density in Guangzhou vs low density in Delft.
+Few limitations have been identified in accordance to our data source. First, most of our datasets come from OSM. Its data completeness however differ between Yuexiu, Guangzhou and Delft, the Netherlands as OSM's volunteer-based system is more dominant in Wester European cities compared to Chinese cities. This means that data gathered is not the most up-to-date nor accurate, or could be biased. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Here, instead of using income per sub-district data, our methodology had to rely on VIIRS night-light data as proxy to economic development. While there have been literatures supporting the linkage between VIIRS night-light data as economic proxy for development, this still does not provide direct comparison between the two cities. Furthermore, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. Interpretation becomes less meaningful due to this sampling bias. In obtaining the datasets, we are also aware of the temporal effect if data gathered were to be obtained throughout different seasons. For example, the comparison would not be less meaningful if NDVI obtained for Delft and Yuexiu were obtained during different seasons.
+
+There are also few limitations identified within our code methodology. The MCDA weights were assigned and not derived @fig-connectmaps. This means that our choice to assign weight accessibility at 30%, biodiversity and connectivity at 25%, and equity/spatial justice at 20% is a judgement made before analysis. This however can differ to other researcher or planning priorities, as the weights assigned were based on judgement with nature-based solution being central to our focus analysis. Moreover, @fig-prioritytiers displays relative ranking, and does not display absolute urgency to where there needs immediate intervention to nature-based solution. It attempts to inform the least well-performing regions, rather than genuine crisis/urgency.
 
 ### Future Work
-
-citizen participation through surveys ecosystem valuation (more in depth) running the workflow with more than 4 indicators
 
 ## Conclusion
 
