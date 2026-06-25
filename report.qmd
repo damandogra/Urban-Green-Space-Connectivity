@@ -285,6 +285,8 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"))
 
 interpretation mean nearest distance to green patch: Delft \~10m vs Yuexiu \~200m. Delft's green space is essentially continuous — patches are almost touching. Yuexiu's patches are isolated islands separated by \~200m of built fabric on average. This is the connectivity crisis that drives our NbS corridor proposals. From a wildlife/biodiversity perspective, a 200m gap is a hard barrier for most invertebrates and small mammals.
 
+Fig 4C: Patch-size colour scales are city-specific. Yuexiu and Delft are shown with separate patch-size legends because their green-patch size ranges differ substantially; the colours therefore indicate relative patch size within each city, not a single shared absolute scale.
+
 ### 5. MCDA
 conclusion MCDA & NBS corridor prioritisation
 Through applying MCDA, the study provides a method to overlay low-access zones and disconnected patches, which allows the planner/user (tbd) to map priority intervention areas.
