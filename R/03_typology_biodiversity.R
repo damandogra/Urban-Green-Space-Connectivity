@@ -87,6 +87,8 @@ classify_green_type <- function(green_sf) {
 
   is_bgt <- "fysiek_voorkomen" %in% cols
 
+  #put a filter on which green spaces to count as publicly accessible urban green space
+
   if (is_bgt) {
     green_sf |>
       mutate(
@@ -411,80 +413,63 @@ saveRDS(type_summary, file.path(OUT_ROOT, "type_summary.rds"))
 # ── Figures ───────────────────────────────────────────────────────────────────
 
 # Figure 2A: Fixed assignment pipeline
+# Figure 2AA - typology quantity
 type_summary <- type_summary |>
   dplyr::filter(green_type != "Other / Unclassified")
-type_summary$green_type <- factor(
-  type_summary$green_type,
-  levels = c(
+type_summary$green_type <- factor(type_summary$green_type, levels = c(
     "Forest / Woodland",
     "Park / Recreation",
     "Nature Reserve / Scrub",
-    "Grass / Meadow"
-  )
-)
-p_type <- ggplot(type_summary,
-                 aes(x = city, y = pct_area, fill = green_type)) +
+    "Grass / Meadow"))
+
+p_type <- ggplot(type_summary, aes(x = city, y = pct_area, fill = green_type)) +
 geom_col() +
-  scale_fill_manual(
-    values = c(
-      "Forest / Woodland" = COLORS$green_dark,
-      "Nature Reserve / Scrub" = COLORS$green_mid,
-      "Park / Recreation" = COLORS$green_light,
-      "Grass / Meadow" = COLORS$beige
-    ),
-    name = "Typology"
-  ) +
+  scale_fill_manual(values = c("Forest / Woodland" = COLORS$green_dark, "Nature Reserve / Scrub" = COLORS$green_mid, "Park / Recreation" = COLORS$green_light, "Grass / Meadow" = COLORS$beige ), name = "Typology") +
   guides(fill = guide_legend(reverse = FALSE)) +
-
-  scale_y_continuous(
-    labels = scales::label_number(suffix = "%")
-  ) +
+  scale_y_continuous(labels = scales::label_number(suffix = "%")) +
   theme_minimal(base_size = 12) +
-  labs(title    = "Green Space Composition by Typology",
-       subtitle = "OSM/BGT tag-based classification — % of total green area",
-       x = NULL, y = "% of total green area")
+  labs(title    = "Green Space Composition by Typology", subtitle = "OSM/BGT tag-based classification — % of total green area", x = NULL, y = "% of total green area") +
+  theme(plot.title = element_text(face = "bold"))
 
 ggsave(
-  file.path(OUT_ROOT, "fig_green_typology.png"),
-  p_type,
-  width = 9,
-  height = 6,
-  dpi = 300
-)
+  file.path(OUT_ROOT, "fig_green_typology.png"), p_type, width = 9, height = 6, dpi = 300)
 
-p_ndvi_yx <- ggplot(yx_sub_ndvi) +
-  geom_sf(aes(fill = ndvi_mean)) +
-  scale_fill_gradientn(
-    colours = pal_green,
-    limits = c(0.1, 0.8),
-    na.value = "grey80",
-    name = "Mean NDVI"
-  ) +
-  theme_minimal() +
-  labs(
-    title = "Mean NDVI per Subdistrict — Yuexiu",
-    subtitle = "Source: Sentinel-2 / Landsat"
-  )
+# Figure 2AB - NDVI
 
-p_ndvi_dl <- ggplot(dl_wijk_ndvi) +
-  geom_sf(aes(fill = ndvi_mean)) +
-  scale_fill_gradientn(
-    colours = pal_green,
-    limits = c(0.1, 0.8),
-    na.value = "grey80",
-    name = "Mean NDVI"
-  ) +
-  theme_minimal() +
-  labs(
-    title = "Mean NDVI per Wijk — Delft",
-    subtitle = "Source: Sentinel-2 / Landsat"
-  )
+# transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_ndvi, CRS_YX)
+dl_plot <- st_transform(dl_wijk_ndvi, 28992)
 
-ggsave(
-  file.path(OUT_ROOT, "fig_ndvi_zonal.png"),
-  p_ndvi_yx + p_ndvi_dl,
-  width = 14, height = 6, dpi = 300
-)
+# calculate real maps widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+p_ndvi_yx <- ggplot(yx_plot) +
+  geom_sf(aes(fill = ndvi_mean), linewidth = 0.25, color = "white") +
+  annotation_scale(location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4) +
+  scale_fill_gradientn( colours = pal_green, limits = c(0.1, 0.8), na.value = COLORS$grey85, name = "Mean NDVI") +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs( title = "Yuexiu", subtitle = "Sentinel-2 NDVI imagery")
+
+p_ndvi_dl <- ggplot(dl_plot) +
+  geom_sf(aes(fill = ndvi_mean), linewidth = 0.25, color = "white") +
+  scale_fill_gradientn( colours = pal_green, limits = c(0.1, 0.8), na.value = COLORS$grey85, name = "Sentinel-2 NDVI imagery", guide = "none") +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Delft", subtitle = "Sentinel-2 NDVI imagery")
+
+fig_ndvi <- p_ndvi_yx + p_ndvi_dl +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect") +
+  plot_annotation(title = "Mean NDVI", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_ndvi
+
+ggsave(file.path(OUT_ROOT, "fig_ndvi.png"), fig_ndvi, width = 14, height = 6, dpi = 300)
 
 # Figure 2D: NDVI violin
 ndvi_df <- bind_rows(
@@ -499,14 +484,13 @@ p_ndvi_violin <- ggplot(ndvi_df, aes(x = green_type, y = ndvi_mean, fill = city)
   theme(axis.text.x = element_text(angle = 35, hjust = 1)) +
   labs(title    = "NDVI Distribution by Green Typology",
        subtitle = "Patch-level mean NDVI (vegetation health proxy)",
-       x = "Green Type", y = "Mean NDVI", fill = "City")
+       x = "Green Type", y = "Mean NDVI", fill = "City") +
+  theme(plot.title = element_text(face = "bold"))
 
-# Figure 2D: NDVI violin
 ggsave(
   file.path(OUT_ROOT, "fig_ndvi_violin.png"),
   p_ndvi_violin,        # was p_type
-  width = 12, height = 6, dpi = 300
-)
+  width = 12, height = 6, dpi = 300)
 
 # Figure 2E: GBIF species density
 bio_df <- bind_rows(
@@ -526,57 +510,67 @@ p_gbif <- ggplot(bio_df, aes(x = area_ha, y = gbif_obs_per_ha,
       "Forest / Woodland" = COLORS$green_dark,
       "Grass / Meadow" = COLORS$beige,
       "Nature Reserve / Scrub" = COLORS$green_mid,
-      "Park / Recreation" = COLORS$green_light
-    )
-  )
+      "Park / Recreation" = COLORS$green_light)) +
   theme_minimal(base_size = 11) +
   labs(title    = "Biodiversity Observation Density vs. Patch Size",
        subtitle = "GBIF occurrences per ha — log-log scale",
-       x = "Patch area (ha, log)", y = "Obs. per ha (log)", shape = "City")
+       x = "Patch area (ha, log)", y = "Obs. per ha (log)", shape = "City") +
+    theme(plot.title = element_text(face = "bold"))
 
-# Figure 2E: GBIF species density
-ggsave(
-  file.path(OUT_ROOT, "fig_gbif_density.png"),
+ggsave(file.path(OUT_ROOT, "fig_gbif_density.png"),
   p_gbif,               # was p_type
-  width = 10, height = 6, dpi = 300
-)
+  width = 10, height = 6, dpi = 300)
 
-p_bg_yx <- ggplot(yx_sub_bg) +
-  geom_sf(aes(fill = blue_green_balance)) +
-  scale_fill_gradientn(
-    colours = pal_green_blue,
-    values = scales::rescale(c(
-      min(yx_sub_bg$blue_green_balance, na.rm = TRUE),
-      0,
-      max(yx_sub_bg$blue_green_balance, na.rm = TRUE)
-    )),
-    na.value = "grey80",
-    name = "BG Balance\n(log scale)"
+
+# Figure 2F: Blue-Green Balance
+
+# Transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_bg, CRS_YX)
+dl_plot <- st_transform(dl_wijk_bg, 28992)
+
+# Calculate real map widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+# Use shared limits so both maps are comparable
+bg_limits <- range(c(yx_plot$blue_green_balance, dl_plot$blue_green_balance), na.rm = TRUE)
+
+bg_values <- scales::rescale(
+  c(bg_limits[1], 0, bg_limits[2]), from = bg_limits)
+
+# recreate blue_green_balance before plotting
+yx_sub_bg <- yx_sub_bg %>%
+  mutate(blue_green_balance = log1p(water_pc_m2) - log1p(green_pc_m2))
+
+dl_wijk_bg <- dl_wijk_bg %>%
+  mutate(blue_green_balance = log1p(water_pc_m2) - log1p(green_pc_m2))
+
+p_bg_yx <- ggplot(yx_plot) +
+  geom_sf(aes(fill = blue_green_balance), linewidth = 0.25, color = "white") +
+  annotation_scale(location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4) +
+  scale_fill_gradientn(colours = pal_green_blue, values = bg_values, limits = bg_limits, na.value = COLORS$grey85, name = "BG Balance\n(log scale)") +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs( title = "Yuexiu", subtitle = "Source: green, water and population datasets")
+
+p_bg_dl <- ggplot(dl_plot) +
+  geom_sf(aes(fill = blue_green_balance), linewidth = 0.25, color = "white") +
+  scale_fill_gradientn( colours = pal_green_blue, values = bg_values, limits = bg_limits, na.value = COLORS$grey85, name = "BG Balance\n(log scale)", guide = "none"
   ) +
-  theme_minimal() +
-  labs(title    = "Blue-Green Balance — Yuexiu Subdistricts",
-       subtitle = "log1p(Water PC) - log1p(Green PC)")
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Delft", subtitle = "Source: green, water and population datasets")
 
-p_bg_dl <- ggplot(dl_wijk_bg) +
-  geom_sf(aes(fill = blue_green_balance)) +
-  scale_fill_gradientn(
-    colours = pal_green_blue,
-    values = scales::rescale(c(
-      min(dl_wijk_bg$blue_green_balance, na.rm = TRUE),
-      0,
-      max(dl_wijk_bg$blue_green_balance, na.rm = TRUE)
-    )),
-    na.value = "grey80",
-    name = "BG Balance\n(log scale)"
-  ) +
-  theme_minimal() +
-  labs(title    = "Blue-Green Balance — Delft Wijken",
-       subtitle = "log1p(Water PC) - log1p(Green PC)")
+fig_blue_green_ratio <- p_bg_yx + p_bg_dl +
+  plot_layout( widths = c(yx_w, dl_w), guides = "collect") +
+  plot_annotation( title = "Blue-Green Balance", theme = theme( plot.title = element_text(face = "bold", size = 14))) &
+  theme( legend.position = "right")
 
-ggsave(
-  file.path(OUT_ROOT, "fig_blue_green_ratio.png"),
-  p_bg_yx + p_bg_dl,    # was p_type
-  width = 14, height = 6, dpi = 300
-)
+fig_blue_green_ratio
+
+ggsave(file.path(OUT_ROOT, "fig_blue_green_ratio.png"), fig_blue_green_ratio, width = 14, height = 6, dpi = 300)
 
 message("Script 03 complete — typology & biodiversity figures saved.")
