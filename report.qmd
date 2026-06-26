@@ -129,6 +129,157 @@ Translate the analytical findings into nature-based planning strategies for impr
 
 ## Methods
 
+### Study Area
+
+### Research Design
+The study addresses the main research question through a comparative analytical framwoerk strcuture around the four thematic objectives:
+1. Accessibility
+2. Ecological Quality
+3. Spatial Justice
+4. Connectivity
+
+Each objective corresponds to a sub research question and is operationalised through a set of spatial analysis methods applied consistently to both cities. The four objectuve scores are subsequently integrtaed through a Multi-Criteria Decision Analysis (MCDA) top produc a composite urban green space quality score and a spatial prioritisation of Nture-based Solution (NbS) intervention zones.
+
+The study was conducted in two stages:
+1. Stage I: All required spatial datasets were collected from public data sources, preprocesses into a consistent format, and validated. The resulting processes layers are provided in the project data folder abd form the fixed input to all subsequent analysis.
+2. Stage II: All tehmatics analyses were conducted in R from those processed files. The analytical workflow described in Section 3.5 through 3.9 is fully reproducible form the provided data using the accompannying R scripts.
+
+### Data Collection and Preprocessing
+All spatial data were collected via a seven-step Python pipeline:
+
+#### Administrative Boundaries
+**Delft**
+
+- Municipality boundary fetched from PDOK WFS (Kadaster bestuurlijke gebieden), filtered to municipality code `GM0503` and dissolved to a single polygon
+- Available WFS layers auto-discovered via `GetCapabilities`; multiple BBOX orientations tried to handle GeoServer axis-order quirks; CBS gebiedsindelingen WFS (years 2024–2022) used as fallback
+- CBS *buurten* (neighbourhood polygons) fetched from PDOK wijkenbuurten WFS, clipped to the municipality boundary, and filtered to buurt-level rows (`bu_code` prefix `BU`) to exclude wijk- and gemeente-level aggregates
+
+**Yuexiu (Guangzhou)**
+
+- District boundary and *jiēdào* subdistrict polygons obtained from GADM v4.1, filtered to `NAME_2 = "Guangzhou"` and dissolved to a single city polygon
+- GADM GeoPackage (~200 MB) downloaded automatically if not present locally
+
+
+#### Vector Layers (Green Space, Water, Roads)
+
+**Delft — green space and water (BGT)**
+
+- Green space fetched from the BGT (Basisregistratie Grootschalige Topografie) via the PDOK OGC API Features endpoint, with automatic pagination via `next` links
+- Two feature types collected: `groenVoorziening` (maintained green infrastructure) and `bos` (forest and woodland)
+- Water bodies fetched as BGT `waterdeel`, covering canals (*grachten*), rivers, ponds, and drainage channels
+- BGT preferred over OSM because Dutch OSM data is derived from BGT via a lossy conversion; BGT carries 20 cm positional accuracy and is the legally authoritative source
+- OSM used as fallback for both layers if BGT returned no features
+
+**Yuexiu — green space, water, and roads (OSM)**
+
+- All vector layers fetched from OpenStreetMap via the Overpass API
+- Green space queried using tags `leisure=`, `landuse=`, and `natural=`
+- Water bodies queried using `waterway=` and `natural=water`
+- Requests retried automatically with exponential backoff on HTTP 429 (rate limit)
+
+**Roads — both cities (OSM)**
+
+- Road network fetched from OSM Overpass API using the `highway=` tag for both cities
+- Bug fix applied: OSM ways with `highway=` that form a closed loop (roundabouts, dead-end loops) are stored as `LineString` regardless of node topology. Without this fix, closed ways are parsed as filled `Polygon` geometries, corrupting network topology and rendering as filled blobs in spatial analysis
+- Zero-distance buffer applied to polygon geometries only to repair self-intersections; explicitly not applied to linestrings to preserve road network topology
+
+**Retained tag attributes:** `leisure`, `landuse`, `natural`, `waterway`, `highway`, `name`, `surface`
+
+
+#### Raster Layers
+
+**WorldPop — both cities**
+
+- Population raster downloaded at 100 m spatial resolution from worldpop.org
+- Fetched via COG (Cloud-Optimised GeoTIFF) HTTP range requests using GDAL `/vsicurl/`, retrieving only the AOI window rather than the full national file
+- Fallback to full national file download if COG range request failed
+
+**Sentinel-2 NDVI — both cities**
+
+- Cloud-free median NDVI composite generated via Google Earth Engine (GEE)
+- S2 Surface Reflectance collection filtered by AOI, date range, and cloud percentage threshold
+- NDVI computed per image as $(B8 - B4) / (B8 + B4)$ and reduced to a pixel-wise median
+- Exported at 10 m native Sentinel-2 resolution
+- Fallback to Copernicus STAC (`pystac-client`) if GEE was unavailable
+
+**ESA WorldCover — both cities**
+
+- Land cover raster downloaded at 10 m resolution from AWS S3 COG tiles
+- Tiles covering the AOI stitched and clipped to city boundary
+
+**VIIRS VNP46A4 — Yuexiu only**
+
+- Annual mean nighttime light radiance composite downloaded from NASA Earthdata via `earthaccess`
+- Used as socioeconomic proxy at subdistrict level; direct income data not publicly available for Yuexiu
+
+**Yuexiu green space mask (derived)**
+
+- Green space raster derived from WorldCover by retaining pixels classified as tree cover (class 10) or grassland (class 30)
+- Further filtered by NDVI > 0.3 to exclude bare or paved surfaces misclassified as vegetation
+- Binary GeoTIFF (10 m, 1 = green) saved and polygonised to GeoPackage
+- Fragments < 100 m² removed; adjacent pixels dissolved then exploded to single-part polygons
+
+
+#### Biodiversity Occurrences (GBIF)
+
+- Species occurrence records fetched from the GBIF REST API (`occurrence/search` endpoint) for each city bounding box
+- Records fetched in pages of 300, up to a maximum of 5,000 per city
+- Filters applied:
+  - `basisOfRecord = HUMAN_OBSERVATION`
+  - Valid decimal coordinates required
+  - `coordinateUncertaintyInMeters ≤ 1,000 m` (records with null uncertainty retained)
+- Retained attributes: gbifID, species, genus, family, kingdom, latitude, longitude, coordinate uncertainty, year, month, basisOfRecord, datasetName
+- Raw JSON cached locally; reruns load from cache without hitting the API
+
+
+#### Socioeconomic Data
+
+**Delft — CBS StatLine income**
+
+- Neighbourhood-level income data fetched from CBS StatLine OData API, table `85163NED`
+- Filtered to Delft buurt codes (`WijkenEnBuurten` starting with `BU0503`)
+- Variables retrieved: mean disposable income per resident, mean income per earner, % low-income households, % near social minimum, % aged 65+, address density
+- Joined to CBS buurt boundary polygons by neighbourhood code
+- Two buurten with suppressed CBS disclosure excluded from income correlation analysis
+
+**Yuexiu — VIIRS zonal statistics**
+
+- Mean, median, and standard deviation of VIIRS nighttime light radiance computed per zone polygon from the raster downloaded in Step 3
+- City-level AOI used as a single zone (subdistrict boundaries not freely available)
+- Output saved as CSV (`guangzhou_viirs_zonal.csv`)
+
+#### Clip and Reproject
+
+All raw layers from Steps 1–5 clipped to the city AOI and reprojected to a metric CRS:
+
+| City | CRS | Authority |
+|---|---|---|
+| Delft | EPSG:28992 — Amersfoort / RD New | Dutch national grid, metre units |
+| Yuexiu | EPSG:4547 — CGCS2000 / Gauss-Krüger zone 20 | Chinese national grid, metre units |
+
+Metric projection required for all buffer, area, and distance operations. Processing applied per layer type:
+
+- **Vectors:** clipped with `geopandas.clip`; zero-distance buffer applied to polygons only to repair projection distortion artefacts; empty geometries removed
+- **Rasters:** masked with `rasterio.mask`; reprojected with `rasterio.warp.reproject`; bilinear resampling used for continuous rasters (WorldPop, NDVI, VIIRS); nearest-neighbour resampling used for categorical rasters (WorldCover)
+- All projected outputs saved with `_proj` suffix
+
+
+#### Validation Audit
+
+A validation audit was run on all projected output layers before analysis. Each layer was checked for:
+
+- File existence and loadability
+- Correct metric CRS matching the city target
+- No null, empty, or invalid geometries
+- Bounding box overlap with the city AOI
+- Raster coverage > 50% valid (non-nodata) pixels
+- Key attribute completeness ≥ 80% non-null (species and coordinates for GBIF; income for CBS)
+- Cross-layer CRS consistency across all projected files for each city
+
+Results were written to `validate_delft.json` and `validate_guangzhou.json`. Any layer failing a check was flagged before analysis proceeded.
+
+
+
 ### Analytical framework
 
 This study addresses the research question by breaking it up in several research sub-questions, which will come together in forming a MCDA. The study provides a method to determine the quality of urban green spaces, and therefore provide a tool for planners and designers to identify aspects for urban green space improvement for more informed decisions.
