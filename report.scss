@@ -39,6 +39,12 @@ p {
   margin-bottom: 1rem;
 }
 
+// Justified body text
+p, li, td, .callout-body {
+  text-align: justify;
+  hyphens: auto;
+}
+
 // Callouts
 .callout-note {
   border-left-color: #8a99bc;
