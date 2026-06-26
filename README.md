@@ -2,8 +2,6 @@
 
 Project report of Group E — Applied Spatial Analytics 2026, TU Delft.
 
-
-
 ---
 
 ## Overview
@@ -78,7 +76,7 @@ In RStudio: open `report.qmd` and click **Render**.
 In VS Code / terminal:
 
 ```bash
-quarto render report.qmd
+quarto render
 ```
 
 Output goes to `docs/index.html` (set via `output-dir: docs` in `_quarto.yml`). This is the folder GitHub Pages serves the live report from — no manual copying needed.
@@ -116,10 +114,13 @@ create-your-report-groupe/
 │   ├── outputs/                        # Figure PNGs referenced by the HTML report
 │   └── report_files/libs/              # JS/CSS assets (Bootstrap, Quarto HTML)
 │
+├── pages/                              # Split pages for future multi-page website version
+│
 ├── run_pipeline.R                      # Sources all R/ scripts in order
 ├── _quarto.yml                         # Quarto project config (output-dir: docs)
 ├── report.qmd                          # Main report narrative — pulls figures from outputs/
-├── asa2025-report.Rproj               # RStudio project file
+├── report.qmd.bak                      # Backup of original single-page report
+├── asa2025-report.Rproj                # RStudio project file
 ├── references.bib                      # BibTeX bibliography
 ├── methodology.md                      # Extended methodology notes
 └── README.md
@@ -165,24 +166,31 @@ All figures are written to `outputs/` by the pipeline scripts and copied to `doc
 
 | Figure | Script | Content |
 |---|---|---|
+| `fig_context_gz_dl.png` | 08 | Study site context map — Guangzhou and Delft |
+| `fig_context_yx_dl.png` | 08 | Study site context map — Yuexiu and Delft |
+| `fig_ugs_yx_dl.png` | 08 | Urban green space overview map |
+| `fig_population_density.png` | 02 | Population density by subdistrict/wijk |
 | `fig_access_per_capita.png` | 02 | Green space m² per capita by subdistrict/wijk |
 | `fig_buffer_coverage.png` | 02 | Population within 300/500 m of green space |
 | `fig_nearest_green_distance.png` | 02 | Distance to nearest green space |
 | `fig_network_walk_access.png` | 02 | Walk-network accessibility map |
 | `fig_green_typology.png` | 03 | OSM green space typology breakdown |
-| `fig_ndvi_maps.png` | 03 | NDVI spatial maps |
 | `fig_ndvi_zonal.png` | 03 | NDVI zonal statistics by admin unit |
-| `fig_ndvi_violin.png` | 03 | NDVI distribution violin plots |
-| `fig_gbif_density.png` | 03 | Biodiversity (GBIF) species density |
-| `fig_blue_green_ratio.png` | 03 | Blue vs. green space ratio |
+| `fig_ndvi_violin.png` | 03 | NDVI distribution violin plots by typology |
+| `fig_gbif_density.png` | 03 | Biodiversity (GBIF) observation density per hectare |
+| `fig_blue_green_ratio.png` | 03 | Blue vs. green space balance index |
 | `fig_lorenz_gini.png` | 04 | Lorenz curve and Gini coefficient |
-| `fig_bivariate_choropleth.png` | 04 | Bivariate map: green space × income/VIIRS |
-| `fig_bivariate_legend.png` | 04 | Legend for bivariate choropleth |
-| `fig_equity_correlations.png` | 04 | Scatter plots: green access vs. deprivation indicators |
-| `fig_fragmentation_metrics.png` | 05 | NP, MPS, ENN fragmentation metrics |
+| `fig_bivariate_choropleth.png` | 04 | Bivariate map: green density × population density |
+| `fig_equity_correlations.png` | 04 | Scatter plots: green access vs. socioeconomic proxy |
 | `fig_enn_distribution.png` | 05 | Euclidean nearest-neighbour distance distribution |
+| `fig_fragmentation_metrics.png` | 05 | NP, MPS, ENN fragmentation metrics |
 | `fig_connectivity_maps.png` | 05 | Green space connectivity graph maps |
 | `fig_betweenness_vs_area.png` | 05 | Patch betweenness centrality vs. area |
+| `fig_mcda_maps.png` | 06 | MCDA composite urgency scores by subdistrict/wijk |
+| `fig_mcda_radar.png` | 06 | City-mean MCDA sub-scores by criterion |
+| `fig_priority_tiers.png` | 06 | NbS intervention priority tiers (High/Medium/Low) |
+| `fig_nbs_corridors.png` | 06 | Proposed green corridors overlaid on priority zones |
+| `fig_mcda_distribution.png` | 06 | Distribution of MCDA composite scores |
 
 ---
 
