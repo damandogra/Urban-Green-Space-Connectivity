@@ -1,5 +1,7 @@
 project:
   output-dir: docs
+  resources:
+    - favicon.png
 
 format:
   html:
