@@ -51,7 +51,7 @@ The study compares the urban contexts of Guangzhou, in China and Delft, in The N
 knitr::include_graphics(file.path(OUT_ROOT,"fig_context_gz_dl.png"))
 ```
 
-Guangzhou is administratively divided into districts. To get a comparable study area, this research focuses on Yuexiu District, the historical core of Guangzhou. Yuexiu covers 33.8 km2 and reports 1.173.100 inhabitants (WorldPop). Although still considerably denser than Delft, it represents a much more comparable spatial scale than the municipality of Guangzhou as a whole. The analytical framework can be applied consistently across both study areas with the use of this spatial unit. 
+Guangzhou is administratively divided into districts. To get a comparable study area, this research focuses on Yuexiu District, the historical core of Guangzhou. Yuexiu covers 33.8 km2 and reports 1.173.100 inhabitants (WorldPop). Although still considerably denser than Delft, it represents a much more comparable spatial scale than the municipality of Guangzhou as a whole. The analytical framework can be applied consistently across both study areas with the use of a spatial unit. This study uses administrative neighbourhood units as the spatial unit. The administrative units are Wijken for Delft, and jiēdào (subdistricts) for Yuexiu. Using administrative units increases policy relevance and reproducibility through different scales.
 
 ```{r}
 #| label: fig-context
@@ -120,7 +120,7 @@ Translate the analytical findings into nature-based planning strategies for impr
 
 ### Analytical framework
 
-This study addresses the research question by breaking it up in several research sub-questions, which will come together in forming a MCDA. The study hopes to provide a method to determine the quality of urban green spaces, and therefore provide a tool for planners and designers to identify aspects for urban green space improvement for more informed decisions.
+This study addresses the research question by breaking it up in several research sub-questions, which will come together in forming a MCDA. The study provides a method to determine the quality of urban green spaces, and therefore provide a tool for planners and designers to identify aspects for urban green space improvement for more informed decisions.
 
 The empirical analysis of this paper is split into four categories to provide more structure in throughout the data collection and evaluation, taking into account its multi-criterion nature. Within each of the categories, multiple relevant spatial analysis are conducted to provide meaning for the comparison between Delft and Yuexiu, to evaluate connectivity between green spaces.
 
@@ -154,13 +154,9 @@ Urban green spaces are heterogeneous (source 2). Different spaces provide in dif
 
 ### MCDA
 
-Urban green space quality cannot be defined by a single indicator and there are different dimensions of quality. With a Spatial Multi-Criteria Decision Analysis (MCDA) conditions in certain locations are evaluated through weighing different criteria. The categories derived from the research objectives are broken down to form these criteria and enables the integration of ecological, social, and spatial indicators into one framework. The MCDA framework combines indicators per category into an analytical dataset, where these indicators are weighted and aggregated into a quality score. The score allows spatial comparison between comparable spatial units; the Dutch wijken and the Chinese jiedao -- to be used as a decision-support tool for decision makers.
+Urban green space quality cannot be defined by a single indicator and there are different dimensions of quality. With a Spatial Multi-Criteria Decision Analysis (MCDA) conditions in certain locations are evaluated through weighing different criteria. The dimensions from the research objectives are broken down to form these criteria and enables the integration of ecological, social, and spatial indicators into one framework. The MCDA framework combines indicators per category into an analytical dataset, where these indicators are weighted and aggregated into a quality score. The score allows spatial comparison between comparable spatial units; the Dutch wijken and the Chinese jiedao -- to be used as a decision-support tool for decision makers.
 
 ### Data collection
-
-### Spatial unit
-
-Spatial analysis outcomes depend on a chosen spatial unit. To ensure comparability, the study uses administrative neighbourhood units. However due to a scale difference, the comparison is done on scale of the entire city of Delft and the Yuexiu district in Guangzhou. These are comparable in surface (mention surface km2) and amount of neighbourhoods (mention #). The administrative units are wijken for Delft, and jiedao for Guanghzhou. Using administrative units increases policy relevance and reproducability through different scales (from neighbourhood to municipality) - difference in scale of Guangzhou and Delft, allows us to find comparable city districts and also allows planners/municipalities to work with the distinctive characters of city districts, makes it applicable in small cities as well as large cities.
 
 ## Results
 
