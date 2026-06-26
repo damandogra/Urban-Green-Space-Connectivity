@@ -8,3 +8,4 @@ format:
     number-sections: true
     code-fold: true
     embed-resources: true
+    favicon: "favicon.png"
