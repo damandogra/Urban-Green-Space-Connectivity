@@ -1,7 +1,7 @@
 project:
   output-dir: docs
   resources:
-    - favicon.png
+    - favicon.ico
 
 format:
   html:
@@ -10,4 +10,3 @@ format:
     number-sections: true
     code-fold: true
     embed-resources: true
-    favicon: "favicon.png"
