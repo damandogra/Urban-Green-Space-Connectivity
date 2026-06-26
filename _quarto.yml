@@ -1,2 +1,10 @@
 project:
   output-dir: docs
+
+format:
+  html:
+    theme: [cosmo, report.scss]
+    toc: true
+    number-sections: true
+    code-fold: true
+    embed-resources: true

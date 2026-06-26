@@ -20,7 +20,7 @@ output-dir: docs
 source(here::here("R/00_config.R"))
 ```
 
-# Introduction
+<!-- # Introduction -->
 
 ## Introduction
 
