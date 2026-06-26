@@ -12,84 +12,97 @@ author:
 format:
   html:
     output-file: index.html
-output-dir: docs
+    theme: [cosmo, report.scss]
+    toc: true
+    number-sections: true
+    code-fold: true
+    embed-resources: true
 ---
 
 ```{r setup, include=FALSE}
 source(here::here("R/00_config.R"))
 ```
 
-# Introduction
-
+<!-- # Introduction -->
 ## Introduction
+Due to rapid urbanisation, the pressure on urban green space (UGS) increases and the benefits are often unevenly distributed across neighborhoods. Green spaces are essential urban infrastructure that influence the physical and mental well-being of inhabitants. They provide a wide range of services, such as urban cooling, air quality improvement and pose opportunities for social interaction. Not only are they beneficial to humans, they also support biodiversity conservation and species movement, thereby enhancing health, ecological, and social outcomes. 
 
-### Background
+However, not all citizens have equal access to these green spaces and they differ in quality. Therefore, their benefits depend not only on the presence of green spaces, but also on their accessibility, ecological quality, and spatial distribution. Research emphasizes implementing multi-functional blue-green infrastructure rather than isolated parks in contemporary planning processes. (Cardinali, 2024; Morris, 2003; Kasim, et al., 2019)
 
-### Problem statement
+Connectivity is a key dimension of green space quality, since urban green spaces often function better as networks rather than independent elements. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity and the ecological condition become indicators of urban green space quality. In addition, better connected green networks improve human access and facilitate movement through cities. Despite growing attention to green infrastructure networks, accessibility, ecological quality, and connectivity are still often assessed independently. (Irvine et al., 2008)
 
-Due to rapid urbanisation, the pressure on urban green space (UGS) increases and the benefits are often unevenly distributed across neighborhoods. Green spaces are essential urban infrastructure that influence the physical and mental well-being of inhabitants. They provide a wide range of services, such as urban cooling, air quality improvement and pose opportunities for social interaction. Not only are they beneficial to humans, they also support biodiversity conservation and species attraction, thereby enhancing health, ecological, and social outcomes. However, not all citizens have equal access to these green spaces and they differ in quality. Therefore, their benefits depend not only on the presence of green spaces, but also on their accessibility, ecological quality, and spatial distribution. Research emphasizes multi-functional blue-green infrastructure rather than isolated parks. (Morris, 2003; Kasim, et al., 2019)
+As defined by Roberto Rocco (n.d.), spatial justice concerns the equitable distribution of urban resources and opportunities across different population groups. When applied to urban green spaces, it considers not only the quantity of green space, but also its quality. Together they determine whether residents have equitable access to connected and ecologically functional green environments. This is important because unequal access can reinforce existing social and environmental inequalities, making spatial justice an increasingly important consideration in urban planning. (Logan et al 2019; De Sousa Silva et al., 2018)
 
-Connectivity is a key dimension of green space quality, since urban green spaces often function better as networks rather than independent elements. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity thus plays a role in determining the quality of the UGS (Irvine et al., 2008). In addition, better connected green networks improve human access and movement through cities. Despite growing attention to green infrastructure networks, accessibility, ecological quality, and connectivity are still often assessed independently. This limits our understanding of urban green space quality.
+Thus in this study, urban green space quality is understood as the combined performance of four dimensions: accessibility, ecological quality, spatial justice, and connectivity. Evaluating these dimensions together, they provide a more comprehensive assessment than considering each independently. To support evidence-based planning, this study integrates these dimensions into a reproducible analytical framework using a Spatial Multi-Criteria Decision Analysis (S-MCDA). The framework combines ecological, spatial, and social indicators to identify priority areas for intervention and is applied to two contrasting urban contexts: Yuexiu District, Guangzhou (China) and Delft (The Netherlands). The methodology is designed to be reproducible for both small cities and city districts. By using globally available datasets and a consistent analytical workflow, the framework can be transferred to other urban contexts to support nature-based planning strategies that improve urban green space quality and spatial justice. 
 
-Spatial justice concerns the equitable distribution of urban resources and opportunities across different populations groups (Rocco, n.d). When applied to urban green spaces, it considers not only the quantity of the green spaces, but also whether residents have equitable access to connected and ecologically functional green environments. Unequal access can reinforce existing social and environmental inequalities, making spatial justice an increasingly important consideration in urban planning. (De Sousa Silva et al., 2018)
+### Study Sites
 
-In this study, urban green space quality is understood as the combined performance of four dimensions: accessibility, ecological quality, connectivity, and spatial justice. Considering these dimensions together provides a more comprehensive assessment than evaluating each independently.
+In China, successful efforts have been made to implement green corridor networks, such as the Chengdu's Tiangfu Greenway, the Beijing urban green corridor, and the Pearl River Delta Greenway Network initiative. From 1986 to 2018, the built-up area of Guangzhou in China continued to increase. As a result of heavy urbanisation, the vegetation area continued to decrease during these 32 years (Guo et al, 2021). Guangzhou's urban greenway network was introduced as part of the wider Pearl River Delta Greenway Network initiative, which began in 2010. With this Guangzhou became one of the leading cities in implementing this strategy. A study by Tang et al., (2022) found that Guangzhou's greenways have met residents' needs between greenway supply and demand. However, high-density areas still prove to have unequal access to ugs. 
 
-Due to spatial justice being increasingly recognised as an important factor for urban quality/wellbeing, municipalities and planners are looking for ways to improve not only the amount, but also the quality of these urban green spaces. This study responds to the need to integrate several dimensions into a reproducible framework. The framework combines them through a Spatial Multi-Criteria Decision Analysis (S-MCDA) to support in identifying priority areas for intervention. The aim of the research is to develop a spatial analytical tool for evaluating urban green space quality by investigating the relationship between accessibility, connectivity, biodiversity, and ultimately, spatial justice. This relationship is compared in two contrasting urban contexts: Delft (The Netherlands) and Guangzhou (China). The framework identifies areas where interventions can improve urban green space quality and translates findings into planning recommendations for increasing this quality.
+In contrast, Delft has developed within the Dutch planning tradition of integrating green and blue infrastructure into compact urban development. Rather than relying on large metropolitan greenway programmes, such as Guangzhou, Delft's urban green space has evolved through integrated spatial planning at a much smaller scale. The municipality actively integrates ugs through structural municipal policies and innovative pilot projects. Implementation of small-scale urban infrastructure and connections between neighbourhoods are considered important components of urban liveability. This planning approach makes Delft an interesting counterpart to Guangzhou. (Poptahof, Delft, The Netherlands | Urban Green-blue Grids, n.d.)
 
-Study sites: Delft, The Netherlands and historic center district of Yuexiu in Guangzhou, China.
+The study compares the urban contexts of Guangzhou, in China and Delft, in The Netherlands. Both cities have a historic urban core and have a relatively high urban green coverage. Urban green spaces cover about 34% of Guangzhou, and similarly, Delft is covered by 33% (HUGSI). Despite these similarities, comparing both cities presents a challenge because of their differences in scale and population density. Delft covers approximately 24 km2 and has a relative low density; the population is 102.000, while Guangzhou has a population of 18.680.000 over 7.433,3 km2 (WorldPop). As a result, Guangzhou is not only about 300 times as big on surface area, it is also approximately 6 times more densely populated than Delft. A direct comparison between the two cities would therefore be inappropriate, requiring the selection of a comparable spatial unit.
 
-Methodology aims to be reproducible for either small cities or city districts. It concludes with providing a strategy for nature-based solutions to improve the relationship between spatial justice and green space connectivity.
+```{r}
+#| label: fig-context
+#| fig-cap: "Study sites of Guangzhou and Delft"
+#| out-width: "100%"
 
-### Literature Review
+knitr::include_graphics(file.path(OUT_ROOT,"fig_context_gz_dl.png"))
+```
 
-For humans; green corridors as places to do sports, relax, meet people and help reduce risks from climare change impact by cooling the city through green corridors. For non-humans; provide animals and pollinators to move better than when they are stuck only on their green spaces ( Cardinali, 2024)​
+Guangzhou is administratively divided into districts. To get a comparable study area, this research focuses on Yuexiu District, the historical core of Guangzhou. Yuexiu covers 33.8 km2 and reports 1.173.100 inhabitants (WorldPop). Although still considerably denser than Delft, it represents a much more comparable spatial scale than the municipality of Guangzhou as a whole. The analytical framework can be applied consistently across both study areas with the use of this spatial unit. 
 
-In China, there has been efforts of green corridor (Chengdu's Tiangfu Greenway, Beijing urban green corridor). Study by Tang et al (2022) found that Guangzhou's greenways have met residents' needs (moderate, barely balanced relationship –0.5885/1) between greenway supply and demand. However, high-density areas have uneven access. ​
+```{r}
+#| label: fig-context
+#| fig-cap: "Study sites of Yuexiu District (Guangzhou) and Delft."
+#| out-width: "100%"
 
-Built-up area of Guangzhou of China from 1986 to 2018 continued to increase. However, the vegetation area continued to decrease during 32 years. (Guo et al, 2021)​
-
-Other than green corridors, we can also look at urban river corridors that proves to contribute to a healthy city, healthier resident and recreational opportiunities – adding ecological and social value (Claudiu)​
-
-Study by Meerow (2019) on green infrastructure spatial planning model for evaluating ecosystem service trade-offs and synergies across three coastal megacities through spatial criterion evaluation. One of the metrics; access to green space, used an indicator representing the population weighted mean distance to the nearest park for all buildings within a census tract (Logan et al 2019) -- thus calculating distance between nearest park to building. ​
-
-High levels of ecological connectivity within an urban landscape enables animals to move between patchy resources and allows for breeding whilst maintaining gene flow. In contrast, low levels of ecological connectivity restricts access to resources and prevents the movement of individuals and genes, inbreeding depression and extinction. Methodology include quantifying ecological connectivity; City biodiversity Index that calculates the probability of two randomly chosen locations to be connected and not separated by barriers. Tools used; Excel and ArcGIS (Kirk et al, 2023)
+knitr::include_graphics(file.path(OUT_ROOT, "report_files/fig_context_yx_dl.png"))
+```
 
 ## Research Questions
 
 ### Research questions
 
-The main research question is: How does connectivity in between urban green spaces contribute to spatial justice in the cities Delft and Guangzhou? As mentioned before, urban green space succes, or quality, is based on 4 categories. This study answers the main question through breaking the analysis up into those 4 categories: accessibility, biodiversity, spatial justice, and connectivity. Each categorie forms an objective, followed by a sub-research question. These questions are answered through analyses (see methodology), and combined through the MCDA.
+The main research question of this study is: 
+opt 1. How does connectivity in between urban green spaces contribute to spatial justice in the cities Delft and Guangzhou? 
+
+opt 2. How can accessibility, ecological quality, spatial justice, and connectivity be integrated into a spatial analytical framework to evaluate urban green space quality in Delft and Yuexiu?
+
+opt 3. How does the connectivity of urban green spaces contribute to urban green space quality and spatial justice in Delft and Yuexiu District?
+
+To answer this question, urban green space quality is evaluated through four complementary dimensions: accessibility, ecological quality, spatial justice, and connectivity. Each dimension forms a research objective with a corresponding sub-research question. The results of these analyses are integrated in a framework through a S-MCDA to indentify priority areas for interventions. 
 
 ### Research objectives
 
 #### Objective 1: Accessibility
 
-What is the spatial composition and accessibility of urban green spaces.
+Assess the accessibility of urban green spaces for residents. 
 
 ::: {.callout-note appearance="simple"}
-**SQ1:** How accessible are the urban green spaces for residents?
+**SQ1:** How accessible are urban green spaces for residents?
 :::
 
 #### Objective 2: Ecological Quality
 
-Evaluate biodiversity in different urban green spaces and their typologies.
+Assess the ecological quality of urban green spaces through biodiversity and typology analysis.
 
 ::: {.callout-note appearance="simple"}
-**SQ2:** What are the different typologies and their ecological value?
+**SQ2:** What urban green space typologies can be identified, and what is their ecological quality?
 :::
 
 #### Objective 3: Spatial Justice
 
-Assess spatial justice through the relationship between population and access to green space.
+Assess the spatial equity of urban green space distribution across administrative units. 
 
 ::: {.callout-note appearance="simple"}
-**SQ3:** How equitable are green spaces distributed across administrative units?
+**SQ3:** How equitable are urban green spaces distributed across administrative units?
 :::
 
 #### Objective 4: Connectivity
 
-Assess connectivity between the urban green spaces within the administrative boundaries.
+Assess the connectivity between urban green spaces as ecological networks. 
 
 ::: {.callout-note appearance="simple"}
 **SQ4:** How well are urban green spaces connected to each other?
@@ -97,10 +110,10 @@ Assess connectivity between the urban green spaces within the administrative bou
 
 #### Objective 5: Strategic Translation
 
-Translate analytical findings into strategies for increasing UGS quality
+Translate the analytical findings into nature-based planning strategies for improving urban green space quality.
 
 ::: {.callout-note appearance="simple"}
-**SQ5:** How do Delft and Guangzhou perform and what NBS can we suggest to improve urban green spaces?
+**SQ5:** Which areas require priority intervention, and what nature-based solutions can improve urban green space quality?
 :::
 
 ## Methods
@@ -113,7 +126,11 @@ The empirical analysis of this paper is split into four categories to provide mo
 
 -   **Accessibility** evaluates the population accessibility with green areas. The analysis conducted are; green space per capita, measuring the square meters of green space per person within an administrative boundary, buffer analysis to measure percentage of people within different walking distances (e.g. 300m and 500m), and mean nearest green space distance per sub-district, captured based on the centroid of each administrative boundary of the sub-district.
 
+In a study by Meerow (2019) on green infrastructure, a spatial planning model for evaluating ecosystem service trade-offs and synergies was performed across three coastal mega-cities through a spatial criterion evaluation. One of the metrics was access to green space, which was used as an indicator representing the population weighted mean distance to the nearest park for all buildings within a census tract (Logan et al 2019), thus calculating distance between nearest park to building.
+
 -   **Typology diversity** <!-- The spatial analysis conducted here include grouping by different green space according to its Open-Street Map data green area classification (e.g. forests, nature reserve, etc).  reveals the typology diversity but i think this is more to show distribution but not really for result analysis? -->
+
+High levels of ecological connectivity within an urban landscape enables animals to move between patchy resources and allows for breeding whilst maintaining gene flow. In contrast, low levels of ecological connectivity restricts access to resources and prevents the movement of individuals and genes, inbreeding depression and extinction. One of the methodologies used in the study of Kirk et al. (2023) was quantifying ecological connectivity by a City biodiversity Index that calculates the probability of two randomly chosen locations to be connected and not separated by barriers.
 
     Species observation density is compared against patch size. The species observation density obtains its data from Global Biodiversity Information Facility (GBIF), an open-access database for biodiversity data. Thus, revealing the relationship between patch size (size of park) compared to the abundance of wildlife within it. $$\log(\text{Area}) \quad \text{vs.} \quad \log\left(\frac{\text{Observations}}{\text{Area}}\right)$$
 
