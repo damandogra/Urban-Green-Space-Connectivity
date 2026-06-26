@@ -589,8 +589,9 @@ Throughout the development of this assignment, we have been assisted by OpenAI's
 
 ## Conclusion
 
-This study answers to the research question ::: {.callout-note appearance="simple"}
-**Research Question**  How can urban green space quality assessment help inform on nature-based interventions in Delft and Yuexiu District?
+This study answers to the research question:
+::: {.callout-note appearance="simple"}
+**Research Question** How can urban green space quality assessment help inform on nature-based interventions in Delft and Yuexiu District?
 :::
 
 This study developed and applied a reproducible spatial analytical framework for evaluating urban green space quality. Accessibility, ecological quality, spatial justice, and connectivity are the key dimensions on which urban green space quality is assessed. By integrating these dimensions into a Spatial Multi-Criteria Decision Analysis (S-MCDA), the framework provides a decision-support tool which can help identifying priority areas for nature-based interventions in urban contexts. The method can be applied to a variety of urban contexts as long as the spatial unit remains comparable. 
