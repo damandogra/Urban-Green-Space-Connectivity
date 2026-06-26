@@ -23,8 +23,6 @@ format:
 source(here::here("R/00_config.R"))
 ```
 
-<!-- # Introduction -->
-
 ## Introduction
 
 Due to rapid urbanisation, the pressure on urban green space (UGS) increases and the benefits are often unevenly distributed across neighborhoods. Green spaces are essential urban infrastructure that influence the physical and mental well-being of inhabitants. They provide a wide range of services, such as urban cooling, air quality improvement and pose opportunities for social interaction. Not only are they beneficial to humans, they also support biodiversity conservation and species movement, thereby enhancing health, ecological, and social outcomes.
@@ -46,7 +44,7 @@ In contrast, Delft has developed within the Dutch planning tradition of integrat
 The study compares the urban contexts of Guangzhou, in China and Delft, in The Netherlands. Both cities have a historic urban core and have a relatively high urban green coverage. Urban green spaces cover about 34% of Guangzhou, and similarly, Delft is covered by 33% (HUGSI). Despite these similarities, comparing both cities presents a challenge because of their differences in scale and population density. Delft covers approximately 24 km2 and has a relative low density; the population is 102.000, while Guangzhou has a population of 18.680.000 over 7.433,3 km2 (WorldPop). As a result, Guangzhou is not only about 300 times as big on surface area, it is also approximately 6 times more densely populated than Delft. A direct comparison between the two cities would therefore be inappropriate, requiring the selection of a comparable spatial unit.
 
 ```{r}
-#| label: fig-context
+#| label: fig-context-gz
 #| fig-cap: "Study sites of Guangzhou and Delft"
 #| out-width: "100%"
 
@@ -56,11 +54,11 @@ knitr::include_graphics(file.path(OUT_ROOT,"fig_context_gz_dl.png"))
 Guangzhou is administratively divided into districts. To get a comparable study area, this research focuses on Yuexiu District, the historical core of Guangzhou. Yuexiu covers 33.8 km2 and reports 1.173.100 inhabitants (WorldPop). Although still considerably denser than Delft, it represents a much more comparable spatial scale than the municipality of Guangzhou as a whole. The analytical framework can be applied consistently across both study areas with the use of a spatial unit. This study uses administrative neighbourhood units as the spatial unit. The administrative units are Wijken for Delft, and jiēdào (subdistricts) for Yuexiu. Using administrative units increases policy relevance and reproducibility through different scales.
 
 ```{r}
-#| label: fig-context
+#| label: fig-context-yx
 #| fig-cap: "Study sites of Yuexiu District (Guangzhou) and Delft"
 #| out-width: "100%"
 
-knitr::include_graphics(file.path(OUT_ROOT, "report_files/fig_context_yx_dl.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_context_yx_dl.png"))
 ```
 
 This study assesses urban green spaces. Figure @fig-ugs shows the assessed composition of urban green spaces in Yuexiu and Delft, and is put in context with roads and water bodies within the administrative boundaries. For the sake of time in this study, peripherical conditions of Yuexiu and Delft are not assessed, which could influence the results, but would be a possibility for further research.
@@ -70,7 +68,7 @@ This study assesses urban green spaces. Figure @fig-ugs shows the assessed compo
 #| fig-cap: "Urban green spaces"
 #| out-width: "100%"
 
-knitr::include_graphics(file.path(OUT_ROOT, "report_files/fig_ugs_yx_dl.png"))
+knitr::include_graphics(file.path(OUT_ROOT, "fig_ugs_yx_dl.png"))
 ```
 
 ## Research Questions
@@ -178,7 +176,7 @@ Each analyses method relies on a specific combination of datasets. The table pro
 WIP!!!! ---\>
 
 | Analysis | Method | Types of data | Data source | SQ |
-|----|----|----|----|:--:|
+|---------------|---------------|---------------|---------------|:-------------:|
 | **Accessibility** |  |  |  |  |
 | Green space per capita | Zonal statistics: green space area ÷ population per administrative unit | Green space polygons, population grid | OSM, WorldPop | SQ1 |
 | Walking-distance accessibility | 300 m & 500 m Euclidean buffers; % population within each buffer | Green space polygons, population grid, administrative boundaries | OSM, WorldPop | SQ1 |
@@ -364,7 +362,8 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"))
 The connectivity analysis reveals two contrasting green space structures: Delft being characterised by a dense network of many small, close green patches that together create a highly connected urban green system, and Yuexiu relying on fewer, substantially larger parks, which provide important ecological areas, but remain relatively isolated from one another. As a result, improving connectivity in Yuexiu would likely depend on creating additional intermediate green spaces or ecological stepping stones between existing parks. Strategies such as implementing vertical green or green roofs provide a solution.
 
 ### 5. MCDA
-The Spatial Multi-Criteria Decision Analysis (S-MCDA) combines the four assessment dimensions (accessibility, ecological quality, spatial justice, connectivity) into a single composite intervention priority score. The criteria are weighed according to their relative importance within the study, with accessibility (30%) receiving the greatest weight, followed by ecological equality and connectivity, both with 25%, and spatial justice with 20%. Higher scores indicate neighbourhoods where interventions are expected to have the greatest potential to improve the urban green space network. 
+
+The Spatial Multi-Criteria Decision Analysis (S-MCDA) combines the four assessment dimensions (accessibility, ecological quality, spatial justice, connectivity) into a single composite intervention priority score. The criteria are weighed according to their relative importance within the study, with accessibility (30%) receiving the greatest weight, followed by ecological equality and connectivity, both with 25%, and spatial justice with 20%. Higher scores indicate neighbourhoods where interventions are expected to have the greatest potential to improve the urban green space network.
 
 EXPLAIN WHY WEIGTHSSS!!!!!!!!!!
 
@@ -405,15 +404,11 @@ Finally, Figure @fig-nbscorridors combines the MCDA priority areas with isolated
 knitr::include_graphics(file.path(OUT_ROOT, "fig_nbs_corridors.png"))
 ```
 
-Overall, the MCDA integrates the individual analyses into a single decision support framework. Rather than identifying the one city as better performing, it highlights where interventions and which interventions are likely to achieve the best improvements within each urban context. The results provide a spatial basis for prioritising nature-based solutions while acknowledging that appropriate interventions could and should differ between different urban contexts. 
+Overall, the MCDA integrates the individual analyses into a single decision support framework. Rather than identifying the one city as better performing, it highlights where interventions and which interventions are likely to achieve the best improvements within each urban context. The results provide a spatial basis for prioritising nature-based solutions while acknowledging that appropriate interventions could and should differ between different urban contexts.
 
 ## Discussion
 
 Translate analytical findings into strategies for increasing UGS quality. How do the differences between the two cities show how connectivity and accessibility can improve spatial justice? What strategies are suggested to improve spatial justice? Potential interventions: green corridors, linear parks, canal-side ecological networks, pocket parks, urban forest, biodiversity stepping stones, street greening, green roofs and walls. - connect those to a weakness found in the analysis.
-
-### Reproducibility
-
-As sources are gathered through globally availbale datasets, methodology can be replicated in other cities/districts. Framework is also available on Github and independent of local planning systems. GIS workflow can be reproduced in QGIS and R indicators depending on local contexts.
 
 ### Limitations
 
@@ -425,7 +420,7 @@ There are also few limitations identified within our code methodology. The MCDA 
 
 **Sensitivity analysis application on MCDA weighing distribution:** Sensitivity analysis can be applied onto weights within the MCDA analysis to examine how different weighing combinations affect the MCDA result. This would mitigate the inherent subjectivity on the opinion of authors and ensure robustness of multiple what-if scenarios. Thus, ensuring a resilient and informed decision-making process.
 
-**Dataset incoroporated enable direct comparison between two cities**: This directly relates to how data sourced through OSM is lower in Chinese cities (such seen in the GBIF analysis on biodiversity) compared to that of Delft. This will enhance consistency and reliability of cross-city comparisons for direct standardization.
+**Dataset incoroporated enable direct comparison between two cities**: This directly relates to how data sourced through OSM is lower in Chinese cities (such seen in the GBIF analysis on biodiversity) compared to that of Delft. This will enhance consistency and reliability of cross-city comparisons.
 
 **Incorporation of more urban cooling quantitative analysis**: The blue-green infrastructure analysis can also be improved with more urban cooling or biodiversity effects, which would be particularly relevant given the context of both cities; Delft's canal-rich characteristic and within Yuexiu's central area within the Pearl River Delta. This directly translates improving urban green space quality.
 
@@ -434,22 +429,20 @@ There are also few limitations identified within our code methodology. The MCDA 
 ### Reproducibility
 
 **Reproducibility of from data source**:
-* **OSM** is a crowd-sourced, volunteer-based global map providing vector features such as building, roads and point of interests. It uses ODbL 1.0 licensing/CC-BY-SA 2.0, which means that alteration, transformation is allowed yet there is legal requirement to distribute the new version via the same licensing. 
-* **WorldPop, VIIRS and NDVI**: These datasets all come from sources from CC-BY 4.0 or public licensing, allowing for sharing, adapting or commercial uses as long as credits are given for creator.
 
-**Reproducibility of pipeline workflow**:
-The entire analysis workflow is designed for full reproducibility and can be executed via running groupE/run_pipeline.R. The project relies on several R libraries, which can be installed or updated through the following script:
-packages <- c("here", "sf", "terra", "dplyr", "ggplot2", "patchwork", "ggspatial")
-install.packages(setdiff(packages, installed.packages()[,"Package"]))
+-   **OSM** is a crowd-sourced, volunteer-based global map providing vector features such as building, roads and point of interests. It uses ODbL 1.0 licensing/CC-BY-SA 2.0, which means that alteration, transformation is allowed yet there is legal requirement to distribute the new version via the same licensing.
 
-Moreover, to support open science, our workflow follows the FAIR; Findable, Accessible, Interoperable, and Reusable data principles. Findability and accessibility of our pipeline is demonstarted through our public GitHub repository, with explicit open data sources to ensure resuability of data principles. 
+<!-- -->
+
+-   **WorldPop, VIIRS and NDVI**: These datasets all come from sources from CC-BY 4.0 or public licensing, allowing for sharing, adapting or commercial uses as long as credits are given for creator.
+
+**Reproducibility of pipeline workflow**: The entire analysis workflow is designed for full reproducibility and can be executed via running groupE/run_pipeline.R. The project relies on several R libraries, which can be installed or updated.
+
+Moreover, to support open science, our workflow follows the FAIR; Findable, Accessible, Interoperable, and Reusable data principles. Findability and accessibility of our pipeline is demonstrated through our public GitHub repository, with explicit open data sources to ensure reusability of data principles.
 
 ### AI usage
 
-Throughout the development of this assignment, we have been assisted by OpenAI’s
-ChatGPT version GPT-5.5 and Google’s Gemini 3 Flash (Free tier). We have reviewed
-and understood all suggestions made by those models, and take full responsibility for the
-content being submitted. AI is used specifically to support our R coding.
+Throughout the development of this assignment, we have been assisted by OpenAI’s ChatGPT version GPT-5.5 and Google’s Gemini 3 Flash (Free tier). We have reviewed and understood all suggestions made by those models, and take full responsibility for the content being submitted. AI is used specifically to support our R coding.
 
 ## Conclusion
 

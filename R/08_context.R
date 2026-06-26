@@ -13,6 +13,7 @@ dl_wijk_context <- dl_wijk
 yx_sub_context  <- yx_sub
 
 # Guangzhou municipality boundary
+gz_bnd <- st_read("data/guangzhou_boundary_proj.gpkg")
 yx_bnd <- st_read("data/Yuexiu/vector/Yuexiu_boundary_proj.gpkg")
 
 # Make equal-size map extents
