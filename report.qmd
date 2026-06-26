@@ -12,7 +12,11 @@ author:
 format:
   html:
     output-file: index.html
-output-dir: docs
+    theme: [cosmo, report.scss]
+    toc: true
+    number-sections: true
+    code-fold: true
+    embed-resources: true
 ---
 
 ```{r setup, include=FALSE}
