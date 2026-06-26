@@ -299,6 +299,11 @@ generate_network_access <- function(green_sf, road_sf, local_crs) {
 yx_plot <- st_transform(yx_sub_access, CRS_YX)
 dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
 
+
+yx_net <- generate_network_access(d$yx_grn,  d$yx_rds, CRS_YX)
+dl_net <- generate_network_access(dl$dl_grn, dl$dl_rds, CRS_DELFT)
+
+
 # Calculate real map widths from network layers
 yx_bb <- st_bbox(yx_net$green)
 dl_bb <- st_bbox(dl_net$green)

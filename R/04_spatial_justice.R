@@ -317,19 +317,22 @@ shared_fill_no_legend <- scale_fill_manual(
   guide = "none"
 )
 
-# 3×3 legend tile
-p_legend <- ggplot(
-  legend_df,
-  aes(x = grn_class, y = pop_class, fill = bivar_class)
-) +
+# 3×3 legend tile — legend_df must be defined first
+legend_df <- expand.grid(grn_class = c("Low","Mid","High"),
+                         pop_class = c("Low","Mid","High")) |>
+  mutate(bivar_class = paste(grn_class, pop_class, sep = "-"),
+         grn_class = factor(grn_class, c("Low","Mid","High")),
+         pop_class = factor(pop_class, c("Low","Mid","High")))
+
+p_legend <- ggplot(legend_df, aes(x = grn_class, y = pop_class, fill = bivar_class)) +
   geom_tile(colour = "white", linewidth = 0.5) +
   scale_fill_manual(values = bivar_palette, guide = "none") +
   coord_fixed(clip = "off") +
   theme_minimal(base_size = 9) +
   labs(
     title = "Bivariate legend",
-    x = "Green density",
-    y = "Population density"
+    x = "← Green density →",
+    y = "← Population density →"
   ) +
   theme(
     plot.title = element_text(face = "bold", size = 10),
@@ -370,20 +373,6 @@ fig_bivariate_choropleth <- p_bv_yx + p_bv_dl + p_legend +
 fig_bivariate_choropleth
 
 ggsave(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"), fig_bivariate_choropleth, width = 14, height = 6, dpi = 300)
-
-# 3×3 legend tile
-legend_df <- expand.grid(grn_class = c("Low","Mid","High"),
-                         pop_class = c("Low","Mid","High")) |>
-  mutate(bivar_class = paste(grn_class, pop_class, sep="-"),
-         grn_class = factor(grn_class, c("Low","Mid","High")),
-         pop_class = factor(pop_class, c("Low","Mid","High")))
-
-p_legend <- ggplot(legend_df, aes(x = grn_class, y = pop_class, fill = bivar_class)) +
-  geom_tile(colour = "white", linewidth = 0.5) +
-  scale_fill_manual(values = bivar_palette, guide = "none") +
-  theme_minimal(base_size = 10) +
-  labs(x = "← Green density →", y = "← Population density →",
-       title = "Bivariate legend")
 
 ggsave(file.path(OUT_ROOT, "fig_bivariate_legend.png"),
        p_legend, width = 3.5, height = 3.5, dpi = 300)
