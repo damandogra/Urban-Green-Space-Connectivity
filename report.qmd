@@ -364,6 +364,11 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"))
 The connectivity analysis reveals two contrasting green space structures: Delft being characterised by a dense network of many small, close green patches that together create a highly connected urban green system, and Yuexiu relying on fewer, substantially larger parks, which provide important ecological areas, but remain relatively isolated from one another. As a result, improving connectivity in Yuexiu would likely depend on creating additional intermediate green spaces or ecological stepping stones between existing parks. Strategies such as implementing vertical green or green roofs provide a solution.
 
 ### 5. MCDA
+The Spatial Multi-Criteria Decision Analysis (S-MCDA) combines the four assessment dimensions (accessibility, ecological quality, spatial justice, connectivity) into a single composite intervention priority score. The criteria are weighed according to their relative importance within the study, with accessibility (30%) receiving the greatest weight, followed by ecological equality and connectivity, both with 25%, and spatial justice with 20%. Higher scores indicate neighbourhoods where interventions are expected to have the greatest potential to improve the urban green space network. 
+
+EXPLAIN WHY WEIGTHSSS!!!!!!!!!!
+
+Figure @fig-mcdamap visualizes a normalized figure of the level of green infrastructure urgency needs (0-1). Dark green suggests low urgency of intervention, while dark red suggests high urgency. In Yuexiu, the spatial pattern is more fragmented than in Delft. Although, both cities show a higher urgency in their historical cores. These findings align with Figure @fig-meandist, which reveals these neighborhoods are isolated from other existing green patches, and, as observed in the other analyses, the overall low amount of green space in both neighbourhoods. Moreover, assigning higher priority to these areas is justified as there is a need for spatial equality to be addressed, consequently fostering better connectivity in the broader urban network.
 
 ```{r}
 #| label: fig-mcdamap
@@ -373,7 +378,7 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_mcda_maps.png"))
 
 ```
 
-@fig-mcdamap visualizes a normalized figure of the level of grene infrastyructure urgency needs to be implemented (0-1). Dark green suggests low urgency for the need of more intervention, while dark red suggesting high urgency. In Yuexiu, the spatial pattern is more fragmented due to its historical characteristic context. On the other hand, Delft's high uregncy zone is less fragmented and more concentrated in the central-north strip. This finding aligns with @fig-meandist, which reveal how isolated these neighborhoods are with other existing green patches. Moreover, assigning higher priority to these areas is justified as there needs spatial equity to be addressed, consequently fostering better connectivity in the broader urban network.
+For each of the four criteria, the city-wide mean of the normalized urgency scores (@fig-mcdamape) is calculated and displayed on @fig-mcdaradar. A higher bar indicate greater average urgency compared to other dimensions. In both cities, connectivity poses higher relative urgency compared to other dimensions. This is opposed to spatial justice, which shows the lowest need for intervention. This is an interesting observation as connectivity is both central to the discussion of nature-based solution and efforts that have seemed to been made to ensure connectivity of green patches in Delft. However, it still seems to need most urgent care compared to other metrics. The findings suggest there is a need for explicit connectivity effort through establishment of green corridors between green patches in both cities as part of further effort to the study its focus; nature-based solutions.
 
 ```{r}
 #| label: fig-mcdaradar
@@ -382,7 +387,7 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_mcda_maps.png"))
 knitr::include_graphics(file.path(OUT_ROOT, "fig_mcda_radar.png"))
 ```
 
-For each of the four criteria, the city-wide mean of the normalized urgency scores (@fig-mcdamape) is calculated and displayed on @fig-mcdaradar. Thus, higher bar indicate greater average urgency compared to other dimensions. In both cities, connectivity pose higher relative urgency compared to other dimensions, opposing to equity/spatial justice, achieving lowest need for intervention. This is an interesting observation as connectivity is both central to the discussion of nature-based solution and efforts seemed to have been made to ensure connectivity of green patches in Delft, however, it still seems to need most urgent care compared to other metrics. The finding thus suggests the need for explicit connectivity effort through establishments of green corridor between green patches in both cities as part of further effort to our focus; nature-based solutions.
+The priority tier (@fig-prioritytiers) divides the range of tiers equally to three groups (tertile classification). This is a choice of classification, which does not aim to exactly set 33% of a city to genuinely needs more urgent intervention as our choice of normalization also does not take into account the within group value difference to really determine the amount of urgent care actually required. Consistent with previous figures, Yuexiu's high priority zones are scattered, reflecting more fragmented planning scheme in terms of urban green infrastructure, compared to Delft where its high-priority zones are more concentrated, that may suggest a more underlying systematic issue around the area.
 
 ```{r}
 #| label: fig-prioritytiers
@@ -391,7 +396,7 @@ For each of the four criteria, the city-wide mean of the normalized urgency scor
 knitr::include_graphics(file.path(OUT_ROOT, "fig_priority_tiers.png"))
 ```
 
-The priority tier (@fig-prioritytiers) divides the range of tiers equally to three groups (tertile classification). This is a choice of classification, which does not aim to exactly set 33% of a city to genuinely needs more urgent intervention as our choice of normalization also does not take into account the within group value difference to really determine the amount of urgent care actually required. Consistent with previous figures, Yuexiu's high priority zones are scattered, reflecting more fragmented planning scheme in terms of urban green infrastructure, compared to Delft where its high-priority zones are more concentrated, that may suggest a more underlying systematic issue around the area.
+Finally, Figure @fig-nbscorridors combines the MCDA priority areas with isolated green patches as identified in the connectivity analysis. This overlay of the two layers results in an efficiently identifiable locator in direct correspondance to provide in nature based solutions (here, green corridors). As seen from the figure (@fig-nbscorridors), Yuexiu exhibits much more need for green corridors compared to Delft. This finding is consistent as also with Yuexiu's fragmented green patches across the city; consequently, more interventions are needed to establish functional connectivity between these isolated sites.
 
 ```{r}
 #| label: fig-nbscorridors 
@@ -400,7 +405,7 @@ The priority tier (@fig-prioritytiers) divides the range of tiers equally to thr
 knitr::include_graphics(file.path(OUT_ROOT, "fig_nbs_corridors.png"))
 ```
 
-@fig-nbscorridors overlays areas of high priorities determined by the MCDA and isolated green areas. The overlay of the two layers result in more easily identifiable places/locations, as direct correspondance to our nature-based solutions. As seen from the figure (@fig-nbscorridors), Yuexiu exhibit much more need for potential corridors compared to Delft. This finding is consistent as also with Yuexiu's fragmented green patches across the city; consequently, more interventions is needed to establish functional connectivity between these isolated sites.
+Overall, the MCDA integrates the individual analyses into a single decision support framework. Rather than identifying the one city as better performing, it highlights where interventions and which interventions are likely to achieve the best improvements within each urban context. The results provide a spatial basis for prioritising nature-based solutions while acknowledging that appropriate interventions could and should differ between different urban contexts. 
 
 ## Discussion
 
