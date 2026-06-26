@@ -1,10 +1,4 @@
 # Spatial Justice through Urban Green Space Connectivity
-
-Project report of Group E — Applied Spatial Analytics 2026, TU Delft.
-1. Roxanne Vuijk
-2. Belina Aileen
-3. Daman Dogra
-
 ---
 
 ## Overview
