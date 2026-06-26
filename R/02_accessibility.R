@@ -51,7 +51,7 @@ calc_green_per_capita <- function(admin_sf, green_sf, pop_rast, local_crs) {
     mutate(
       green_area_m2 = unlist(results),
       pop_count     = exact_extract(pop_rast, admin_for_extract, "sum"),
-      pop_count     = pmax(pop_count, 1, na.rm = TRUE),
+      pop_count = ifelse(is.na(pop_count), NA_real_, pop_count),
       green_pc_m2   = green_area_m2 / pop_count
     )
 }
@@ -69,15 +69,15 @@ pct_pop_within_buffer <- function(green_sf, pop_rast, boundary_sf, dist_m, local
   green_m <- st_transform(green_sf, local_crs)
   bnd_m   <- st_transform(boundary_sf, local_crs)
   buf     <- st_union(st_buffer(green_m, dist_m))
-  
+
   # Clip inside the local metric projection framework
   clipped_m <- tryCatch(st_intersection(bnd_m, buf), error = function(e) NULL)
 
   # FIX: Transform vectors to match the raster's native CRS right before exact_extract
   bnd_for_extract <- st_transform(boundary_sf, st_crs(pop_rast))
-  
+
   pop_total  <- exact_extract(pop_rast, bnd_for_extract, "sum")
-  
+
   pop_within <- if (!is.null(clipped_m) && nrow(clipped_m) > 0) {
     # Transform clipped boundary to raster CRS
     clipped_for_extract <- st_transform(clipped_m, st_crs(pop_rast))
@@ -125,78 +125,155 @@ saveRDS(buffer_summary,  file.path(OUT_ROOT, "buffer_summary.rds"))
 
 # ── Figures ───────────────────────────────────────────────────────────────────
 
-# Figure 0: Population density maps
+# Figure 1A: Population density maps
+density_breaks <- c(0, 1000, 2500, 5000, 10000, 20000, 40000, 80000, Inf)
+
+density_labels <- c("0–1k", "1k–2.5k", "2.5k–5k", "5k–10k","10k–20k", "20k–40k", "40k–80k", ">80k")
+
+density_cols <- c(
+  COLORS$beige,
+  "#e7d6bc",
+  "#d8b48a",
+  "#c98f5f",
+  COLORS$red_light,
+  "#7f3f3e",
+  COLORS$red,
+  "#4a1f1f")
+
 yx_sub_access <- yx_sub_access %>%
-  mutate(
-    area_km2 = as.numeric(st_area(st_transform(., CRS_YX))) / 1e6,
-    pop_density_km2 = pop_count / area_km2
-  )
+  mutate(area_km2 = as.numeric(st_area(st_transform(., CRS_YX))) / 1e6, pop_density_km2 = pop_count / area_km2, pop_density_class = cut( pop_density_km2, breaks = density_breaks, labels = density_labels, include.lowest = TRUE))
 
 dl_wijk_access <- dl_wijk_access %>%
-  mutate(
-    area_km2 = as.numeric(st_area(st_transform(., CRS_DELFT))) / 1e6,
-    pop_density_km2 = pop_count / area_km2
-  )
+  mutate(pop_density_km2 = bevolkingsdichtheidInwonersPerKm2, pop_density_class = cut( pop_density_km2, breaks = density_breaks, labels = density_labels,include.lowest = TRUE))
 
-density_breaks <- c(0, 1000, 2500, 5000, 10000, 20000, 40000, 80000)
-density_labels <- c("0–1k", "1k–2.5k", "2.5k–5k", "5k–10k", "10k–20k", "20k–40k", "40k–80k")
-density_cols   <- c(COLORS$beige, "#e7d6bc", "#d8b48a", "#c98f5f", COLORS$red_light, "#7f3f3e", COLORS$red)
+# transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_access, CRS_YX)
+dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
 
-yx_sub_access$pop_density_class <- cut(yx_sub_access$pop_density_km2, breaks = density_breaks, labels = density_labels, include.lowest = TRUE)
-dl_wijk_access$pop_density_class <- cut(dl_wijk_access$pop_density_km2, breaks = density_breaks, labels = density_labels, include.lowest = TRUE)
+# calculate real maps widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
 
-p_den_yx <- ggplot(yx_sub_access) +
-  geom_sf(aes(fill = pop_density_class)) +
-  scale_fill_manual(name = "residents/km²", values = setNames(density_cols, density_labels), drop = FALSE, na.value = COLORS$grey85, guide = guide_legend(reverse = TRUE)) +
-  theme_minimal() + labs(title = "Population Density – Yuexiu Jiēdào", subtitle = "Source: WorldPop")
-
-p_den_dl <- ggplot(dl_wijk_access) +
-  geom_sf(aes(fill = pop_density_class)) +
-  scale_fill_manual(name = "residents/km²", values = setNames(density_cols, density_labels), drop = FALSE, na.value = COLORS$grey85, guide = guide_legend(reverse = TRUE)) +
-  theme_minimal() + labs(title = "Population Density – Delft Wijken", subtitle = "Source: WorldPop")
-
-ggsave(file.path(OUT_ROOT, "fig_population_density.png"), p_den_yx + p_den_dl, width = 14, height = 6, dpi = 300)
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
 
 
-# Figure 1A: Green space per capita maps
+p_den_yx <- ggplot(yx_plot) +
+  geom_sf(aes(fill = pop_density_class), linewidth = 0.25, color = "white")  +
+  geom_sf(aes(fill = pop_density_class), color = NA, alpha = 0.001, show.legend = TRUE) +
+  annotation_scale( location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4 ) +
+  scale_fill_manual( name = "residents/km²", values = setNames(density_cols, density_labels), limits = density_labels, breaks = density_labels, drop = FALSE, na.value = COLORS$grey85, guide = guide_legend( reverse = TRUE, override.aes = list( fill = rev(density_cols), alpha = 1,color = NA))) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs( title = "Yuexiu", subtitle = "Source: WorldPop + administrative polygons")
+
+p_den_dl <- ggplot(dl_plot) +
+  geom_sf(aes(fill = pop_density_class), linewidth = 0.25, color = "white") +
+  scale_fill_manual( name = "residents/km²", values = setNames(density_cols, density_labels), breaks = density_labels, drop = FALSE, na.value = COLORS$grey85, guide = "none") +
+  coord_sf(expand = FALSE, datum = NA) +
+theme_map_clean() +
+  labs( title = "Delft", subtitle = "Source: CBS wijk data")
+
+fig_population_density <- p_den_yx + p_den_dl +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect")+
+  plot_annotation( title = "Population Density", theme = theme( plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_population_density
+
+ggsave(file.path(OUT_ROOT, "fig_population_density.png"), fig_population_density, width = 14, height = 6, dpi = 300)
+
+# Figure 1B: Green space per capita maps
 green_colours <- c("#f4ecd0", "#e6dfbb", "#d5d0a5", "#c3c193", "#b1b181", "#92975f", "#5c612f", "#252f18", "#111809")
 green_breaks  <- c(0, 0.1, 0.5, 1, 2.5, 5, 10, 25, 100, 500)
 
-p1 <- ggplot(yx_sub_access) + geom_sf(aes(fill = green_pc_m2)) +
+# transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_access, CRS_YX)
+dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
+
+# calculate real maps widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+
+p1 <- ggplot(yx_sub_access) + geom_sf(aes(fill = green_pc_m2), linewidth = 0.25, color = "white") +
+  annotation_scale( location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4) +
   scale_fill_stepsn(name = "m² per person", colours = green_colours, values = scales::rescale(green_breaks), breaks = green_breaks, limits = c(0, 500), na.value = "grey85") +
-  theme_minimal() + labs(title = "Green Space per Capita — Yuexiu Jiēdào")
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs( title = "Yuexiu", subtitle = "source")
 
 p2 <- ggplot(dl_wijk_access) + geom_sf(aes(fill = green_pc_m2)) +
   scale_fill_stepsn(name = "m² per person", colours = green_colours, values = scales::rescale(green_breaks), breaks = green_breaks, limits = c(0, 500), na.value = "grey85") +
-  theme_minimal() + labs(title = "Green Space per Capita — Delft Wijken")
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs( title = "Delft", subtitle = "source" )
 
-ggsave(file.path(OUT_ROOT, "fig_access_per_capita.png"), p1 + p2, width = 14, height = 6, dpi = 300)
+fig_green_per_capita <- p1 + p2 +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect") +
+  plot_annotation (title = "Green space per capita", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
 
+fig_green_per_capita
 
-# Figure 1B: Mean nearest green distance maps
-p3 <- ggplot(yx_sub_access) + geom_sf(aes(fill = nearest_green_m)) +
-  scale_fill_gradient(name = "Distance (m)", low = COLORS$pink_light, high = COLORS$red) +
-  theme_minimal() + labs(title = "Mean Distance to Nearest Green Space — Yuexiu")
-
-p4 <- ggplot(dl_wijk_access) + geom_sf(aes(fill = nearest_green_m)) +
-  scale_fill_gradient(name = "Distance (m)", low = COLORS$pink_light, high = COLORS$red) +
-  theme_minimal() + labs(title = "Mean Distance to Nearest Green Space — Delft")
-
-ggsave(file.path(OUT_ROOT, "fig_nearest_green_distance.png"), p3 + p4, width = 14, height = 6, dpi = 300)
+ggsave(file.path(OUT_ROOT, "fig_access_per_capita.png"), fig_green_per_capita, width = 14, height = 6, dpi = 300)
 
 
-# Figure 1C: Buffer coverage bar chart
-p5 <- ggplot(buffer_summary, aes(x = factor(buffer_m), y = pct_pop, fill = city)) +
-  geom_col(position = position_dodge(0.7), width = 0.6) +
-  scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
-  scale_y_continuous(limits = c(0, 100), labels = function(x) paste0(x, "%")) +
-  theme_minimal(base_size = 12) +
-  labs(title = "Population within Walking Distance of Green Space", x = "Buffer distance (m)", y = "% of population covered")
+# Figure 1C: Mean nearest green distance maps
+# transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_access, CRS_YX)
+dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
+
+# calculate real maps widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+p3 <- ggplot(yx_plot) +
+  geom_sf(aes(fill = nearest_green_m), linewidth = 0.25, color = "white") +
+  annotation_scale( location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4 ) +
+  scale_fill_gradient(name = "Distance (m)", low = COLORS$pink_light, high = COLORS$red, na.value = COLORS$grey85) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Yuexiu", subtitle = "Source")
+
+p4 <- ggplot(dl_plot) +
+  geom_sf(aes(fill = nearest_green_m), linewidth = 0.25, color = "white") +
+  scale_fill_gradient(name = "Distance (m)", low = COLORS$pink_light, high = COLORS$red, na.value = COLORS$grey85, guide = "none") +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Delft", subtitle = "Source")
+fig_nearest_green_distance <- p3 + p4 +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect") + plot_annotation(title = "Mean Nearest Distance to Urban Green Space", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_nearest_green_distance
+
+ggsave(file.path(OUT_ROOT, "fig_nearest_green_distance.png"), fig_nearest_green_distance, width = 14, height = 6, dpi = 300)
+
+# Figure 1D: Buffer coverage line chart
+#changed to linechart to show the differences in a more readable way
+p5 <- ggplot(buffer_summary, aes( x = buffer_m, y = pct_pop, colour = city, group = city)
+) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_colour_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue), name = NULL ) +
+  scale_x_continuous(breaks = sort(unique(buffer_summary$buffer_m))) +
+  scale_y_continuous( limits = c(0, 100), labels = function(x) paste0(x, "%")) +
+  labs( title = "Population within Walking Distance of Green Space", x = "Buffer distance (m)", y = "Population covered (%)") +
+  theme_map_clean() +
+  theme( plot.title = element_text( face = "bold", size = 14), legend.position = "right", axis.text = element_text(size = 10), axis.title = element_text(size = 11))
+
+p5
 
 ggsave(file.path(OUT_ROOT, "fig_buffer_coverage.png"), p5, width = 8, height = 5, dpi = 300)
 
-
-# ── Figure 1D: Network Entry Gates & Multi-Ring Walking Buffers Panel ───────────
+# ── Figure 1E: Network Entry Gates & Multi-Ring Walking Buffers Panel ───────────
 generate_network_access <- function(green_sf, road_sf, local_crs) {
   green_m <- st_transform(green_sf, local_crs)
   road_m  <- st_transform(road_sf, local_crs)
@@ -218,27 +295,48 @@ generate_network_access <- function(green_sf, road_sf, local_crs) {
   list(b100 = buf_100, b300 = buf_300, b500 = buf_500, entry_buffer = entry_buffer, entry_segments = entry_segments, roads = road_m, green = green_m, pts = access_pts)
 }
 
-yx_net <- generate_network_access(d$yx_grn, d$yx_rds, CRS_YX)
-dl_net <- generate_network_access(dl$dl_grn, dl$dl_rds, CRS_DELFT)
+# transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_access, CRS_YX)
+dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
+
+# Calculate real map widths from network layers
+yx_bb <- st_bbox(yx_net$green)
+dl_bb <- st_bbox(dl_net$green)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
 
 p_yx_network <- ggplot() +
-  geom_sf(data = yx_net$roads, color = "grey85", size = 0.3) +
-  geom_sf(data = yx_net$b500, fill = COLORS$pink_light, alpha = 0.08, color = NA) +
-  geom_sf(data = yx_net$entry_buffer, fill = COLORS$blue_light, alpha = 0.25, color = COLORS$beige, linetype = "dashed", size = 0.4) +
-  geom_sf(data = yx_net$b100, fill = COLORS$pink, alpha = 0.25, color = NA) +
-  geom_sf(data = yx_net$green, fill = COLORS$green_dark, color = NA) +
-  geom_sf(data = yx_net$pts, color = COLORS$red, size = 0.4, alpha = 0.7) +
-  theme_minimal() + labs(title = "Network Entry Thresholds — Yuexiu")
+  geom_sf(data = yx_net$roads, aes(color = "Roads"), linewidth = 0.2) +
+  geom_sf(data = yx_net$b300, aes(fill = "300 m buffer"), color = NA, alpha = 0.18) +
+  geom_sf(data = yx_net$green, aes(fill = "Green patches"), color = NA) +
+  geom_sf(data = yx_net$pts, aes(color = "Access points"), size = 0.5, alpha = 0.8) +
+  annotation_scale(location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4) +
+  scale_color_manual( name = NULL, values = c( "Roads" = "grey75", "Access points" = COLORS$red)) +
+  scale_fill_manual( name = NULL, values = c( "300 m buffer" = COLORS$pink_light, "Green patches" = COLORS$green_dark)) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Yuexiu", subtitle = "Network entry thresholds")
 
 p_dl_network <- ggplot() +
-  geom_sf(data = dl_net$roads, color = "grey85", size = 0.3) +
-  geom_sf(data = dl_net$b500, fill = COLORS$pink_light, alpha = 0.08, color = NA) +
-  geom_sf(data = dl_net$entry_buffer, fill = COLORS$blue_light, alpha = 0.25, color = COLORS$beige, linetype = "dashed", size = 0.4) +
-  geom_sf(data = dl_net$b100, fill = COLORS$pink, alpha = 0.25, color = NA) +
-  geom_sf(data = dl_net$green, fill = COLORS$green_dark, color = NA) +
-  geom_sf(data = dl_net$pts, color = COLORS$red, size = 0.4, alpha = 0.7) +
-  theme_minimal() + labs(title = "Network Entry Thresholds — Delft")
+  geom_sf(data = dl_net$roads, aes(color = "Roads"), linewidth = 0.2) +
+  geom_sf(data = dl_net$b300, aes(fill = "300 m buffer"), color = NA, alpha = 0.18) +
+  geom_sf(data = dl_net$green, aes(fill = "Green patches"), color = NA) +
+  geom_sf(data = dl_net$pts, aes(color = "Access points"), size = 0.5, alpha = 0.8) +
+  scale_color_manual(name = NULL, values = c("Roads" = "grey75", "Access points" = COLORS$red), guide = "none") +
+  scale_fill_manual(name = NULL, values = c("300 m buffer" = COLORS$pink_light, "Green patches" = COLORS$green_dark), guide = "none") +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Delft", subtitle = "Network entry thresholds")
 
-ggsave(file.path(OUT_ROOT, "fig_network_walk_access.png"), p_yx_network + p_dl_network, width = 14, height = 6, dpi = 300)
+fig_network_walk_access <- p_yx_network + p_dl_network +
+  plot_layout( widths = c(yx_w, dl_w),
+    guides = "collect") +
+  plot_annotation(title = "Network Entry Gates & Walking Buffer", theme = theme( plot.title = element_text(face = "bold", size = 14))) &
+  theme( legend.position = "right")
+
+ggsave(
+  file.path(OUT_ROOT, "fig_network_walk_access.png"), fig_network_walk_access, width = 14, height = 6, dpi = 300)
 
 message("All figures corrected and saved successfully!")

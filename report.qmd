@@ -15,7 +15,6 @@ format:
 output-dir: docs
 ---
 
-
 ```{r setup, include=FALSE}
 source(here::here("R/00_config.R"))
 ```
@@ -28,18 +27,19 @@ source(here::here("R/00_config.R"))
 
 ### Problem statement
 
-Due to rapid urbanisation, the pressure on urban green space increases and the benefits are often unevenly distributed across neighborhoods. Green spaces are essential urban infrastructure that influence the physical and mental well-being of inhabitants. They provide urban climate improvements through shade, cooling, better air quality, and also provide in space for physical activity, leisure, and social interaction. Not only are they beneficial to humans, they also help with biodiversity conservation and species attraction. Which ultimately increase ecological, social, and health benefits. However, not all citizens have equal access to these green spaces and they differ in quality. Therefore, their benefits depend not only on the presence of green spaces, but also on their accessibility, ecological quality, and spatial distribution. Research emphasizes multi-functional blue-green infrastructure rather than isolated parks. (Morris, 2003; Kasim, et al., 2019)
+Due to rapid urbanisation, the pressure on urban green space (UGS) increases and the benefits are often unevenly distributed across neighborhoods. Green spaces are essential urban infrastructure that influence the physical and mental well-being of inhabitants. They provide a wide range of services, such as urban cooling, air quality improvement and pose opportunities for social interaction. Not only are they beneficial to humans, they also support biodiversity conservation and species attraction, thereby enhancing health, ecological, and social outcomes. However, not all citizens have equal access to these green spaces and they differ in quality. Therefore, their benefits depend not only on the presence of green spaces, but also on their accessibility, ecological quality, and spatial distribution. Research emphasizes multi-functional blue-green infrastructure rather than isolated parks. (Morris, 2003; Kasim, et al., 2019)
 
-Connectivity is a key dimension of green space quality, since urban green spaces often function better as networks rather than independent elements. Better connectivity in between UGS supports ecological processes such as species movements, habitat continuity, and biodiversity conservation as well as attraction. Better connected green networks improve human access and movement through cities. Despite growing attention to continuous green infrastructure, connectivity is often evaluated seperately from biodiversity and accessbility.
+Connectivity is a key dimension of green space quality, since urban green spaces often function better as networks rather than independent elements. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity thus plays a role in determining the quality of the UGS (Irvine et al., 2008). In addition, better connected green networks improve human access and movement through cities. Despite growing attention to green infrastructure networks, accessibility, ecological quality, and connectivity are still often assessed independently. This limits our understanding of urban green space quality.
 
-Spatial justice concerns the fair distribution of urban resources and opportunities across populations (Rocco, n.d). Spatial justice in relationship to UGS seeks to understand wether the benefits are distributed equitably among residents. When we look at urban green space, spatial justice is not only determined by the quality of green space, but by how well green spaces are connected, accessible, and ecologically functional. Unequal access to UGS can reinforce existing social and environmental inequalities. Traditional urban plans often focus on quantity or proximity of parks alone, but access to high-quality green spaces is increasingly recognised as a spatial justice issue. Measuring spatial justice requires considering not only the amount of green space, but also who can access it and under what conditions. (De Sousa Silva et al., 2018)
+Spatial justice concerns the equitable distribution of urban resources and opportunities across different populations groups (Rocco, n.d). When applied to urban green spaces, it considers not only the quantity of the green spaces, but also whether residents have equitable access to connected and ecologically functional green environments. Unequal access can reinforce existing social and environmental inequalities, making spatial justice an increasingly important consideration in urban planning. (De Sousa Silva et al., 2018)
 
-Municipalities and planners are looking for ways to improve not only the amount, but also the quality of these urban green spaces. Understanding how accessibility identifies opportunities to improve spatial justice.
+In this study, urban green space quality is understood as the combined performance of four dimensions: accessibility, ecological quality, connectivity, and spatial justice. Considering these dimensions together provides a more comprehensive assessment than evaluating each independently.
 
-How urban green spaces are distributed across different city districts depends not only on factors such as accessibility and proximity, but also neighbourhood profile differences, such as density and income. Residents may live close to green areas, but have limited access due to fragmentation or poor connectivity (source3). -\> redundant?
+Due to spatial justice being increasingly recognised as an important factor for urban quality/wellbeing, municipalities and planners are looking for ways to improve not only the amount, but also the quality of these urban green spaces. This study responds to the need to integrate several dimensions into a reproducible framework. The framework combines them through a Spatial Multi-Criteria Decision Analysis (S-MCDA) to support in identifying priority areas for intervention. The aim of the research is to develop a spatial analytical tool for evaluating urban green space quality by investigating the relationship between accessibility, connectivity, biodiversity, and ultimately, spatial justice. This relationship is compared in two contrasting urban contexts: Delft (The Netherlands) and Guangzhou (China). The framework identifies areas where interventions can improve urban green space quality and translates findings into planning recommendations for increasing this quality.
 
-Having optimal connectivity between urban green spaces increases quality; it becomes more accessible for humans as well as non-humans, providing better habitat and improving the ecological value of urban green spaces. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity thus plays a role in determining the quality of the UGS (Irvine et al., 2008).
+Study sites: Delft, The Netherlands and historic center district of Yuexiu in Guangzhou, China.
 
+Methodology aims to be reproducible for either small cities or city districts. It concludes with providing a strategy for nature-based solutions to improve the relationship between spatial justice and green space connectivity.
 
 ### Literature Review
 
@@ -55,63 +55,53 @@ Study by Meerow (2019) on green infrastructure spatial planning model for evalua
 
 High levels of ecological connectivity within an urban landscape enables animals to move between patchy resources and allows for breeding whilst maintaining gene flow. In contrast, low levels of ecological connectivity restricts access to resources and prevents the movement of individuals and genes, inbreeding depression and extinction. Methodology include quantifying ecological connectivity; City biodiversity Index that calculates the probability of two randomly chosen locations to be connected and not separated by barriers. Tools used; Excel and ArcGIS (Kirk et al, 2023)
 
-### Research aim
-
-The aim of the research is to develop a spatial analytical tool for evaluating urban green space quality by investigating the relationship between accessibility, connectivity, biodiversity, and ultimately, spatial justice. This relationship is compared in two contrasting urban contexts: Delft (The Netherlands) and Guangzhou (China). The framework identifies areas where interventions can improve urban green space quality and translates findings into planning recommendations for increasing this quality.
-
 ## Research Questions
+
+### Research questions
+
+The main research question is: How does connectivity in between urban green spaces contribute to spatial justice in the cities Delft and Guangzhou? As mentioned before, urban green space succes, or quality, is based on 4 categories. This study answers the main question through breaking the analysis up into those 4 categories: accessibility, biodiversity, spatial justice, and connectivity. Each categorie forms an objective, followed by a sub-research question. These questions are answered through analyses (see methodology), and combined through the MCDA.
 
 ### Research objectives
 
-### Objective 1: Spatial Distribution & Accessibility
+#### Objective 1: Accessibility
 
-Quantify the spatial distribution and accessibility of urban green spaces.
-
-::: {.callout-note appearance="simple"}
-**SQ1:** How accessible are green spaces for residents?
-:::
-
-### Objective 2: Connectivity & Typologies
-
-Evaluate connectivity between different urban green spaces.
+What is the spatial composition and accessibility of urban green spaces.
 
 ::: {.callout-note appearance="simple"}
-**SQ2:** What are the different typologies of urban green spaces and their access?
+**SQ1:** How accessible are the urban green spaces for residents?
 :::
 
-### Objective 3: Spatial Justice & Demographics
+#### Objective 2: Ecological Quality
+
+Evaluate biodiversity in different urban green spaces and their typologies.
+
+::: {.callout-note appearance="simple"}
+**SQ2:** What are the different typologies and their ecological value?
+:::
+
+#### Objective 3: Spatial Justice
 
 Assess spatial justice through the relationship between population and access to green space.
 
 ::: {.callout-note appearance="simple"}
-**SQ3:** How equitable are green spaces distributed across administrative units in relation to population demographics?
+**SQ3:** How equitable are green spaces distributed across administrative units?
 :::
 
-### Objective 4: Comparative Analysis
+#### Objective 4: Connectivity
 
-Compare how strong these relationships are in different cities (Delft vs Guangzhou).
+Assess connectivity between the urban green spaces within the administrative boundaries.
 
 ::: {.callout-note appearance="simple"}
-**SQ4:** How does urban green space relate to spatial justice in Delft compared to Guangzhou?
+**SQ4:** How well are urban green spaces connected to each other?
 :::
 
-### Objective 5: Strategic Translation
+#### Objective 5: Strategic Translation
 
 Translate analytical findings into strategies for increasing UGS quality
 
 ::: {.callout-note appearance="simple"}
-**SQ5:** How do the differences between the two cities show how connectivity and accessibility can improve spatial justice? What strategies are suggested to improve spatial justice?
+**SQ5:** How do Delft and Guangzhou perform and what NBS can we suggest to improve urban green spaces?
 :::
-
-### Research questions
-
-How does Quality and Connectivity of Urban Green Spaces Contribute to Spatial Justice in Delft and Guangzhou? How does connectivity in between urban green spaces contribute to spatial justice in the cities Delft and Guangzhou?
-
-### Spatial context
-
-Study sites: Delft, The Netherlands and historic center district of Yuexiu in Guangzhou, China.
-
-Methodology aims to be reproducible for either small cities or city districts. It concludes with providing a strategy for nature-based solutions to improve the relationship between spatial justice and green space connectivity.
 
 ## Methods
 
@@ -152,8 +142,6 @@ Urban green space quality cannot be defined by a single indicator and there are 
 ### Data collection
 
 ### Spatial unit
-
-Describe what a spatial unit is - see literature references. describe Modifiable Areal Unit Problem (MAUP)
 
 Spatial analysis outcomes depend on a chosen spatial unit. To ensure comparability, the study uses administrative neighbourhood units. However due to a scale difference, the comparison is done on scale of the entire city of Delft and the Yuexiu district in Guangzhou. These are comparable in surface (mention surface km2) and amount of neighbourhoods (mention #). The administrative units are wijken for Delft, and jiedao for Guanghzhou. Using administrative units increases policy relevance and reproducability through different scales (from neighbourhood to municipality) - difference in scale of Guangzhou and Delft, allows us to find comparable city districts and also allows planners/municipalities to work with the distinctive characters of city districts, makes it applicable in small cities as well as large cities.
 
@@ -199,7 +187,7 @@ As background context, @fig-green_typology reveal the the green space compositio
 
 ```{r}
 #| label: fig-green_typology
-#| fig-cap: "Spatial Distribution of Urban Green Typologies"
+#| fig-cap: "Spatial Composition of Urban Green Typologies"
 knitr::include_graphics(file.path(OUT_ROOT, "fig_green_typology.png"))
 
 ```
@@ -234,7 +222,7 @@ The biodiversity observation density vs patch size suggest an interesting correl
 knitr::include_graphics(file.path(OUT_ROOT, "fig_blue_green_ratio.png"))
 ```
 
-Blue green balance, calculated by \$\\text{blue-green balance} = \\log(1 + \\text{water per capita}) - \\log(1 + \\text{green per capita})\$ reveal higher abundance of blue space (water) if dominated by positive values, higher abundance of green space if dominated by negative values, and relatively balanced green-blue space with values nearing 0. Comparing the two cities, the range in comparison for Yuexiu suggests much higher green space presence in comparison to water. This is validated by doing summary statistics between total water vs green, in which Yuexiu yielded 192,494m^2^ of mean green space compared to 40,304m^2^ of mean water space. In comparison, Delft yielded a more evenly spread balance between green and blue areas; akin to its canal-rich characteristic, thus reflecting its water-city heritage. The relevance extends as blue and green infratsructure together, can provide better cooling and biodiversity than either alone (@akther2026bgi).
+Blue green balance, calculated by \$\\text{blue-green balance} = \\log(1 + \\text{water per capita}) - \\log(1 + \\text{green per capita})\$ reveal higher abundance of blue space (water) if dominated by positive values, higher abundance of green space if dominated by negative values, and relatively balanced green-blue space with values nearing 0. Comparing the two cities, the range in comparison for Yuexiu suggests much higher green space presence in comparison to water. This is validated by doing summary statistics between total water vs green, in which Yuexiu yielded 192,494m^2^ of mean green space compared to 40,304m^2^ of mean water space. In comparison, Delft yielded a more evenly spread balance between green and blue areas; akin to its canal-rich characteristic, thus reflecting its water-city heritage. The relevance extends as blue and green infratsructure together, can provide better cooling and biodiversity than either alone (@akther2026bgi). Limitation for now, for future work possible to relate the green-blue ratio with cooling/biodiversity and explore the relationship.
 
 ### 3. Spatial Justice
 
@@ -277,17 +265,75 @@ Lastly, spatial justice is examined by comparing the behavior of Lorenz gini of 
 ### 4. Connectivity
 
 ```{r}
+#| label: fig-eucl
+#| fig-cap: "Eucladian Nearest Neighbour Distance"
+#| 
 knitr::include_graphics(file.path(OUT_ROOT, "fig_enn_distribution.png"))
+```
+
+Through figure @fig-eucl we can see how majority of the green patches across the city are close to one another (below the 200m threshold). This indicate high connectivity (based on low distance traveled between one green patch to another). However this is not the case with Yuexiu, where green patches are located further away from each other (all exceeding the 200m threshold). This confirms that Yuexiu has more structurally isolated green patches with one another compared to Delft.
+
+```{r}
+#| label: fig-fragm
+#| fig-cap: "Fragmentation metrics"
+#| 
 knitr::include_graphics(file.path(OUT_ROOT, "fig_fragmentation_metrics.png"))
+```
+
+Figure @fig-fragm reveal that while Delft has much higher number of patches, its distance between the patches is also subsequenly lower than of Yuexiu's. However, this high number of patches is also followed by its patch size that is not very large. This is the opposite when compared to Yuexiu, that while number of patches is much lower and distance in between patches is much further away compared to Delft, the size of each patch seen by the percentage of patches exceeding 1 ha and mean patch size (in ha) are much larger compared to Delft. This implies that while Delft focuses more on more well-connected green patches across the city, Yuexiu may focus more on providing large green spaces as leisure than that of connectivity, as demonstarted by Delft.
+
+```{r}
+#| label: fig-connectmaps
+#| fig-cap: "Green patch connectivity maps for Yuexiu and Delft."
+#| 
 knitr::include_graphics(file.path(OUT_ROOT, "fig_connectivity_maps.png"))
+```
+
+The figure @fig-connectmaps visualizes UGS as a functional network, as it takes centroids out of each patch (as nodes) and edges, representing potential dispersal paths between each green patches. The edges then function as potential corridors to enable movement of wildlife or human between the otherwise green patches. Thus based on this, areas with least orange lines/edges represent where weakest links are due to its far proximities with other green areas. In contrast to Delft's high connectivity network, Yuexiu reveals more limited potential for connectivity through green corridors. This finding is consistent with previous figures' finding @fig-fragm where green pacthes in Yuexiu may be further away compared to delft, where green patches are closer to each other yet smaller. Despite the lack of potential corridors in Yuexiu, the city's larger green patches still offer potential for possible connectivity. However, this implies that more planning and infrastructure investment needs to exist for connectivity to be in place.
+
+```{r}
+#| label: fig-betweenness
 knitr::include_graphics(file.path(OUT_ROOT, "fig_betweenness_vs_area.png"))
 ```
 
-interpretation mean nearest distance to green patch: Delft \~10m vs Yuexiu \~200m. Delft's green space is essentially continuous — patches are almost touching. Yuexiu's patches are isolated islands separated by \~200m of built fabric on average. This is the connectivity crisis that drives our NbS corridor proposals. From a wildlife/biodiversity perspective, a 200m gap is a hard barrier for most invertebrates and small mammals.
+### 5. MCDA
 
-### conclusion analysis 5: NBS corridor prioritisation
+```{r}
+#| label: fig-mcdamap
+#| fig-cap: "MCDA map"
 
-Through applying MCDA, the study provides a method to overlay low-access zones and disconnected patches, which allows the planner/user (tbd) to map priority intervention areas.
+knitr::include_graphics(file.path(OUT_ROOT, "fig_mcda_maps.png"))
+
+```
+
+@fig-mcdamap visualizes a normalized figure of the level of grene infrastyructure urgency needs to be implemented (0-1). Dark green suggests low urgency for the need of more intervention, while dark red suggesting high urgency. In Yuexiu, the spatial pattern is more fragmented due to its historical characteristic context. On the other hand, Delft's high uregncy zone is less fragmented and more concentrated in the central-north strip. This finding aligns with @fig-meandist, which reveal how isolated these neighborhoods are with other existing green patches. Moreover, assigning higher priority to these areas is justified as there needs spatial equity to be addressed, consequently fostering better connectivity in the broader urban network.
+
+```{r}
+#| label: fig-mcdaradar
+#| fig-cap: "Suggestion for green corridors"
+#|
+knitr::include_graphics(file.path(OUT_ROOT, "fig_mcda_radar.png"))
+```
+
+For each of the four criteria, the city-wide mean of the normalized urgency scores (@fig-mcdamape) is calculated and displayed on @fig-mcdaradar. Thus, higher bar indicate greater average urgency compared to other dimensions. In both cities, connectivity pose higher relative urgency compared to other dimensions, opposing to equity/spatial justice, achieving lowest need for intervention. This is an interesting observation as connectivity is both central to the discussion of nature-based solution and efforts seemed to have been made to ensure connectivity of green patches in Delft, however, it still seems to need most urgent care compared to other metrics. The finding thus suggests the need for explicit connectivity effort through establishments of green corridor between green patches in both cities as part of further effort to our focus; nature-based solutions.
+
+```{r}
+#| label: fig-prioritytiers
+#| fig-cap: "Green patch connectivity maps for Yuexiu and Delft."
+#|
+knitr::include_graphics(file.path(OUT_ROOT, "fig_priority_tiers.png"))
+```
+
+The priority tier (@fig-prioritytiers) divides the range of tiers equally to three groups (tertile classification). This is a choice of classification, which does not aim to exactly set 33% of a city to genuinely needs more urgent intervention as our choice of normalization also does not take into account the within group value difference to really determine the amount of urgent care actually required. Consistent with previous figures, Yuexiu's high priority zones are scattered, reflecting more fragmented planning scheme in terms of urban green infrastructure, compared to Delft where its high-priority zones are more concentrated, that may suggest a more underlying systematic issue around the area.
+
+```{r}
+#| label: fig-nbscorridors 
+#| fig-cap: "Suggestion for green corridors" 
+#| 
+knitr::include_graphics(file.path(OUT_ROOT, "fig_nbs_corridors.png"))
+```
+
+@fig-nbscorridors overlays areas of high priorities determined by the MCDA and isolated green areas. The overlay of the two layers result in more easily identifiable places/locations, as direct correspondance to our nature-based solutions. As seen from the figure (@fig-nbscorridors), Yuexiu exhibit much more need for potential corridors compared to Delft. This finding is consistent as also with Yuexiu's fragmented green patches across the city; consequently, more interventions is needed to establish functional connectivity between these isolated sites.
 
 ## Discussion
 
@@ -299,11 +345,11 @@ As sources are gathered through globally availbale datasets, methodology can be 
 
 ### Limitations
 
-OSM data completeness differs between cities and is a crowd-sourced data. This means that data gathered is not the most up-to-date nor accurate. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Moreover, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. <!-- what does this mean ya; NDVI does not directly measure biodiversity different city scales influence comparability administrative boundaries introduce MAUP effects.--> more... High density in Guangzhou vs low density in Delft.
+Few limitations have been identified in accordance to our data source. First, most of our datasets come from OSM. Its data completeness however differ between Yuexiu, Guangzhou and Delft, the Netherlands as OSM's volunteer-based system is more dominant in Wester European cities compared to Chinese cities. This means that data gathered is not the most up-to-date nor accurate, or could be biased. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Here, instead of using income per sub-district data, our methodology had to rely on VIIRS night-light data as proxy to economic development. While there have been literatures supporting the linkage between VIIRS night-light data as economic proxy for development, this still does not provide direct comparison between the two cities. Furthermore, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. Interpretation becomes less meaningful due to this sampling bias. In obtaining the datasets, we are also aware of the temporal effect if data gathered were to be obtained throughout different seasons. For example, the comparison would not be less meaningful if NDVI obtained for Delft and Yuexiu were obtained during different seasons.
+
+There are also few limitations identified within our code methodology. The MCDA weights were assigned and not derived @fig-connectmaps. This means that our choice to assign weight accessibility at 30%, biodiversity and connectivity at 25%, and equity/spatial justice at 20% is a judgement made before analysis. This however can differ to other researcher or planning priorities, as the weights assigned were based on judgement with nature-based solution being central to our focus analysis. Moreover, @fig-prioritytiers displays relative ranking, and does not display absolute urgency to where there needs immediate intervention to nature-based solution. It attempts to inform the least well-performing regions, rather than genuine crisis/urgency.
 
 ### Future Work
-
-citizen participation through surveys ecosystem valuation (more in depth) running the workflow with more than 4 indicators
 
 ## Conclusion
 

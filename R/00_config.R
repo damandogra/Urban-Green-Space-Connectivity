@@ -1,4 +1,10 @@
 library(here)
+library(sf)
+library(terra)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(ggspatial)
 
 # ── Output directory ──────────────────────────────────────────────────────────
 OUT_ROOT <- here("outputs")
@@ -85,6 +91,21 @@ pal_green_blue <- c(COLORS$green_dark, COLORS$green_mid, COLORS$green_light, COL
 pal_green_orange <- c(COLORS$green_dark, COLORS$green_mid, COLORS$green_light, COLORS$beige, COLORS$orange_light, COLORS$orange)
 
 pal_full <- c(COLORS$green_dark, COLORS$green_mid, COLORS$green_light, COLORS$beige, COLORS$pink_light, COLORS$pink, COLORS$red_light, COLORS$red)
+
+# - Reusable clean map theme ------------------------
+
+theme_map_clean <- function() {
+  theme_minimal() +
+    theme(
+      panel.grid = element_blank(),
+      axis.text = element_blank(),
+      axis.title = element_blank(),
+      axis.ticks = element_blank(),
+      legend.position = "right",
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 9)
+    )
+}
 
 # — Green space typology filter --------------------------------------------
 

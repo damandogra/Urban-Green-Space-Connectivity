@@ -242,96 +242,159 @@ message("MCDA weights saved to mcda_weights.csv")
 # ── Figures ───────────────────────────────────────────────────────────────────
 
 # Figure 5A: MCDA composite score maps
-p_mcda_yx <- ggplot(yx_mcda) +
-  geom_sf(aes(fill = mcda_composite), colour = "white", linewidth = 0.3) +
-  scale_fill_gradientn(
-    colours = pal_full,
-    name = "MCDA score\n(0–1)",
-    na.value = COLORS$grey85
-  ) +
-  theme_minimal(base_size = 11) +
-  labs(title = "MCDA Composite Score — Yuexiu Subdistricts",
-       subtitle = sprintf("Weights: Acc %.0f%% | Bio %.0f%% | Conn %.0f%% | Eq %.0f%%",
-                          w["accessibility"]*100, w["biodiversity"]*100,
-                          w["connectivity"]*100, w["equity"]*100))
 
-p_mcda_dl <- ggplot(dl_mcda) +
-  geom_sf(aes(fill = mcda_composite), colour = "white", linewidth = 0.3) +
-  scale_fill_gradientn(
-    colours = pal_full,
-    name = "MCDA score\n(0–1)",
-    na.value = COLORS$grey85
-  ) +
-  theme_minimal(base_size = 11) +
-  labs(title = "MCDA Composite Score — Delft Wijken",
-       subtitle = sprintf("Weights: Acc %.0f%% | Bio %.0f%% | Conn %.0f%% | Eq %.0f%%",
-                          w["accessibility"]*100, w["biodiversity"]*100,
-                          w["connectivity"]*100, w["equity"]*100))
+# Transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_mcda, CRS_YX)
+dl_plot <- st_transform(dl_mcda, CRS_DELFT)
 
-ggsave(file.path(OUT_ROOT, "fig_mcda_maps.png"),
-       p_mcda_yx + p_mcda_dl, width = 14, height = 7, dpi = 300)
+# Calculate real map widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+# Shared limits so colours are comparable
+mcda_limits <- c(0, 1)
+
+p_mcda_yx <- ggplot(yx_plot) +
+  geom_sf(aes(fill = mcda_composite), colour = "white", linewidth = 0.3) +
+  annotation_scale(location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4) +
+  scale_fill_gradientn(colours = pal_full,limits = mcda_limits, name = "MCDA score\n(0–1)", na.value = COLORS$grey85) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Yuexiu")
+
+p_mcda_dl <- ggplot(dl_plot) +
+  geom_sf(aes(fill = mcda_composite), colour = "white", linewidth = 0.3) +
+  scale_fill_gradientn(colours = pal_full, limits = mcda_limits, name = "MCDA score\n(0–1)", na.value = COLORS$grey85, guide = "none") +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Delft")
+
+fig_mcda_maps <- p_mcda_yx + p_mcda_dl +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect") +
+  plot_annotation(
+    title = "MCDA Composite Score",
+    subtitle = sprintf("Weights: Acc %.0f%% | Bio %.0f%% | Conn %.0f%% | Eq %.0f%%",
+      w["accessibility"] * 100,
+      w["biodiversity"] * 100,
+      w["connectivity"] * 100,
+      w["equity"] * 100),
+    theme = theme(plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_mcda_maps
+
+ggsave(file.path(OUT_ROOT, "fig_mcda_maps.png"), fig_mcda_maps, width = 14, height = 7, dpi = 300)
 
 # Figure 5B: Priority tier maps
-tier_colours <- c("High priority"   = COLORS$red,
-                   "Medium priority" = COLORS$orange_light,
-                   "Low priority"    = COLORS$green_light)
+tier_colours <- c("High priority"   = COLORS$red_light, "Medium priority" = COLORS$beige, "Low priority"    = COLORS$green_mid)
 
-p_tier_yx <- ggplot(yx_mcda) +
+# Transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_mcda, CRS_YX)
+dl_plot <- st_transform(dl_mcda, CRS_DELFT)
+
+# Calculate real map widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+p_tier_yx <- ggplot(yx_plot) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
-  scale_fill_manual(values = tier_colours, name = "NbS Priority",
-                  breaks = c("High priority", "Medium priority", "Low priority")) + 
-  theme_minimal(base_size = 11) +
-  labs(title = "NbS Intervention Priority — Yuexiu",
-       subtitle = "Tertile classification of MCDA composite score")
+  annotation_scale(location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4) +
+  scale_fill_manual(values = tier_colours, name = "NbS Priority",  breaks = c("High priority", "Medium priority", "Low priority"), drop = FALSE) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Yuexiu")
 
-p_tier_dl <- ggplot(dl_mcda) +
+p_tier_dl <- ggplot(dl_plot) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
-  scale_fill_manual(values = tier_colours, name = "NbS Priority",
-                  breaks = c("High priority", "Medium priority", "Low priority")) + 
-  theme_minimal(base_size = 11) +
-  labs(title = "NbS Intervention Priority — Delft",
-       subtitle = "Tertile classification of MCDA composite score")
+  scale_fill_manual(
+    values = tier_colours,
+    name = "NbS Priority",
+    breaks = c("High priority", "Medium priority", "Low priority"),
+    drop = FALSE,
+    guide = "none"
+  ) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(
+    title = "Delft"
+  )
 
-ggsave(file.path(OUT_ROOT, "fig_priority_tiers.png"),
-       p_tier_yx + p_tier_dl, width = 14, height = 7, dpi = 300)
+fig_priority_tiers <- p_tier_yx + p_tier_dl +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect") +
+  plot_annotation( title = "NbS Intervention Priority", subtitle = "Tertile classification of MCDA composite score", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_priority_tiers
+
+ggsave(file.path(OUT_ROOT, "fig_priority_tiers.png"), fig_priority_tiers, width = 14, height = 7, dpi = 300)
 
 # Figure 5C: NbS corridor maps (isolated patches + proposed links)
-plot_nbs_map <- function(nbs_obj, bnd_sf, local_crs, city_label) {
+# Transform both maps to metre-based CRS
+yx_plot <- st_transform(d$yx_bnd, CRS_YX)
+dl_plot <- st_transform(dl$dl_bnd, CRS_DELFT)
+
+# Calculate real map widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+plot_nbs_map <- function(nbs_obj, bnd_sf, local_crs, city_label, show_scale = FALSE) {
   # Pre-transform all layers to local_crs before passing to ggplot.
   # Without this, ggplot inherits the CRS of the first geom_sf layer (bnd in
   # WGS84) and renders subsequent layers — especially corridor lines already
   # in UTM/RD New — outside the map extent, making them invisible.
-  bnd           <- st_transform(bnd_sf, local_crs)
-  high_priority <- st_transform(nbs_obj$high_priority, local_crs)
-  isolated      <- st_transform(nbs_obj$isolated_patches, local_crs)
-  corridors     <- if (!is.null(nbs_obj$corridor_lines))
-                     st_transform(nbs_obj$corridor_lines, local_crs) else NULL
+    bnd           <- st_transform(bnd_sf, local_crs)
+    high_priority <- st_transform(nbs_obj$high_priority, local_crs)
+    isolated      <- st_transform(nbs_obj$isolated_patches, local_crs)
+    corridors     <- if (!is.null(nbs_obj$corridor_lines))
+      st_transform(nbs_obj$corridor_lines, local_crs)
+    else NULL
 
-  p <- ggplot() +
-    geom_sf(data = bnd, fill = "#e8e4dc", colour = "grey50", linewidth = 0.5) +
-    geom_sf(data = high_priority, fill = COLORS$red_light, alpha = 0.55, colour = NA)
+    p <- ggplot() +
+      geom_sf(data = bnd, aes(fill = "Urban fabric"), colour = COLORS$grey50, linewidth = 0.5) +
+      geom_sf(data = high_priority, aes(fill = "High-priority areas"), colour = NA, alpha = 0.55)
 
-  if (!is.null(corridors) && nrow(corridors) > 0) {
+    if (!is.null(corridors) && nrow(corridors) > 0) {
+      p <- p +
+        geom_sf(data = corridors, aes(colour = "Proposed corridors"), linewidth = 1.4, linetype = "11")
+    }
+
     p <- p +
-      geom_sf(data = corridors,
-        colour = COLORS$blue, linewidth = 1.4,
-        linetype = "11", alpha = 1.0)
-  }
+      geom_sf(data = isolated, aes(fill = "Isolated patches"), colour = COLORS$green_mid, linewidth = 0.1, alpha = 1) +
+      scale_fill_manual(name = NULL, values = c( "Urban fabric" = COLORS$beige, "High-priority areas" = COLORS$red_light, "Isolated patches" = COLORS$green_light)) +
+      scale_colour_manual(name = NULL, values = c("Proposed corridors" = COLORS$green_dark)) +
+      coord_sf(expand = FALSE, datum = NA) +
+      theme_map_clean() +
+      labs( title = city_label)
 
-  p +
-    geom_sf(data = isolated,
-        fill = COLORS$green_light, colour = COLORS$green_mid,
-        alpha = 1.0, linewidth = 0.1) +
-    theme_minimal(base_size = 11) +
-    labs(title = paste("NbS Corridor Prioritisation —", city_label),
-         subtitle = "Red = high priority | Green = isolated patches | Dashed = proposed corridors")
-}
+    if (show_scale) {
+      p <- p +
+        annotation_scale( location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4)
+    }
+    p}
 
-p_nbs_yx <- plot_nbs_map(yx_nbs, d$yx_bnd, CRS_YX,    "Yuexiu")
-p_nbs_dl <- plot_nbs_map(dl_nbs, dl$dl_bnd, CRS_DELFT, "Delft")
 
-ggsave(file.path(OUT_ROOT, "fig_nbs_corridors.png"),
-       p_nbs_yx + p_nbs_dl, width = 14, height = 7, dpi = 300)
+p_nbs_yx <- plot_nbs_map( yx_nbs, d$yx_bnd, CRS_YX, "Yuexiu", show_scale = TRUE)
+
+p_nbs_dl <- plot_nbs_map(dl_nbs, dl$dl_bnd, CRS_DELFT, "Delft", show_scale = FALSE) +
+  guides(fill = "none", colour = "none")
+
+fig_nbs_corridors <- p_nbs_yx + p_nbs_dl +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect") +
+  plot_annotation(title = "Nature-based Solution Corridor Prioritisation", subtitle = "High-priority areas, isolated patches and proposed corridors", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_nbs_corridors
+
+ggsave(file.path(OUT_ROOT, "fig_nbs_corridors.png"), fig_nbs_corridors, width = 14, height = 7, dpi = 300)
 
 # Figure 5D: Sub-score radar / spider chart (city-level means)
 score_means <- bind_rows(
@@ -359,12 +422,13 @@ p_radar_bar <- ggplot(score_means, aes(x = criterion, y = score, fill = city)) +
   geom_hline(yintercept = c(0.25, 0.5, 0.75), linetype = "dotted", colour = "grey70") +
   geom_text(aes(label = sprintf("%.2f", score)),
             position = position_dodge(0.7), vjust = -0.4, size = 3.5) +
-  scale_fill_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
+  scale_fill_manual(values = c("Yuexiu" = COLORS$orange_light, "Delft" = COLORS$blue_light)) +
   scale_y_continuous(limits = c(0, 1.05), labels = label_percent()) +
   theme_minimal(base_size = 12) +
   labs(title = "MCDA Sub-score Profile — City Comparison",
        subtitle = "Mean normalised intervention urgency score (higher = greater need)",
-       x = NULL, y = "Mean normalised score", fill = "City")
+       x = NULL, y = "Mean normalised score", fill = "City") +
+  theme(plot.title = element_text(face = "bold"))
 
 # Wider aspect ratio suits a horizontal bar comparison better than the
 # square format used for the polar chart.
@@ -380,13 +444,14 @@ score_dist <- bind_rows(
 p_dist <- ggplot(score_dist, aes(x = mcda_composite, fill = city)) +
   geom_density(alpha = 0.6) +
   geom_rug(aes(colour = city), alpha = 0.6) +
-  scale_fill_manual(values  = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue)) +
-  scale_colour_manual(values = c("Yuexiu" = COLORS$orange, "Delft" = COLORS$blue),
+  scale_fill_manual(values  = c("Yuexiu" = COLORS$orange_light, "Delft" = COLORS$blue_light)) +
+  scale_colour_manual(values = c("Yuexiu" = COLORS$orange_light, "Delft" = COLORS$blue_light),
                       guide = "none") +
   theme_minimal(base_size = 12) +
   labs(title = "Distribution of MCDA Composite Scores",
        subtitle = "Density plot — all admin units",
-       x = "MCDA composite score (0–1)", y = "Density", fill = "City")
+       x = "MCDA composite score (0–1)", y = "Density", fill = "City") +
+  theme(plot.title = element_text(face = "bold"))
 
 ggsave(file.path(OUT_ROOT, "fig_mcda_distribution.png"),
        p_dist, width = 8, height = 5, dpi = 300)

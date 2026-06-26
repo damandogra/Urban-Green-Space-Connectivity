@@ -47,7 +47,7 @@ theme_context <- theme_void() +
   )
 
 ## figures
-# Delft and Guangzhou context
+# 0A Delft and Guangzhou context
 
 p_context_gz <- ggplot() +
   geom_sf(
@@ -67,8 +67,8 @@ p_context_gz <- ggplot() +
     color = COLORS$red_light,
     linewidth = 0.55
   ) +
-  theme_context +
-  labs(title = "Guangzhou") +
+  theme_map_clean() +
+  labs( title = "Guangzhou", subtitle = "Source: ??")
 
   annotation_scale(
     location = "bl",
@@ -96,8 +96,8 @@ p_context_dl <- ggplot() +
     color = COLORS$red_light,
     linewidth = 0.55
   ) +
-  theme_context +
-  labs(title = "Delft") +
+  theme_map_clean() +
+  labs( title = "Delft", subtitle = "Source: CBS wijk data")
 
   annotation_scale(
     location = "bl",
@@ -108,72 +108,54 @@ p_context_dl <- ggplot() +
     line_width = 0.6
   )
 
-p_context_dl + p_context_gz
+fig_context_gz_dl <- p_context_gz + p_context_dl +
+  plot_layout(widths = c(1, 1)) +
+  plot_annotation(title = "Context", theme = theme(plot.title = element_text(face = "bold", size = 14)))
 
-# spatial unit (su) Delft and Yuexiu context
+fig_context_gz_dl
 
-p_su_dl <- ggplot() +
-  geom_sf(
-    data = dl_bnd,
-    fill = COLORS$blue_light,
-    color = NA
-  ) +
-  geom_sf(
-    data = dl_wijk_context,
-    fill = NA,
-    color = "white",
-    linewidth = 0.12
-  ) +
-  geom_sf(
-    data = dl_bnd,
-    fill = NA,
-    color = COLORS$red_light,
-    linewidth = 0.55
-  ) +
-  theme_context +
-  labs(title = "Delft") +
-  annotation_scale(
-    location = "bl",
-    style = "ticks",
-    unit_category = "metric",
-    width_hint = 0.30,
-    text_cex = 0.7,
-    line_width = 0.6
-  ) +
-  coord_sf(
-    xlim = c(dl_equal["xmin"], dl_equal["xmax"]),
-    ylim = c(dl_equal["ymin"], dl_equal["ymax"]),
-    expand = FALSE
-  )
+ggsave( file.path(OUT_ROOT, "fig_context_gz_dl.png"), fig_context_gz_dl, width = 14, height = 6, dpi = 300)
+
+# 0B spatial unit (su) Delft and Yuexiu context
+# transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_access, CRS_YX)
+dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
+
+# calculate real maps widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
 
 p_su_yx <- ggplot() +
-  geom_sf(
-    data = yx_bnd,
-    fill = COLORS$orange_light,
-    color = NA
-  ) +
-  geom_sf(
-    data = yx_sub_context,
-    fill = NA,
-    color = "white",
-    linewidth = 0.12
-  ) +
-  geom_sf(
-    data = yx_bnd,
-    fill = NA,
-    color = COLORS$red_light,
-    linewidth = 0.55
-  ) +
-  theme_context +
-  labs(title = "Yuexiu") +
+  geom_sf(data = yx_bnd, fill = COLORS$orange_light, color = NA) +
+  geom_sf(data = yx_sub_context,  fill = NA, color = "white", linewidth = 0.12) +
+  geom_sf(data = yx_bnd, fill = NA, color = COLORS$red_light, linewidth = 0.55) +
+  annotation_scale( location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4 ) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs( title = "Yuexiu", subtitle = "Source: WorldPop + administrative polygons")
 
-  coord_sf(
-    xlim = c(dl_equal["xmin"], dl_equal["xmax"]),
-    ylim = c(dl_equal["ymin"], dl_equal["ymax"]),
-    expand = FALSE
-  )
 
-p_su_dl + p_su_yx
+p_su_dl <- ggplot() +
+  geom_sf(data = dl_bnd, fill = COLORS$blue_light, color = NA) +
+  geom_sf(data = dl_wijk_context, fill = NA, color = "white", linewidth = 0.12 ) +
+  geom_sf(data = dl_bnd, fill = NA, color = COLORS$red_light, linewidth = 0.55 ) +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
+  labs(title = "Delft", subtitle = "Source: CBS wijk data")
+
+
+fig_context_yx_dl <- p_su_yx +  p_su_dl +
+  plot_layout(widths = c(yx_w, dl_w), guides = "collect")+
+  plot_annotation( title = "Context", theme = theme( plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_context_yx_dl
+
+ggsave(file.path(OUT_ROOT, "fig_context_yx_dl.png"), fig_context_yx_dl, width = 14, height = 6, dpi = 300)
+
 
 # Urban green space ------------------------------------
 
@@ -200,86 +182,51 @@ yx_green <- st_transform(yx_green, st_crs(yx_bnd))
 yx_roads <- st_intersection(yx_roads, yx_bnd)
 yx_green <- st_intersection(yx_green, yx_bnd)
 
-p_ugs_dl <- ggplot() +
-  geom_sf(data = dl_bnd,
-          fill = COLORS$beige,
-          color = NA) +
-  geom_sf(
-    data = dl_water_context,
-    fill = COLORS$blue_light,
-    color = NA,
-    alpha = 0.6
-  ) +
-  geom_sf(data = dl_roads,
-          color = COLORS$grey85,
-          linewidth = 0.10) +
-  geom_sf(data = dl_green,
-          fill = COLORS$green_dark,
-          color = NA,
-          alpha = 0.95) +
-  geom_sf(data = dl_wijk_context,
-          fill = NA,
-          color = COLORS$red,
-          linewidth = 0.16) +
-  geom_sf(data = dl_bnd,
-          fill = NA,
-          color = COLORS$red_light,
-          linewidth = 0.55) +
-  theme_context +
-  labs(title = "Delft") +
-  annotation_scale(
-    location = "bl",
-    style = "ticks",
-    unit_category = "metric",
-    width_hint = 0.22,
-    text_cex = 0.7,
-    line_width = 0.6
-  ) +
-  coord_sf(
-    xlim = c(dl_equal["xmin"], dl_equal["xmax"]),
-    ylim = c(dl_equal["ymin"], dl_equal["ymax"]),
-    expand = FALSE
-  )
+# transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_sub_access, CRS_YX)
+dl_plot <- st_transform(dl_wijk_access, 28992)  # RD New
+
+# calculate real maps widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
 
 p_ugs_yx <- ggplot() +
-  geom_sf(data = yx_bnd,
-          fill = COLORS$beige,
-          color = NA) +
-  geom_sf(
-    data = yx_water_context,
-    fill = COLORS$blue_light,
-    color = NA,
-    alpha = 0.6
-  ) +
-  geom_sf(data = yx_roads,
-          color = COLORS$grey85,
-          linewidth = 0.15) +
-  geom_sf(data = yx_green,
-          fill = COLORS$green_dark,
-          color = NA,
-          alpha = 0.9) +
-  geom_sf(data = yx_sub_context,
-          fill = NA,
-          color = COLORS$red,
-          linewidth = 0.16) +
-  geom_sf(data = yx_bnd,
-          fill = NA,
-          color = COLORS$red_light,
-          linewidth = 0.55) +
-  theme_context +
-  labs(title = "Yuexiu") +
-  coord_sf(
-    xlim = c(yx_equal["xmin"], yx_equal["xmax"]),
-    ylim = c(yx_equal["ymin"], yx_equal["ymax"]),
-    expand = FALSE
-  )
+  geom_sf(data = yx_bnd, aes(fill = "Urban fabric"), color = NA) +
+  geom_sf(data = yx_water_context, aes(fill = "Water"), color = NA, alpha = 0.6) +
+  geom_sf(data = yx_roads, aes(color = "Roads"), linewidth = 0.15) +
+  geom_sf(data = yx_green, aes(fill = "Urban green space"), color = NA, alpha = 0.9) +
+  geom_sf(data = yx_sub_context, aes(color = "Administrative boundaries"), fill = NA, linewidth = 0.16) +
+  geom_sf(data = yx_bnd, aes(color = "City boundary"), fill = NA, linewidth = 0.55) +
+  annotation_scale( location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4 ) +
+  coord_sf(expand = FALSE, datum = NA) +
+  scale_fill_manual(name = NULL, values = c("Urban fabric" = COLORS$beige, "Water" = COLORS$blue_light, "Urban green space" = COLORS$green_dark)) +
+  scale_color_manual( name = NULL, values = c( "Roads" = COLORS$grey85, "Administrative boundaries" = COLORS$red, "City boundary" = COLORS$red_light)) +
+  theme_map_clean() +
+  labs(title = "Yuexiu - Jiēdào", subtitle = "Source: WorldPop + administrative polygons")
 
-p_ugs_dl + p_ugs_yx
+p_ugs_dl <- ggplot() +
+  geom_sf(data = dl_bnd, aes(fill = "Urban fabric"), color = NA) +
+  geom_sf(data = dl_water_context, aes(fill = "Water"), color = NA, alpha = 0.6) +
+  geom_sf(data = dl_roads, aes(color = "Roads"), linewidth = 0.10) +
+  geom_sf(data = dl_green, aes(fill = "Urban green space"), color = NA, alpha = 0.95) +
+  geom_sf(data = dl_wijk_context, aes(color = "Administrative boundaries"), fill = NA, linewidth = 0.16) +
+  geom_sf(data = dl_bnd, aes(color = "City boundary"), fill = NA, linewidth = 0.55) +
+  coord_sf(expand = FALSE, datum = NA) +
+  scale_fill_manual(name = NULL, values = c( "Urban fabric" = COLORS$beige, "Water" = COLORS$blue_light, "Urban green space" = COLORS$green_dark), guide = "none") +
+  scale_color_manual( name = NULL, values = c( "Roads" = COLORS$grey85, "Administrative boundaries" = COLORS$red, "City boundary" = COLORS$red_light), guide = "none") +
+  theme_map_clean() +
+  labs(title = "Delft - Wijken", subtitle = "Source: CBS wijk data")
 
-ggsave(
-  file.path(OUT_ROOT, "context_urban_green_space.png"),
-  p_ugs_dl + p_ugs_yx,
-  width = 14,
-  height = 7,
-  dpi = 300
-)
+fig_ugs_yx_dl <- p_ugs_yx + p_ugs_dl +
+  plot_layout(
+    widths = c(yx_w, dl_w),
+    guides = "collect") +
+  plot_annotation(title = "Context", theme = theme( plot.title = element_text(face = "bold", size = 14))) &
+  theme(legend.position = "right")
+
+fig_ugs_yx_dl
+
+ggsave(file.path(OUT_ROOT, "fig_ugs_yx_dl.png"), fig_ugs_yx_dl, width = 14, height = 6, dpi = 300)

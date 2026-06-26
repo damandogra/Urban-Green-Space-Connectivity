@@ -274,10 +274,11 @@ p_lorenz <- ggplot(lorenz_data, aes(x = cum_pop, y = cum_grn, colour = city)) +
   scale_y_continuous(labels = label_percent()) +
   theme_minimal(base_size = 12) +
   labs(title = "Lorenz Curve — Green Space per Capita Inequality",
-       subtitle = "Diagonal = perfect equality; further below = more unequal",
+       subtitle = "Dashed diagonal = perfect equality; further below = less equal",
        x = "Cumulative share of neighbourhoods (ranked by green pc)",
        y = "Cumulative share of total green space",
-       colour = "City")
+       colour = "City") +
+  theme(plot.title = element_text(face = "bold"))
 
 ggsave(file.path(OUT_ROOT, "fig_lorenz_gini.png"),
        p_lorenz, width = 8, height = 6, dpi = 300)
@@ -296,39 +297,79 @@ dl_bivar <- dl_bivar |>
   mutate(bivar_class = factor(paste(grn_class, pop_class, sep = "-"),
                      levels = bivar_order))
 
-shared_fill <- scale_fill_manual(
+# 2. Transform both maps to metre-based CRS
+yx_plot <- st_transform(yx_bivar, CRS_YX)
+dl_plot <- st_transform(dl_bivar, 28992)
+
+# 3. Calculate real map widths
+yx_bb <- st_bbox(yx_plot)
+dl_bb <- st_bbox(dl_plot)
+
+yx_w <- yx_bb$xmax - yx_bb$xmin
+dl_w <- dl_bb$xmax - dl_bb$xmin
+
+# 4. Shared legend scale
+shared_fill_no_legend <- scale_fill_manual(
   values = bivar_palette,
-  breaks = bivar_order,   # was rev(bivar_order)
-  limits = bivar_order,   # was rev(bivar_order)
-  name   = "Green–Population\nmatrix",
-  drop   = FALSE
+  breaks = bivar_order,
+  limits = bivar_order,
+  drop = FALSE,
+  guide = "none"
 )
+
+# 3×3 legend tile
+p_legend <- ggplot(
+  legend_df,
+  aes(x = grn_class, y = pop_class, fill = bivar_class)
+) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  scale_fill_manual(values = bivar_palette, guide = "none") +
+  coord_fixed(clip = "off") +
+  theme_minimal(base_size = 9) +
+  labs(
+    title = "Bivariate legend",
+    x = "Green density",
+    y = "Population density"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", size = 10),
+    axis.title = element_text(size = 8),
+    axis.text = element_text(size = 8),
+    panel.grid = element_blank(),
+    plot.margin = margin(10, 10, 10, 10)
+  )
 
 
 p_bv_yx <- ggplot(yx_bivar) +
   geom_sf(aes(fill = bivar_class), colour = "white", linewidth = 0.3) +
-  shared_fill +
-  theme_minimal() +
+  annotation_scale(location = "bl", style = "ticks", width_hint = 0.25, text_cex = 0.7, line_width = 0.4) +
+  shared_fill_no_legend +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
   labs(title = "Yuexiu", subtitle = "3×3 tertile classification")
 
 p_bv_dl <- ggplot(dl_bivar) +
   geom_sf(aes(fill = bivar_class), colour = "white", linewidth = 0.3) +
-  shared_fill +
-  theme_minimal() +
+  shared_fill_no_legend +
+  coord_sf(expand = FALSE, datum = NA) +
+  theme_map_clean() +
   labs(title = "Delft", subtitle = "3×3 tertile classification")
 
+# give legend more space
+fig_bivariate_choropleth <- p_bv_yx + p_bv_dl + p_legend +
+  plot_layout(
+    widths = c(yx_w, dl_w, max(yx_w, dl_w) * 0.35)
+  ) +
+  plot_annotation(
+    title = "Bivariate: Green Density × Population Density",
+    theme = theme(
+      plot.title = element_text(size = 14, face = "bold")
+    )
+  )
 
-p_combined <- (p_bv_yx + p_bv_dl) +
-  plot_layout(guides = "collect") &
-  theme(legend.position = "right")
+fig_bivariate_choropleth
 
-ggsave(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"),
-       p_combined +
-         plot_annotation(
-           title = "Bivariate: Green Density × Population Density",
-           theme = theme(plot.title = element_text(size = 14, face = "bold"))
-         ),
-       width = 14, height = 6, dpi = 300)
+ggsave(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"), fig_bivariate_choropleth, width = 14, height = 6, dpi = 300)
 
 # 3×3 legend tile
 legend_df <- expand.grid(grn_class = c("Low","Mid","High"),
@@ -362,7 +403,8 @@ p_corr_dl <- ggplot(dl_inc_joined |> st_drop_geometry(),
   labs(title = "Green Space per Capita vs. Household Income — Delft",
        subtitle = "Pearson correlation; wijk level (residential wijken only)",
        x = "Mean disposable income (€1 000 / resident)",
-       y = "Green space (m² per person)")
+       y = "Green space (m² per person)") +
+  theme(plot.title = element_text(face = "bold"))
 
 n_yx <- sum(!is.na(yx_viirs_zonal$viirs_mean))
 p_corr_yx <- ggplot(yx_viirs_zonal |> st_drop_geometry(),
@@ -378,7 +420,8 @@ p_corr_yx <- ggplot(yx_viirs_zonal |> st_drop_geometry(),
   labs(title = "Green Space per Capita vs. VIIRS Nighttime Light — Yuexiu",
        subtitle = "Pearson correlation; subdistrict level (residential only)",
        x = "Mean VIIRS radiance (nW/cm²/sr)",
-       y = "Green space (m² per person)")
+       y = "Green space (m² per person)") +
+  theme(plot.title = element_text(face = "bold"))
 
 ggsave(file.path(OUT_ROOT, "fig_equity_correlations.png"),
        p_corr_dl + p_corr_yx, width = 14, height = 6, dpi = 300)
