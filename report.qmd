@@ -157,6 +157,32 @@ Urban green spaces are heterogeneous (source 2). Different spaces provide in dif
 Urban green space quality cannot be defined by a single indicator and there are different dimensions of quality. With a Spatial Multi-Criteria Decision Analysis (MCDA) conditions in certain locations are evaluated through weighing different criteria. The dimensions from the research objectives are broken down to form these criteria and enables the integration of ecological, social, and spatial indicators into one framework. The MCDA framework combines indicators per category into an analytical dataset, where these indicators are weighted and aggregated into a quality score. The score allows spatial comparison between comparable spatial units; the Dutch wijken and the Chinese jiedao -- to be used as a decision-support tool for decision makers.
 
 ### Data collection
+To ensure the methodology is reproducible, this study primarily relies on globally available and open-access spatial datasets. Publicly accessible data enables the framework to be applied consistently across different geographical contexts while minimising dependence on local data availability.
+Even though the framework is designed around globally available datasets, complete equivalence between datasets could not always be achieved (see limitations).
+
+Each analyses method relies on a specific combination of datasets. The table provides an overview of the methods, datasets, and corresponding sub-research question for each category. Throughout the entire analysis vector data describes green spaces, administrative boundaries, roads and water bodies, which are then combined with other data. All datasets were projected to a local coordinate reference system (Delft: EPSG:28992 & Yuexiu:EPSG:4547) prior to analysis and processed using R and QGIS. 
+
+WIP!!!! ---> 
+
+| Analysis | Method | Types of data | Data source | SQ |
+|----------|--------|---------------|-------------|:--:|
+| **Accessibility** |||||
+| Green space per capita | Zonal statistics: green space area ÷ population per administrative unit | Green space polygons, population grid | OSM, WorldPop | SQ1 |
+| Walking-distance accessibility | 300 m & 500 m Euclidean buffers; % population within each buffer | Green space polygons, population grid, administrative boundaries | OSM, WorldPop | SQ1 |
+| Mean nearest green space distance | Mean Euclidean distance from administrative unit centroid to nearest green space | Administrative boundaries, green space polygons | OSM, GADM/CBS | SQ1 |
+| **Ecological Quality** |||||
+| Green space typology | Classification of green spaces based on OSM land-use categories | OSM land-use attributes | OpenStreetMap | SQ2 |
+| Vegetation condition (NDVI) | Mean NDVI calculated per green space polygon | Sentinel-2 multispectral imagery | Sentinel-2 | SQ2 |
+| Species observation density | GBIF observations normalised by green space area (log–log relationship) | Biodiversity occurrence points, green space polygons | GBIF, OSM | SQ2 |
+| **Spatial Justice** |||||
+| Green space Gini coefficient | Lorenz curve and Gini coefficient of green space per capita | Green space area, population | Derived from OSM + WorldPop | SQ3 |
+| Population–green space distribution | Bivariate choropleth comparing population density and green space coverage | Administrative boundaries, population, green space | WorldPop, OSM | SQ3 |
+| **Connectivity** |||||
+| Fragmentation metrics | Number of Patches (NP), Mean Patch Size (MPS) and Euclidean Nearest Neighbour (ENN) | Green space polygons | OSM | SQ4 |
+| Network connectivity analysis | Breadth-First Search (BFS) identifying connected components and isolated patches | Green space centroids | OSM, NetworkX | SQ4 |
+| Corridor prioritisation | Identification of potential ecological corridors between isolated patches | Connectivity outputs | Derived layer | SQ5 |
+| **Integrated Assessment** |||||
+| Spatial Multi-Criteria Decision Analysis (S-MCDA) | Weighted integration of accessibility, ecological quality, spatial justice and connectivity indicators | All analytical outputs | Derived layers | SQ5 |
 
 ## Results
 
