@@ -1,6 +1,6 @@
 ---
 title: "Spatial Justice through Urban Green Space Connectivity"
-favicon: "favicon.ico"
+favicon: "https://applied-spatial-analytics.github.io/create-your-report-groupe/docs/favicon.ico"
 bibliography: references.bib
 subtitle: "Project report of Group E"
 author:
