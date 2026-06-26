@@ -314,7 +314,7 @@ p_tier_dl <- ggplot(dl_plot) +
   geom_sf(aes(fill = priority_tier), colour = "white", linewidth = 0.3) +
   scale_fill_manual(
     values = tier_colours,
-    name = "NbS Priority",
+    name = "NBS Priority",
     breaks = c("High priority", "Medium priority", "Low priority"),
     drop = FALSE,
     guide = "none"
@@ -327,7 +327,7 @@ p_tier_dl <- ggplot(dl_plot) +
 
 fig_priority_tiers <- p_tier_yx + p_tier_dl +
   plot_layout(widths = c(yx_w, dl_w), guides = "collect") +
-  plot_annotation( title = "NbS Intervention Priority", subtitle = "Tertile classification of MCDA composite score", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
+  plot_annotation( title = "NBS Intervention Priority", subtitle = "Tertile classification of MCDA composite score", theme = theme(plot.title = element_text(face = "bold", size = 14))) &
   theme(legend.position = "right")
 
 fig_priority_tiers
