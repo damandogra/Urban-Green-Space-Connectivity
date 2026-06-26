@@ -35,7 +35,7 @@ install.packages(c(
 
 Data files are **not tracked in this repo**. Place them at the paths expected by `R/00_config.R`.
 
-Download the data folder from: [Google Drive](https://drive.google.com/file/d/1ZwqZ9QyFR51ZMT_FNu4M2gbkrB5Pw6Z9/view?usp=sharing)
+Download the data folder from: [Google Drive]([https://drive.google.com/file/d/1ZwqZ9QyFR51ZMT_FNu4M2gbkrB5Pw6Z9/view?usp=sharing](https://drive.google.com/file/d/1Pk3aUc24ta8mHQLxxRYyFL_q4feXcNhA/view?usp=sharing))
 
 Expected structure after download:
 
