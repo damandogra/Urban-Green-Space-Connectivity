@@ -290,10 +290,10 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_blue_green_ratio.png"))
 Overall, Delft demonstrated a more consistent ecological condition, and is characterised by higher vegetation greenness and a better blue-green balance. Yuexiu, on the other hand, relies mainly on formal urban parks and shows a greater variation in vegetation condition across its green spaces. The indicators suggest that ecological quality is generally more consistent in Delft, while Yuexiu shows greater ecological heterogeneity.
 
 ### 3. Spatial Justice
+Spatial justice is assessed by evaluating the relationship between green space distribution and socio-economic conditions, population density, accessibility, and green space inequality. Tis analysis provides insight into wether urban green spaces are distributed equitably across neighbourhoods. 
 
-Compare how strong these relationships are in different cities (Delft vs Guangzhou). How does urban green space relate to spatial justice in Delft compared to Guangzhou? which city performs better on each analysis? which one is more equitable
-
-gini coefficient green space per capita inequalities relationship between population density and green access income correlation what neighbourhoods are troubled? does this have to do with the heritage core in delft as well as guangzhou (both heritage centres) When a Gini-coefficient is higher, it means there is a more unequal distribution of urban green spaces. Accessibility and spatial justice vary across different neighbourhoods.
+The relationship between green space per capita and socio-economic status is presented in Figure @fig-equity-correlations. Because spatial income data were unavailable for Yuexiu, VIIRS night-time light intensity has been used as a proxy for economic activity. Studies (@unlit and @unlit2) have revealed that night-time light (VIIRS) can serve as a reliable proxy to examining economic development of certain regional area. As for the Netherlands, with data availability on income per neighborhood (Delft: CBS disposable income), the direct metric is used instead. The equity correlation displayed in @fig-equity-correlations shows both cities have weak correlations between socio-economic status and green space per capita.
+The correlation of income as direct measure of health is found to be -0.117 for Delft, and -0.122 for Yuexiu. Both exhibit negative, near-zero values, suggesting very little to no significant trend of green spaces favoring wealthier sub-districts or neighborhoods in both compared locations. Green space availability therefore appears to be largely independent of income in both study areas. 
 
 ```{r}
 #| label: fig-equity-correlations
@@ -302,12 +302,7 @@ gini coefficient green space per capita inequalities relationship between popula
 knitr::include_graphics(file.path(OUT_ROOT, "fig_equity_correlations.png"))
 ```
 
-Studies (@unlit and @unlit2) have revealed that night-time light (VIIRS) can serve as a reliable proxy to examining economic development of certain regional area. To this finding, due to our inability to find the spatial distribution of income in Yuexiu sub-district, China, VIIRS night-light is used in this graph. As for the Netherlands, with data availability on income per neighborhood (Delft: CBS disposable income), the direct metric is used instead. The equity correlation displayed by @fig-equity-correlations, reveal both statistically insignificant finding of green spaces versus indicator of economic status. The correlation of income as direct measure of health is found to be -0.117 for Delft, and -0.122 for Yuexiu. Both exhibit negative, near-zero values, suggesting very little to no significant trend of green spaces favoring wealthier sub-districts or neighborhoods in both compared locations. Relative to income, its distribution is relatively random.
-
-```{r, out.width="30%"}
-#| label: fig_bivariate_legend.png
-knitr::include_graphics(file.path(OUT_ROOT, "fig_bivariate_legend.png"))
-```
+The spatial relationship between population density and green space density is further explored in the bivariate choropleth, see Figure @fig-bivariate-choropleth. The bivariate choropleth displays the interaction between a demographic factor of population density and an environmental factor of green density. Between the two cities, Delft reveals a more balanced spatial transition; a steady balance between areas dominated by high green density with low population (green) and zones characterized by high population density with limited greenery (pink). Yuexiu does not display this characteristic; instead, it reveals a less uniformal transition of greenery-population density balance across its neighborhoods. This suggests that, while Delft’s green-population dynamic is more structural, Yuexiu’s landscape is the result of uneven, rapid growth where an increase in residential density may have outpaced the provision of ecological infrastructure in the urban fabric, this is backed by Introduction - Study Sites. This indicates that the distribution of urban green space is, spatially seen, less consistent across Yuexiu than across Delft. 
 
 ```{r}
 #| label: fig-bivariate-choropleth
@@ -316,7 +311,7 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_bivariate_legend.png"))
 knitr::include_graphics(file.path(OUT_ROOT, "fig_bivariate_choropleth.png"))
 ```
 
-The bivariate choropleth @fig-bivariate-choropleth displays the interaction between a demographic factor of population density and an environmental factor of green density. Between the two cities, Delft reveals a more balanced spatial transition; of steady balance between areas dominated in high green density with low population (green) and zones characterized by high population density with limited greenery (pink). Yuexiu does not display this characteristic; instead, it reveals less uniform transition of greenery-population density balance amongst its neighborhoods. This suggests that while Delft’s green-population dynamic is more structural, Yuexiu’s landscape is the result of uneven, rapid growth where increase in residential density may have outpaced the provision of ecological infrastructure in the city of Yuexiu.
+Lastly, spatial justice is examined by comparing the behavior of the Lorenz curves and corresponding Gini coefficients of the two cities, see Figure @fig-gini-coeff. The dotted diagonal grey line represents 0; a state of perfect equality where green space would have been equally distributed among all its neighborhoods, and 1 representing maximum inequality. Delft (Gini coefficient= 0.605) reveal a more equal distribution of green spaces across the city compared to Yuexiu (Gini coefficient= 0.719). This can be attributed back to the spatial distribution shown on the map of Figure @fig-bivariate-choropleth, displaying how the inequality exists (while being relative to population density), or more simply Figure @fig-access on green space per capita. 
 
 ```{r}
 #| label: fig-gini-coeff
@@ -325,7 +320,7 @@ The bivariate choropleth @fig-bivariate-choropleth displays the interaction betw
 knitr::include_graphics(file.path(OUT_ROOT, "fig_lorenz_gini.png"))
 ```
 
-Lastly, spatial justice is examined by comparing the behavior of Lorenz gini of the two cities @fig-gini-coeff. The dotted diagonal grey line represents perfect state of equality where green space would have been equally distributed among all its neighborhoods; 0, means perfect equality, whereas 1 represents perfect inequality. Delft (Gini coefficient= 0.605) reveal a more equal distribution of green spaces across the city compared to Yuexiu (Gini coefficient= 0.719). This can be attributed back to the spatial distribution shown on the map of Figure @fig-bivariate-choropleth, displaying how the inequality exists (while being relative to population density), or more simply Figure @fig-access on access to green space per neighborhood.
+Delft performs better in terms of spatial justice, with a more balanced distribution of green space across neighbourhoods and lower inequality between administrative units. Yuexiu (despite containing several large urban parks) exhibits larger disparities in green space availability, particularly within its dense historical urban fabric. 
 
 ### 4. Connectivity
 
