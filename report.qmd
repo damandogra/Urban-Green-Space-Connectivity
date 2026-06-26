@@ -243,9 +243,10 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_network_walk_access.png"))
 
 These results conclude a different accessibility structure, where Yuexiu depends more on larger green spaces and travel time, whereas Delft benefits from a more equally distributed green space network, consisting out of smaller patches. Delft performs better in terms of green space availability and walking-distance access, and due to its lesser density, its urban green space is less pressurised. 
 
-### 2. Typology diversity & Biodiversity
+### 2. Ecological Quality
+To gain insight on the ecological characteristics and condition of urban green spaces, this "ecological quality" is assessed through the composition of urban green space typologies, vegetation condition (NDVI), biodiversity observations, and, to contextualise, the balance between green and blue infrastructure. The blue-green balance needs to be assessed since it can influence the interpretation of the analyses. While this study focuses on green infrastructure, incorporating blue-infrastructure analyses could be a valuable asset to the methodology. 
 
-As background context, @fig-green_typology reveal the the green space composition in urban area taken from the Open-Street Map data (e.g. forests, nature reserve, etc) between the two cities. While Delft seem to be dominated by green or meadows, Yuexiu green space composition is dominated by parls/recreation. The difference is consistent with the urban characteristic between the two cities; while Delft is considered a relatively small European city, Yuexiu historical city center pose more dense, urban characteristic, where presence of formal parks are more easily found compared more scarce grassland/meadow-type green spaces.
+Figure @fig-green_typology illustrates the composition of urban green spaces based on OpenStreetMap land-use classifications. There is a filter applied in the data, so only the publicly accessible green spaces are taken into consideration. The two study areas show different green space compositions. Yuexiu is primarily composed of park and recreational green spaces, while Delft is dominated by grassland and meadow typologies. This difference reflects the contrasting urban contexts; delft being a medium-sized Dutch city, with a greater proportion of informal green areas distributed throughout the urban fabric, while Yuexiu's green space is largely concentrated in formal public parks that serve a dense population. This comes from the different municipal UGS strategies that have been implemented (see Introduction - Study Sites). 
 
 ```{r}
 #| label: fig-green_typology
@@ -254,13 +255,7 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_green_typology.png"))
 
 ```
 
-```{r}
-#| label: fig-ndvi-violin
-#| fig-cap: "NDVI Violin"
-knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_violin.png"))
-```
-
-The NDVI violin plot can be interpreted as first, high consistency in the specific patch type to be very similar vegetation health scores; indicating good maintenance of urban green areas for narrow/pointy plots, and second, high variance in NDVI value across parks, suggesting possible differences in prioritisation of maintenance of different green areas. Based on these, three following interpretations can be made 1) Delft's forest/woodland patches cluster tightly at NDVI ≈ 0.75 (2) Yuexiu's parks have wider spread between 0.35–0.75, thus green quality is highly variable.​
+The Normalised Difference Vegetation Index (NDVI) is a remote sensing metric used to measure and quantify the health, density and greenness of vegetation. Figure @fig-ndvi-spatial shows that Delft has higher mean NDVI values than Yuexiu. Delft's neighborhoods have relatively higher NDVI (high NDVI ≈ 0.7–0.8) and the highest values are concentrated in the southern neighbourhoods of Delft and one up north-east, while lower values occur closer to the historical city centre. Yuexiu displays a similar spatial pattern, with a low to mid-mean NDVI level (NDVI ≈ 0.2–0.6), indicating sparse vegetation overall. It similarly to Delft shows lower NDVI scores in the historical centre and higher NDVI values observed around the northern neighborhoods. Both show the oldest historical cores, which are mostly protected heritage, to have the lowest NDVI scores, which implies there is less freedom for implementing urban green spaces. Overall, the results indicate that vegetation in Delft is generally denser or healthier than in Yuexiu. 
 
 ```{r}
 #| label: fig-ndvi-spatial
@@ -268,7 +263,15 @@ The NDVI violin plot can be interpreted as first, high consistency in the specif
 knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_zonal.png"))
 ```
 
-The Normalised Difference Vegetation Index (NDVI) is a remote sensing metric used to measure and quantify the health, density and greenness of vegetation. The figure @fig-ndvi-spatial, reveals the spatial distribution of NDVI relative within each cities' neighborhoods. Comparing the two cities, Delft's northwestern neighborhoods have relatively higher NDVI (high NDVI ≈ 0.7–0.8), yet lowers as it reached central areas of the city. In contrast, Yuexiu reveals a low to mid-mean NDVI level (NDVI ≈ 0.2–0.6), indicating sparse vegetation, with higher NDVI values observed around the northern neighborhoods. NDVI thus complements OSM's land use data as it measures actual health of vegetation, beyond its land-use mappings.
+These differences between green space typologies become clearer in the NDVI violin plots, see Figure @fig-ndvi-violin. Although at first looking similar, across most typologies, Yuexiu shows lower NDVI values than Delft consistently. Forest and woodland patches in Delft show particularly high and relatively consistent vegetation conditions, while park and recreation areas also maintain high NDVI values. In Yuexiu, the vegetation condition varies more strongly within several typologies, particularly within park and recreational areas. This could be indicating good maintenance of urban green areas for narrow/pointy plots, and second, high variance in NDVI value across parks, could suggest possible differences in prioritisation of maintenance of different green areas. The results suggests ecological quality is more heterogeneous across Yuexiu's green spaces, whereas Delft's vegetation condition is more consistent. 
+
+```{r}
+#| label: fig-ndvi-violin
+#| fig-cap: "NDVI Violin"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_ndvi_violin.png"))
+```
+
+Biodiversity observations were analysed using GBIF occurence records normalised by patch area, see Figure @fig-gbif. The results show that smaller green patches generally contain higher numbers of recorded observations per hectare, while larger patches exhibit lower observation densities. This phenomenon can also be known as sampling artefact, where more observations are gathered in well-surveyed community sites as community gather near entrances, and not necessarily due to richer biodiversity. A second observation reveals the cluster of high patch area (\>10 ha) found in Yuexiu found to have low number of observations. While it can be attributed to the previous phenomenon, it may also indicate under sampling of the larger green spaces, thus, instead of reflecting low ecological biodiversity, the recorded data is more likely to under-represent their true biodiversity. This pattern should be interpreted with caution, as GBIF records represent observation effort rather than actual biodiversity. Consequently, the figure is better interpreted as representing the spatial distribution of biodiversity observations rather than ecological richness itself. 
 
 ```{r}
 #| label: fig-gbif
@@ -276,7 +279,7 @@ The Normalised Difference Vegetation Index (NDVI) is a remote sensing metric use
 knitr::include_graphics(file.path(OUT_ROOT, "fig_gbif_density.png"))
 ```
 
-The biodiversity observation density vs patch size suggest an interesting correlation; first, small patches are found to have significantly higher recorded observations per hectare, whereas larger patches are found to have much lower observations per hectare. This phenomenon can also be known as sampling artefact, where more observations are gathered in well-surveyed community sites as community gather near entrances, and not necessarily due to richer biodiversity. A second observation reveals the cluster of high patch area (\>10 ha) found in Yuexiu found to have low number of observations. While it can be attributed to the previous phenomenon, it may also indicate under sampling of the larger green spaces, thus, instead of reflecting low ecological biodiversity, the recorded data is more likely to under-represent their true biodiversity.
+Figure @fig-bluegreen presents the blue-green balance, calculated by \$\\text{blue-green balance} = \\log(1 + \\text{water per capita}) - \\log(1 + \\text{green per capita})\$ reveal higher abundance of blue space (water) if dominated by positive values, higher abundance of green space if dominated by negative values. Values close to 0 indicate a balanced amount of blue and green infrastructure. Comparing the two cities, the range in comparison for Yuexiu suggests much higher green space presence in comparison to water bodies. This is validated by summary statistics between total water vs green, in which Yuexiu yielded 192,494m^2^ of mean green space compared to 40,304m^2^ of mean water space. In comparison, Delft yielded a more evenly spread balance between green and blue areas; akin to its canal-rich characteristic, thus reflecting its water-city heritage. The relevance extends as blue and green infratsructure together, can provide better cooling and biodiversity than either alone (@akther2026bgi). This is considered a limitation for now, but, as suggested before, future research would benefit to relate the green-blue ratio with cooling and biodiversity, and further explore this relationship.
 
 ```{r}
 #| label: fig-bluegreen
@@ -284,7 +287,7 @@ The biodiversity observation density vs patch size suggest an interesting correl
 knitr::include_graphics(file.path(OUT_ROOT, "fig_blue_green_ratio.png"))
 ```
 
-Blue green balance, calculated by \$\\text{blue-green balance} = \\log(1 + \\text{water per capita}) - \\log(1 + \\text{green per capita})\$ reveal higher abundance of blue space (water) if dominated by positive values, higher abundance of green space if dominated by negative values, and relatively balanced green-blue space with values nearing 0. Comparing the two cities, the range in comparison for Yuexiu suggests much higher green space presence in comparison to water. This is validated by doing summary statistics between total water vs green, in which Yuexiu yielded 192,494m^2^ of mean green space compared to 40,304m^2^ of mean water space. In comparison, Delft yielded a more evenly spread balance between green and blue areas; akin to its canal-rich characteristic, thus reflecting its water-city heritage. The relevance extends as blue and green infratsructure together, can provide better cooling and biodiversity than either alone (@akther2026bgi). Limitation for now, for future work possible to relate the green-blue ratio with cooling/biodiversity and explore the relationship.
+Overall, Delft demonstrated a more consistent ecological condition, and is characterised by higher vegetation greenness and a better blue-green balance. Yuexiu, on the other hand, relies mainly on formal urban parks and shows a greater variation in vegetation condition across its green spaces. The indicators suggest that ecological quality is generally more consistent in Delft, while Yuexiu shows greater ecological heterogeneity.
 
 ### 3. Spatial Justice
 
