@@ -590,6 +590,7 @@ Throughout the development of this assignment, we have been assisted by OpenAI's
 ## Conclusion
 
 This study answers to the research question:
+
 ::: {.callout-note appearance="simple"}
 **Research Question** How can urban green space quality assessment help inform on nature-based interventions in Delft and Yuexiu District?
 :::
