@@ -30,3 +30,4 @@ data.zip
 **/*.quarto_ipynb
 /outputs
 .github
+pages

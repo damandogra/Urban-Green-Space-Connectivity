@@ -535,41 +535,21 @@ Overall, the MCDA integrates the individual analyses into a single decision supp
 
 Few limitations have been identified in accordance to the used data sources. First, most of the datasets come from OSM, its data completeness, however, differs between Yuexiu, Guangzhou and Delft. The Netherlands as OSM's volunteer-based system is more dominant in Western European cities compared to Chinese cities. This means that the data which is gathered is not the most up-to-date nor accurate, and could be biased. Moreover, the language barrier in accessing chinese dataset makes it more difficult to perform a direct comparison between the two cities, especially regarding the spatial justice analysis. Here, instead of using income per sub-district data, our methodology had to rely on an alternative method; the VIIRS night-light data as a proxy to economic development was used instead of actual income related numbers. While literature supports the link between VIIRS night-light data as economic proxy for development, this still does not provide a fully correct comparison between the two cities. Furthermore, GBIF observations from the ecological quality section may contain sampling bias, as the Chinese dataset are much more up to date in comparison to the Delft dataset. Due to this sampling bias, interpretation becomes less meaningful. In obtaining the datasets, there was an awareness of the temporal effect if data gathered was to be obtained in different seasons. For example, the comparison would not be less meaningful if NDVI for Delft and Yuexiu were obtained during a different seasons.
 
-<<<<<<< HEAD
 Additional limitations relate to specific analytical decisions.
 
 **WorldPop floor artifacts.** Nine Yuexiu subdistrict polygons carried `pop_count = 1` placeholder values from WorldPop, producing two fabricated high-priority subdistricts (Binjiang, Liede) in an initial analysis run. These were identified via a hard discontinuity in the sorted population distribution and excluded via a `pop_count ≥ 100` filter applied consistently across scripts 04 and 06.
 
-**Connectivity score compression.** Both cities score ~0.81–0.82 on connectivity 
-urgency, meaning this criterion contributes limited differentiation to the MCDA 
-composite. The degree-based measure collapses to near-maximum for most 
-administrative units. A continuous dispersal kernel or area-weighted betweenness 
-centrality would produce more sensitive differentiation in future work.
+**Connectivity score compression.** Both cities score ~0.81–0.82 on connectivity urgency, meaning this criterion contributes limited differentiation to the MCDA composite. The degree-based measure collapses to near-maximum for most administrative units. A continuous dispersal kernel or area-weighted betweenness centrality would produce more sensitive differentiation in future work.
 
-**GBIF recording bias.** GBIF observation density reflects recording effort as 
-much as actual biodiversity. Well-known urban parks in Yuexiu attract 
-disproportionate citizen science activity, producing high obs/ha values that 
-overstate biodiversity relative to less-visited patches. This metric should be 
-interpreted as a relative spatial indicator rather than an absolute biodiversity 
-measure.
+**GBIF recording bias.** GBIF observation density reflects recording effort as much as actual biodiversity. Well-known urban parks in Yuexiu attract disproportionate citizen science activity, producing high obs/ha values that overstate biodiversity relative to less-visited patches. This metric should be interpreted as a relative spatial indicator rather than an absolute biodiversity measure.
 
-**Income proxy asymmetry.** Delft uses CBS disposable income per resident; Yuexiu 
-uses VIIRS nighttime light radiance as a socioeconomic proxy, as subdistrict 
-income data are not publicly available. These are not equivalent metrics and the 
-equity correlation results are not directly comparable across cities.
+**Income proxy asymmetry.** Delft uses CBS disposable income per resident; Yuexiu uses VIIRS nighttime light radiance as a socioeconomic proxy, as subdistrict income data are not publicly available. These are not equivalent metrics and the equity correlation results are not directly comparable across cities.
 
-**NDVI range asymmetry.** Yuexiu's NDVI range (−0.35 to 0.55) is substantially 
-wider than Delft's (0.31–0.78), driven by water bodies and concrete surfaces 
-scoring very low NDVI. After within-city min-max normalisation, most Yuexiu 
-subdistricts compress toward the lower urgency end, not because vegetation is 
-healthy but because the range is stretched by non-vegetated pixels.
+**NDVI range asymmetry.** Yuexiu's NDVI range (−0.35 to 0.55) is substantially wider than Delft's (0.31–0.78), driven by water bodies and concrete surfaces scoring very low NDVI. After within-city min-max normalisation, most Yuexiu subdistricts compress toward the lower urgency end, not because vegetation is healthy but because the range is stretched by non-vegetated pixels.
 
-There are also limitations within the analytical methodology. The MCDA weights were assigned a priori rather than derived empirically. This means that our choice to assign weight accessibility at 30%, biodiversity and connectivity at 25%, and equity/spatial justice at 20% is a judgement made before analysis. This however can differ to other researcher or planning priorities, as the weights assigned were based on judgement with nature-based solution being central to our focus analysis. Moreover, @fig-prioritytiers displays relative ranking, and does not display absolute urgency to where there needs immediate intervention to nature-based solution. It attempts to inform the least well-performing regions, rather than genuine crisis/urgency.
-=======
-In our code methodology a few limitations are identified. The MCDA weights were assigned and not derived from @fig-connectmaps, which means that the choice to assign weight accessibility at 30%, biodiversity and connectivity at 25%, and spatial justice at 20%, is a judgement made before carrying out the analysis. This, however, can differ with other research or planning priorities, as the weights assigned in this study have been based on nature-based solutions being central to the focus. Moreover, @fig-prioritytiers displays relative ranking, and does not display absolute urgency to where there needs immediate intervention to nature-based solution. It attempts to inform the least well-performing regions, rather than genuine crisis/urgency.
+The MCDA weights were assigned a priori rather than derived empirically. This means that our choice to assign weight accessibility at 30%, biodiversity and connectivity at 25%, and equity/spatial justice at 20% is a judgement made before analysis. This however can differ to other researcher or planning priorities, as the weights assigned were based on judgement with nature-based solution being central to our focus analysis. Moreover, the priority tiers map (see Results) displays relative ranking, and does not display absolute urgency to where there needs immediate intervention to nature-based solution. It attempts to inform the least well-performing regions, rather than genuine crisis/urgency.
 
-Finally, a limitation was on the fact that there has been no regard of peripherical conditions, and, in addition, different transportation methods. Different mobility networks bring different accessibility results, if for example tramlines in relationship to urban green space would be considered. Same goes for population density in relationship to accessible urban green space, even if its further away. If peripherical conditions would have been taken in regard, the outer neighbourhoods especially, could have a completely different score on a couple of the analysis, such as the buffer and the green space per capita. 
->>>>>>> 687674a (Re-write and add of discussion and reprocucibility and ai statement)
+Finally, no regard was given to peripherical conditions or different transportation methods. Different mobility networks bring different accessibility results — for example, tramlines in relationship to urban green space. If peripherical conditions were taken into account, outer neighbourhoods especially could score differently on analyses such as the buffer coverage and green space per capita.
 
 ### Future Work
 
@@ -609,11 +589,7 @@ Moreover, to support open science, our workflow follows the FAIR; Findable, Acce
 
 ### AI statement
 
-<<<<<<< HEAD
-Throughout the development of this assignment, we have been assisted by OpenAI’s ChatGPT version GPT-5.5, Google’s Gemini 3 Flash (Free tier) and Claude Sonnet 4.6. We have reviewed and understood all suggestions made by those models, and take full responsibility for the content being submitted. AI is used specifically to support our R coding.
-=======
-Throughout the development of this assignment, we used by OpenAI’s ChatGPT version GPT-5.5 and Google’s Gemini 3 Flash (Free tier) as supporting tools. The tools were primarily used to assist with R programming, debugging, gathering information on analytical methods, and for improving clarity and grammar of the written report. All AI-generated suggestions were critically reviewed and adapted. The analytical decisions, methodological choices, data processing, interpretations, and conclusions were made solely by the authors. 
->>>>>>> 687674a (Re-write and add of discussion and reprocucibility and ai statement)
+Throughout the development of this assignment, we have been assisted by OpenAI's ChatGPT version GPT-5.5, Google's Gemini 3 Flash (Free tier) and Claude Sonnet 4.6. These tools were primarily used to assist with R programming, debugging, gathering information on analytical methods, and for improving clarity and grammar of the written report. All AI-generated suggestions were critically reviewed and adapted. The analytical decisions, methodological choices, data processing, interpretations, and conclusions were made solely by the authors, who take full responsibility for the content being submitted.
 
 ## Conclusion
 
