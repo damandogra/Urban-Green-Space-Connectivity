@@ -423,6 +423,34 @@ There are also few limitations identified within our code methodology. The MCDA 
 
 ### Future Work
 
+**Sensitivity analysis application on MCDA weighing distribution:** Sensitivity analysis can be applied onto weights within the MCDA analysis to examine how different weighing combinations affect the MCDA result. This would mitigate the inherent subjectivity on the opinion of authors and ensure robustness of multiple what-if scenarios. Thus, ensuring a resilient and informed decision-making process.
+
+**Dataset incoroporated enable direct comparison between two cities**: This directly relates to how data sourced through OSM is lower in Chinese cities (such seen in the GBIF analysis on biodiversity) compared to that of Delft. This will enhance consistency and reliability of cross-city comparisons for direct standardization.
+
+**Incorporation of more urban cooling quantitative analysis**: The blue-green infrastructure analysis can also be improved with more urban cooling or biodiversity effects, which would be particularly relevant given the context of both cities; Delft's canal-rich characteristic and within Yuexiu's central area within the Pearl River Delta. This directly translates improving urban green space quality.
+
+**Comparison between two cities more comparable in size and population density**: To improve the validity of cross-city comparison, future studies hope to ensure alignment between city sizes and population density. Reducing the current discrepancy in scale would result in more meaningful comparison for future planning recommendations.
+
+### Reproducibility
+
+**Reproducibility of from data source**:
+* **OSM** is a crowd-sourced, volunteer-based global map providing vector features such as building, roads and point of interests. It uses ODbL 1.0 licensing/CC-BY-SA 2.0, which means that alteration, transformation is allowed yet there is legal requirement to distribute the new version via the same licensing. 
+* **WorldPop, VIIRS and NDVI**: These datasets all come from sources from CC-BY 4.0 or public licensing, allowing for sharing, adapting or commercial uses as long as credits are given for creator.
+
+**Reproducibility of pipeline workflow**:
+The entire analysis workflow is designed for full reproducibility and can be executed via running groupE/run_pipeline.R. The project relies on several R libraries, which can be installed or updated through the following script:
+packages <- c("here", "sf", "terra", "dplyr", "ggplot2", "patchwork", "ggspatial")
+install.packages(setdiff(packages, installed.packages()[,"Package"]))
+
+Moreover, to support open science, our workflow follows the FAIR; Findable, Accessible, Interoperable, and Reusable data principles. Findability and accessibility of our pipeline is demonstarted through our public GitHub repository, with explicit open data sources to ensure resuability of data principles. 
+
+### AI usage
+
+Throughout the development of this assignment, we have been assisted by OpenAI’s
+ChatGPT version GPT-5.5 and Google’s Gemini 3 Flash (Free tier). We have reviewed
+and understood all suggestions made by those models, and take full responsibility for the
+content being submitted. AI is used specifically to support our R coding.
+
 ## Conclusion
 
 Spatial justice is not only determined by the quality of green space, but by how well green spaces are connected, accessible, and ecologically functional.
