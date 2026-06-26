@@ -128,38 +128,6 @@ create-your-report-groupe/
 
 ---
 
-## Key configuration (`R/00_config.R`)
-
-| Constant | Value | Purpose |
-|---|---|---|
-| `CRS_YX` | EPSG:4547 | Projected CRS for Yuexiu (Guangzhou) |
-| `CRS_DELFT` | EPSG:28992 | Projected CRS for Delft (RD New) |
-| `BUFFER_300M` | 300 m | Walkability buffer for access analysis |
-| `BUFFER_500M` | 500 m | Extended buffer for access analysis |
-| `DISPERSAL_THRESH_M` | 150 m | Max inter-patch gap for connectivity graph edges |
-| `WATER_LINE_BUFFER` | 5 m | Buffer applied to water line features |
-| `MCDA_WEIGHTS` | accessibility 0.30, biodiversity 0.25, connectivity 0.25, equity 0.20 | Weights for multi-criteria scoring |
-
----
-
-## Green space filter
-
-Only publicly accessible, ecologically functional green spaces are included in all analyses. The OSM typology is filtered as follows:
-
-**Included:**
-- Park / Recreation
-- Forest / Woodland
-- Grass / Meadow
-- Nature reserve / Scrub
-
-**Excluded:**
-- Cemetery
-- Allotment / Agriculture
-- Sports facility
-- Other / Unclassified
-
----
-
 ## Outputs
 
 All figures are written to `outputs/` by the pipeline scripts and copied to `docs/outputs/` on render:
