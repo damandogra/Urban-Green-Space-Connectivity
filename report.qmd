@@ -1,5 +1,6 @@
 ---
 title: "Spatial Justice through Urban Green Space Connectivity"
+favicon: "docs/outputs/favicon.svg"
 bibliography: references.bib
 subtitle: "Project report of Group E"
 author:
