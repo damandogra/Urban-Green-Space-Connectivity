@@ -2,7 +2,7 @@
 
 Project report of Group E — Applied Spatial Analytics 2026, TU Delft.
 
-**Live report:** https://applied-spatial-analytics.github.io/create-your-report-groupe/
+
 
 ---
 
