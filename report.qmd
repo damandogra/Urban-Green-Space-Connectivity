@@ -129,22 +129,22 @@ Translate the analytical findings into nature-based planning strategies for impr
 
 ## Methods
 
-### Study Area
+### Research Design
 
-## Research Design
-
-This study addresses its central research question through a comparative analytical framework structured around four thematic objectives: **Accessibility**, **Ecological Quality**, **Spatial Justice**, and **Connectivity**. Each objective corresponds to a sub-question and is operationalised through spatial analysis methods applied consistently across both cities. The four objective scores are subsequently integrated via Multi-Criteria Decision Analysis (MCDA) to produce a composite urban green space quality score and a spatial prioritisation of Nature-based Solution (NbS) intervention zones.
+This study addresses its central research question through a comparative analytical framework structured around four thematic objectives: Accessibility, Ecological Quality, Spatial Justice, and Connectivity. Each objective corresponds to a sub-question and is operationalised through spatial analysis methods applied consistently across both cities. The four objective scores are subsequently integrated via Multi-Criteria Decision Analysis (MCDA) to produce a composite urban green space quality score and a spatial prioritisation of Nature-based Solution (NbS) intervention zones.
 
 The study proceeded in two stages:
 
-1. **Stage I — Data preparation.** All required spatial datasets were collected from public sources, preprocessed into a consistent format, and validated. The resulting layers are provided in the project data folder and serve as fixed inputs to all subsequent analysis.
-2. **Stage II — Thematic analysis.** All analyses were conducted in R from those processed files. The workflow described in Sections 3.5–3.9 is fully reproducible from the provided data using the accompanying R scripts.
+1. **Stage I — Data Collection and Preprocessing.** All required spatial datasets were collected from public sources, preprocessed into a consistent format, and validated. The resulting layers are provided in the project data folder and serve as fixed inputs to all subsequent analysis.
+2. **Stage II — Thematic analysis.** All analyses were conducted in R from those processed files. The workflow described in Sections 3.3–3.4 is fully reproducible from the provided data using the accompanying R scripts.
 
 ---
 
-## Data Collection and Preprocessing
+### Stage I - Data Collection and Preprocessing
 
-All spatial data were collected via a seven-step Python pipeline.
+To ensure reproducibility, this study relies primarily on globally available and open-access spatial datasets. This enables the framework to be applied consistently across different geographical contexts while minimising dependence on local data availability. Complete equivalence between datasets could not always be achieved across the two cities — limitations are discussed in Section 5.1.
+
+All spatial data were collected via a seven-step Python pipeline, summarised below.
 
 ```{r}
 #| label: fig-data-collection
@@ -154,179 +154,158 @@ All spatial data were collected via a seven-step Python pipeline.
 knitr::include_graphics(file.path(OUT_ROOT, "data_collection.png"))
 ```
 
-### Step 1 — Administrative boundaries
+#### Step 1 — Administrative boundaries
 
-**Delft**
+**Delft.** The municipality boundary was fetched from the PDOK WFS (Kadaster bestuurlijke gebieden), filtered to municipality code `GM0503`, and dissolved to a single polygon. CBS gebiedsindelingen (years 2022–2024) was used as a fallback. Neighbourhood polygons (*buurten*) were fetched from the PDOK wijkenbuurten WFS, clipped to the municipality boundary, and filtered to buurt-level rows (`bu_code` prefix `BU`) to exclude wijk- and gemeente-level aggregates.
 
-The municipality boundary was fetched from the PDOK WFS (Kadaster bestuurlijke gebieden), filtered to municipality code `GM0503`, and dissolved to a single polygon. Available WFS layers were auto-discovered via `GetCapabilities`; multiple bounding-box orientations were tried to handle GeoServer axis-order quirks. CBS gebiedsindelingen (years 2022–2024) was used as a fallback. Neighbourhood polygons (*buurten*) were fetched from the PDOK wijkenbuurten WFS, clipped to the municipality boundary, and filtered to buurt-level rows (`bu_code` prefix `BU`) to exclude wijk- and gemeente-level aggregates.
+**Yuexiu (Guangzhou).** The district boundary and *jiēdào* subdistrict polygons were obtained from GADM v4.1, filtered to `NAME_2 = "Guangzhou"`, and dissolved to a single city polygon.
 
-**Yuexiu (Guangzhou)**
+#### Step 2 — Vector layers
 
-The district boundary and *jiēdào* subdistrict polygons were obtained from GADM v4.1, filtered to `NAME_2 = "Guangzhou"`, and dissolved to a single city polygon. The GADM GeoPackage (~200 MB) is downloaded automatically if not present locally.
+**Delft — green space and water (BGT).** Green space and water were fetched from the BGT (Basisregistratie Grootschalige Topografie) via the PDOK OGC API Features endpoint with automatic pagination. Two feature types were collected: `groenVoorziening` (maintained green infrastructure) and `bos` (forest and woodland). Water bodies were fetched as BGT `waterdeel`. BGT was preferred over OSM because it carries 20 cm positional accuracy and is the legally authoritative source; OSM was used as a fallback.
 
----
-
-### Step 2 — Vector layers (green space, water, roads)
-
-**Delft — green space and water (BGT)**
-
-Green space and water were fetched from the BGT (Basisregistratie Grootschalige Topografie) via the PDOK OGC API Features endpoint with automatic pagination. Two feature types were collected: `groenVoorziening` (maintained green infrastructure) and `bos` (forest and woodland). Water bodies were fetched as BGT `waterdeel`, covering canals, rivers, ponds, and drainage channels. BGT was preferred over OSM because Dutch OSM data is derived from BGT via a lossy conversion; BGT carries 20 cm positional accuracy and is the legally authoritative source. OSM was used as a fallback for both layers.
-
-**Yuexiu — green space, water, and roads (OSM)**
-
-All vector layers were fetched from OpenStreetMap via the Overpass API. Green space was queried using the `leisure=`, `landuse=`, and `natural=` tags; water bodies using `waterway=` and `natural=water`. Requests were retried automatically with exponential backoff on HTTP 429 responses.
-
-**Roads — both cities (OSM)**
-
-Road networks were fetched using the `highway=` tag for both cities. A bug fix was applied: OSM ways with `highway=` that form a closed loop (roundabouts, dead-end loops) are stored as `LineString` regardless of node topology; without this fix, closed ways are parsed as filled `Polygon` geometries, corrupting network topology. A zero-distance buffer was applied to polygon geometries only to repair self-intersections, and explicitly not applied to linestrings to preserve road network topology.
+**Yuexiu — green space, water, and roads (OSM).** All vector layers were fetched from OpenStreetMap via the Overpass API using the `leisure=`, `landuse=`, `natural=`, and `waterway=` tags. Road networks for both cities were fetched using the `highway=` tag.
 
 Retained tag attributes: `leisure`, `landuse`, `natural`, `waterway`, `highway`, `name`, `surface`.
 
----
-
-### Step 3 — Raster layers
+#### Step 3 — Raster layers
 
 | Layer | Cities | Resolution | Source |
 |---|---|---|---|
-| WorldPop | Both | 100 m | worldpop.org (COG range request) |
-| Sentinel-2 NDVI | Both | 10 m | Google Earth Engine (cloud-free median composite) |
+| WorldPop | Both | 100 m | worldpop.org |
+| Sentinel-2 NDVI | Both | 10 m | Google Earth Engine |
 | ESA WorldCover | Both | 10 m | AWS S3 COG tiles |
-| VIIRS VNP46A4 | Yuexiu only | ~500 m | NASA Earthdata (annual nighttime light composite) |
+| VIIRS VNP46A4 | Yuexiu only | ~500 m | NASA Earthdata |
 | Green space mask | Yuexiu only | 10 m | Derived from WorldCover + NDVI |
 
-**Notes:**
+NDVI was computed per image as $(B8 - B4) / (B8 + B4)$ and reduced to a pixel-wise median. The Yuexiu green space mask retained tree cover (class 10) and grassland (class 30) pixels, further filtered by NDVI > 0.3. VIIRS nighttime light radiance served as a socioeconomic proxy for Yuexiu, where direct income data are not publicly available.
 
-- WorldPop was fetched via GDAL `/vsicurl/` COG range requests, retrieving only the AOI window. A full national file download was used as fallback.
-- Sentinel-2 NDVI was computed per image as $(B8 - B4) / (B8 + B4)$ and reduced to a pixel-wise median. Copernicus STAC (`pystac-client`) was used as a fallback if GEE was unavailable.
-- VIIRS nighttime light radiance was used as a socioeconomic proxy for Yuexiu, where direct income data are not publicly available.
-- The Yuexiu green space mask was derived from WorldCover by retaining tree cover (class 10) and grassland (class 30) pixels, further filtered by NDVI > 0.3 to exclude bare or paved surfaces. Fragments < 100 m² were removed; adjacent pixels were dissolved then exploded to single-part polygons.
+#### Step 4 — Biodiversity occurrences (GBIF)
 
----
+Species occurrence records were fetched from the GBIF REST API (`occurrence/search`) for each city bounding box, in pages of 300 up to a maximum of 5,000 records per city. Filters applied: `basisOfRecord = HUMAN_OBSERVATION`, valid decimal coordinates, and `coordinateUncertaintyInMeters ≤ 1,000 m`. Raw JSON was cached locally to avoid repeat API calls.
 
-### Step 4 — Biodiversity occurrences (GBIF)
+#### Step 5 — Socioeconomic data
 
-Species occurrence records were fetched from the GBIF REST API (`occurrence/search`) for each city bounding box, in pages of 300 up to a maximum of 5,000 records per city. Filters applied:
+**Delft.** Neighbourhood-level income data were fetched from CBS StatLine OData API (table `85163NED`), filtered to Delft buurt codes (`BU0503*`), and joined to CBS buurt boundary polygons. Two buurten with suppressed disclosure values were excluded from income correlation analysis.
 
-- `basisOfRecord = HUMAN_OBSERVATION`
-- Valid decimal coordinates required
-- `coordinateUncertaintyInMeters ≤ 1,000 m` (records with null uncertainty retained)
+**Yuexiu.** Mean, median, and standard deviation of VIIRS nighttime light radiance were computed per zone polygon and saved as `guangzhou_viirs_zonal.csv`.
 
-Retained attributes: `gbifID`, `species`, `genus`, `family`, `kingdom`, coordinates, uncertainty, `year`, `month`, `basisOfRecord`, `datasetName`. Raw JSON was cached locally to avoid repeat API calls.
-
----
-
-### Step 5 — Socioeconomic data
-
-**Delft — CBS StatLine income**
-
-Neighbourhood-level income data were fetched from CBS StatLine OData API, table `85163NED`, filtered to Delft buurt codes (`BU0503*`). Variables retrieved: mean disposable income per resident, mean income per earner, share of low-income households, share near the social minimum, share aged 65+, and address density. Data were joined to CBS buurt boundary polygons by neighbourhood code. Two buurten with suppressed CBS disclosure values were excluded from income correlation analysis.
-
-**Yuexiu — VIIRS zonal statistics**
-
-Mean, median, and standard deviation of VIIRS nighttime light radiance were computed per zone polygon from the raster downloaded in Step 3. Output was saved as `guangzhou_viirs_zonal.csv`.
-
----
-
-### Step 6 — Clip and reproject
+#### Step 6 — Clip and reproject
 
 All raw layers were clipped to the city AOI and reprojected to a metric CRS:
 
-| City | CRS | Notes |
+| City | CRS | Authority |
 |---|---|---|
-| Delft | EPSG:28992 — Amersfoort / RD New | Dutch national grid, metre units |
-| Yuexiu | EPSG:4547 — CGCS2000 / Gauss-Krüger zone 20 | Chinese national grid, metre units |
+| Delft | EPSG:28992 — Amersfoort / RD New | Dutch national grid |
+| Yuexiu | EPSG:4547 — CGCS2000 / Gauss-Krüger zone 20 | Chinese national grid |
 
-Processing was applied per geometry type:
+Vectors were clipped with `geopandas.clip`; rasters were masked with `rasterio.mask` and reprojected with `rasterio.warp.reproject`, using bilinear resampling for continuous rasters and nearest-neighbour for categorical rasters. All projected outputs were saved with a `_proj` suffix.
 
-- **Vectors:** clipped with `geopandas.clip`; zero-distance buffer applied to polygons only; empty geometries removed.
-- **Rasters:** masked with `rasterio.mask`; reprojected with `rasterio.warp.reproject`; bilinear resampling for continuous rasters (WorldPop, NDVI, VIIRS); nearest-neighbour resampling for categorical rasters (WorldCover).
+#### Step 7 — Validation audit
 
-All projected outputs were saved with a `_proj` suffix.
+A validation audit was run on all projected layers before analysis, checking for correct CRS, valid geometries, bounding box overlap with the AOI, raster coverage > 50% valid pixels, and key attribute completeness ≥ 80% non-null. Results were written to `validate_delft.json` and `validate_guangzhou.json`. Any layer failing a check was flagged before analysis proceeded.
 
 ---
 
-### Step 7 — Validation audit
+### Stage II — Thematic Analysis
 
-A validation audit was run on all projected layers before analysis. Each layer was checked for:
+All analyses were conducted in R from the processed layers produced in Stage I, following the pipeline illustrated in @fig-analytical-pipeline. The pipeline is implemented in six sequential scripts (`00_config.R` through `06_mcda_nbs.R`), each reading GeoPackage and GeoTIFF inputs from the project data folder and writing intermediate RDS objects to `outputs/`. All spatial operations use the city-specific metric CRS throughout; reprojection to EPSG:4326 is applied only for raster extraction via `exact_extract()`.
 
-- File existence and loadability
-- Correct metric CRS matching the city target
-- No null, empty, or invalid geometries
-- Bounding box overlap with the city AOI
-- Raster coverage > 50% valid (non-nodata) pixels
-- Key attribute completeness ≥ 80% non-null
-- Cross-layer CRS consistency
-
-Results were written to `validate_delft.json` and `validate_guangzhou.json`. Any layer failing a check was flagged before analysis proceeded.
-
-
-### Analytical framework
-
-This study addresses the research question by breaking it up in several research sub-questions, which will come together in forming a MCDA. The study provides a method to determine the quality of urban green spaces, and therefore provide a tool for planners and designers to identify aspects for urban green space improvement for more informed decisions.
-
-The empirical analysis of this paper is split into four categories to provide more structure in throughout the data collection and evaluation, taking into account its multi-criterion nature. Within each of the categories, multiple relevant spatial analysis are conducted to provide meaning for the comparison between Delft and Yuexiu, to evaluate connectivity between green spaces.
-
--   **Accessibility** evaluates the population accessibility with green areas. The analysis conducted are; green space per capita, measuring the square meters of green space per person within an administrative boundary, buffer analysis to measure percentage of people within different walking distances (e.g. 300m and 500m), and mean nearest green space distance per sub-district, captured based on the centroid of each administrative boundary of the sub-district.
-
-In a study by Meerow (2019) on green infrastructure, a spatial planning model for evaluating ecosystem service trade-offs and synergies was performed across three coastal mega-cities through a spatial criterion evaluation. One of the metrics was access to green space, which was used as an indicator representing the population weighted mean distance to the nearest park for all buildings within a census tract (Logan et al 2019), thus calculating distance between nearest park to building.
-
--   **Typology diversity** <!-- The spatial analysis conducted here include grouping by different green space according to its Open-Street Map data green area classification (e.g. forests, nature reserve, etc).  reveals the typology diversity but i think this is more to show distribution but not really for result analysis? -->
-
-High levels of ecological connectivity within an urban landscape enables animals to move between patchy resources and allows for breeding whilst maintaining gene flow. In contrast, low levels of ecological connectivity restricts access to resources and prevents the movement of individuals and genes, inbreeding depression and extinction. One of the methodologies used in the study of Kirk et al. (2023) was quantifying ecological connectivity by a City biodiversity Index that calculates the probability of two randomly chosen locations to be connected and not separated by barriers.
-
-```         
-Species observation density is compared against patch size. The species observation density obtains its data from Global Biodiversity Information Facility (GBIF), an open-access database for biodiversity data. Thus, revealing the relationship between patch size (size of park) compared to the abundance of wildlife within it. $$\log(\text{Area}) \quad \text{vs.} \quad \log\left(\frac{\text{Observations}}{\text{Area}}\right)$$
-
--   <!--  The violin plot takes mean NDVI (per sub-district) to be plotted against green typology. Thus, the plot reveals the variability and spread/distribution of NDVI value within each green space type. -> so we are evaluating whether each or which green space type has high or lower NDVI? it feels slightly redundant if we take a look how different green spaces if they have higher low NDVI? doesn't really help answer our question on biodiversity/accessibility? -->
-
-<!-- -->
-
--   <!-- The green-blue ratio calculates the amount of area overlap between green features and water features, within each sub-district boundaries. Lower values indicate low water ratio compared to its amount of greeneries, whereas higher values reveal more water presence compared to the amount of green spaces.  discussed in gc, maybe we are trying to implement green-blue infrastructure (whatsapp gc) -->
+```{r}
+#| label: fig-analytical-pipeline
+#| fig-cap: "Analytical pipeline for urban green space quality assessment across Delft and Yuexiu, structured around five sub-research questions and integrated through a weighted MCDA synthesis."
+#| fig-align: center
+#| out-width: "100%"
+knitr::include_graphics(file.path(OUT_ROOT, "analysis_methodology.png"))
 ```
 
-<!-- addition, did we end up using k-means?-->
+Two global decisions apply across all scripts: the S2 geometry engine is disabled (`sf_use_s2(FALSE)`) in favour of planar GEOS operations, and `st_make_valid()` is applied to all polygon layers before any spatial operation. Green patches smaller than **0.1 ha** are dropped for both cities prior to analysis — fragments below this threshold are too small to provide measurable ecosystem services.
 
-Urban green spaces are heterogeneous (source 2). Different spaces provide in different ecological and social functions. Typologies can help identify recurring patterns across neighbourhoods/contexts. To identify these recurring patterns, this research does a typology construction, making use of the indicators derived from the sub research questions. These observations are grouped based on indicator values. Through answering which urban green spaces are similar to others, there is a typology set created, which can then be used to classify and rate the chosen location on its urban green space quality through an MCDA. Resulting typologies reveal different combinations of accessibility, connectivity, biodiversity, and the neighbourhoods' demographic context.
+---
 
--   **Spatial justice** Gini coefficient is a measure of statistical dispersion, used in this report too reveal the urban green space inequality (within meaningful residential population, current minimum population is 100). Value of 0 reflects perfect equality, whereas value of 1 represents maximum inequality. In this case, gini of 0 means equal access of green space for everyone, whereas 0, means that an area has nearly all the green spaces within the city. It is closely linked to the Lorenz curve as the Gini score is a direct reflection of the shape of the Lorenz Curve.
+#### SQ1 — Accessibility
 
-    Bivariate choropleth is also used to visualize density of green space per administrative boundaries against population. Lastly, green space-income correlation is used to capture the relationship between the two variables. <!-- i think it is better to use one data that can be synced with china and NL, cos now it is different, actual income data for NL but VIIRS (light) data for china -->
+Four metrics are computed per administrative unit using WorldPop 100 m population aggregated via `exact_extract()`.
 
-    *Lorenz curve* $$G = \frac{A}{A + B}$$
+**Green space per capita.** Total green area (m²) within each admin polygon, divided by WorldPop population count. Green patches are pre-unioned via `st_union()` before intersection to avoid double-counting. Units: m² per person.
 
--   **Connectivity** The landscape structure uses number of patches (NP) and mean patch size (MPS) in hectares to define overall availability and average size of habitat fragments. Moreover Eucladian Nearest Neighbour (ENN) is also computed by taking the centroid of green patch, thus evaluating the distance of green patches from each other as metric of connectivity. Taking it further, the green patch centroids are used as network nodes. Edges are also defined as the line connecting these nodes. Through Breadth-First-Search (BFS), number of connected components are calculated. This also allows for isolated green patches to also be identified, where the gene flow across the city is blocked. This metric allow for analysis of both degree of centrality, measuring local connectivity of green patches, and also betweenness centrality, based on the edges connecting these centroids, revealing accessibility.
+**Walking-distance buffer coverage.** Euclidean buffers of **300 m** (WHO-aligned maximum comfortable walking distance) and **500 m** applied to all green patches in metric CRS, clipped to the city boundary. Metric: share of total city population falling within each buffer, reported as a single city-level scalar.
 
-### MCDA
+**Mean nearest green space distance.** Straight-line distance from each admin unit centroid to the nearest green patch centroid, computed via `st_nearest_feature()` + `st_distance()` in metric CRS.
 
-Urban green space quality cannot be defined by a single indicator and there are different dimensions of quality. With a Spatial Multi-Criteria Decision Analysis (MCDA) conditions in certain locations are evaluated through weighing different criteria. The dimensions from the research objectives are broken down to form these criteria and enables the integration of ecological, social, and spatial indicators into one framework. The MCDA framework combines indicators per category into an analytical dataset, where these indicators are weighted and aggregated into a quality score. The score allows spatial comparison between comparable spatial units; the Dutch wijken and the Chinese jiedao -- to be used as a decision-support tool for decision makers.
+**Road network entry analysis.** Road segments filtered to navigable types (primary, secondary, tertiary, residential, living_street, unclassified, service, pedestrian, cycleway, footway). A **−10 m** inward buffer excludes roads inside the green core; a **3 m** outward buffer on green boundaries identifies entry interface segments. Entry segments are centroided and dissolved at **35 m** clusters to produce deduplicated access point locations, visualised alongside 300 m walking buffers.
 
-### Data collection
+---
 
-To ensure the methodology is reproducible, this study primarily relies on globally available and open-access spatial datasets. Publicly accessible data enables the framework to be applied consistently across different geographical contexts while minimising dependence on local data availability. Even though the framework is designed around globally available datasets, complete equivalence between datasets could not always be achieved (see limitations).
+#### SQ2 — Ecological Quality
 
-Each analyses method relies on a specific combination of datasets. The table provides an overview of the methods, datasets, and corresponding sub-research question for each category. Throughout the entire analysis vector data describes green spaces, administrative boundaries, roads and water bodies, which are then combined with other data. All datasets were projected to a local coordinate reference system (Delft: EPSG:28992 & Yuexiu:EPSG:4547) prior to analysis and processed using R and QGIS.
+**Green space typology.** Every green polygon classified into one of eight classes via `classify_green_type()`, using BGT `fysiek_voorkomen` for Delft and OSM `leisure` / `landuse` / `natural` tags for Yuexiu. Three classes are excluded from all subsequent analyses: Agriculture, Cemetery, and Sports Facility. Five classes are retained: Park/Recreation, Forest/Woodland, Grass/Meadow, Nature Reserve/Scrub, and Allotment Garden.
 
-WIP!!!! ---\>
+**NDVI.** Sentinel-2 10 m cloud-free median composite (produced in Stage I via GEE) extracted per green patch and per admin unit using `terra::extract()`. A geometry scrubber (`scrub_sf()`) is applied before extraction: empty geometries dropped, `st_make_valid()` + zero-distance buffer, GEOMETRYCOLLECTION objects split to polygon parts, zero-area polygons removed. Metrics stored: `ndvi_mean`, `ndvi_sd` per patch; `ndvi_mean`, `ndvi_p25`, `ndvi_p75` per admin unit. The per-admin NDVI mean is used as the ecological quality proxy in the MCDA.
 
-| Analysis | Method | Types of data | Data source | SQ |
-|---------------|---------------|---------------|---------------|:-------------:|
-| **Accessibility** |  |  |  |  |
-| Green space per capita | Zonal statistics: green space area ÷ population per administrative unit | Green space polygons, population grid | OSM, WorldPop | SQ1 |
-| Walking-distance accessibility | 300 m & 500 m Euclidean buffers; % population within each buffer | Green space polygons, population grid, administrative boundaries | OSM, WorldPop | SQ1 |
-| Mean nearest green space distance | Mean Euclidean distance from administrative unit centroid to nearest green space | Administrative boundaries, green space polygons | OSM, GADM/CBS | SQ1 |
-| **Ecological Quality** |  |  |  |  |
-| Green space typology | Classification of green spaces based on OSM land-use categories | OSM land-use attributes | OpenStreetMap | SQ2 |
-| Vegetation condition (NDVI) | Mean NDVI calculated per green space polygon | Sentinel-2 multispectral imagery | Sentinel-2 | SQ2 |
-| Species observation density | GBIF observations normalised by green space area (log–log relationship) | Biodiversity occurrence points, green space polygons | GBIF, OSM | SQ2 |
-| **Spatial Justice** |  |  |  |  |
-| Green space Gini coefficient | Lorenz curve and Gini coefficient of green space per capita | Green space area, population | Derived from OSM + WorldPop | SQ3 |
-| Population–green space distribution | Bivariate choropleth comparing population density and green space coverage | Administrative boundaries, population, green space | WorldPop, OSM | SQ3 |
-| **Connectivity** |  |  |  |  |
-| Fragmentation metrics | Number of Patches (NP), Mean Patch Size (MPS) and Euclidean Nearest Neighbour (ENN) | Green space polygons | OSM | SQ4 |
-| Network connectivity analysis | Breadth-First Search (BFS) identifying connected components and isolated patches | Green space centroids | OSM, NetworkX | SQ4 |
-| Corridor prioritisation | Identification of potential ecological corridors between isolated patches | Connectivity outputs | Derived layer | SQ5 |
-| **Integrated Assessment** |  |  |  |  |
-| Spatial Multi-Criteria Decision Analysis (S-MCDA) | Weighted integration of accessibility, ecological quality, spatial justice and connectivity indicators | All analytical outputs | Derived layers | SQ5 |
+**Species observation density.** GBIF occurrence points joined to green patches via `st_intersects()`. Density computed as observations per hectare (`gbif_obs_per_ha`), floored at area = 0.01 ha to avoid division by zero. Plotted against patch area on a log–log scale:
+
+$$\log(\text{Area}) \quad \text{vs.} \quad \log\left(\frac{\text{Observations}}{\text{Area}}\right)$$
+
+**Blue-green balance.** Green area and water area clipped to each admin polygon via `st_intersection()`. For Yuexiu, linear water features are buffered **5 m** and unioned with water polygons before intersection; for Delft, BGT water polygons are used directly. Per-capita values computed (`green_pc_m2`, `water_pc_m2`); balance index:
+
+$$\text{BGI} = \log(1 + \text{water}_{pc}) - \log(1 + \text{green}_{pc})$$
+
+Positive values indicate water-dominant zones; negative values indicate green-dominant zones. `log1p()` suppresses extreme per-capita outliers. Admin units with missing population default to pop = 1 (flagged in log).
+
+---
+
+#### SQ3 — Spatial Justice
+
+Admin units with `pop_count < 100` are excluded from all equity analyses. WorldPop returns near-zero floor values (~1) for non-residential zones; Yuexiu's next value above 1 jumps to 28,253, confirming this threshold is appropriate.
+
+**Gini coefficient.** Computed on `green_pc_m2` per admin unit using the weighted rank-sum formula:
+
+$$G = \frac{2 \cdot \sum(\text{rank} \times \text{value})}{n \cdot \sum(\text{value})} - \frac{n+1}{n}$$
+
+Lorenz curve: cumulative population share (x) vs. cumulative green space share (y), both normalised to [0, 1].
+
+**Bivariate choropleth.** Green density (`green_m2 / admin_m2`) and population density (`pop_count / area_ha`) each classified independently into tertiles via `quantile(x, probs = c(0, 1/3, 2/3, 1))`. Nine bivariate classes produced by combining tertile labels (e.g. `Low-High`). The `Low-High` class (low green density, high population density) represents the highest equity concern.
+
+**Income correlation.** Pearson r between `green_pc_m2` and a socioeconomic proxy: CBS StatLine mean disposable income per resident (table `85163NED`, variable `gemiddeldInkomenPerInwoner`) for Delft; VIIRS VNP46A4 annual mean nighttime light radiance (nW/cm²/sr) as proxy for Yuexiu, where subdistrict income data are unavailable. Two Delft wijken with suppressed CBS income (Delftse Hout, Abtswoude — park/polder zones) are excluded from the correlation.
+
+---
+
+#### SQ4 — Connectivity
+
+**Fragmentation indices.** Three landscape metrics computed from green patch vectors:
+
+| Metric | Abbreviation | Computation |
+|---|---|---|
+| Number of patches | NP | Row count after patch filter |
+| Mean patch size | MPS (ha) | `mean(area_ha)` across all patches |
+| Euclidean nearest neighbour | ENN (m) | Centroid-to-centroid distance matrix; diagonal set to NA; row minimum; then mean across patches |
+
+**Functional connectivity graph.** Nodes: green patch centroids. Edges: all patch pairs with centroid distance ≤ **150 m** (reflecting typical dispersal range of urban birds and seed vectors), computed via `st_distance()`. Graph built via `igraph::make_empty_graph(n)` to preserve isolated patches with no edges. Metrics computed per patch: degree (connection count), normalised betweenness centrality (`igraph::betweenness(g, normalized = TRUE)`). Connected components identified via BFS traversal. Isolated patches defined as ENN > 150 m — no neighbour within the dispersal threshold.
+
+---
+
+#### SQ5 — MCDA and NbS Prioritisation
+
+**Normalisation.** All sub-scores normalised to [0, 1] via min-max scaling: $s = (x - \min) / (\max - \min)$. If max = min (no variation), all units assigned 0.5. Inversion applied where lower raw value = higher intervention urgency.
+
+**Sub-score construction.**
+
+| Sub-score | Weight | Input | Direction |
+|---|---|---|---|
+| Accessibility | 30% | Mean of normalised `green_pc_m2` (inverted) and `nearest_green_m` | Low coverage / high distance = high urgency |
+| Ecological quality | 25% | `ndvi_mean` per admin unit | Inverted — high NDVI = lower urgency |
+| Connectivity | 25% | Mean patch degree within admin unit | Inverted — low degree = high urgency. Degree used over betweenness: >75% of patches have betweenness ≈ 0, insufficient variation |
+| Spatial justice | 20% | Bivariate class pre-assigned urgency score | `Low-High` = 1.00 → `High-Low` = 0.10 |
+
+**Composite and priority tiers.**
+
+$$\text{MCDA} = 0.30 \cdot S_{\text{access}} + 0.25 \cdot S_{\text{bio}} + 0.25 \cdot S_{\text{conn}} + 0.20 \cdot S_{\text{equity}}$$
+
+Priority tiers assigned by tertile thresholds within each city: High (≥ 67th percentile), Medium (33rd–67th), Low (< 33rd percentile). Robustness tested by ±10% perturbation of each criterion weight.
+
+**NbS corridor identification.** For each isolated patch (ENN > 150 m), the nearest connected patch centroid (ENN ≤ 150 m) is identified and a straight LINESTRING drawn between them, representing the gap a corridor intervention (e.g. street tree planting, green roof linkage) should bridge. Corridors attributed with source patch area (ha) and gap distance (m). Output overlaid with High-priority admin units to produce the final NbS intervention map.
+
 
 ## Results
 
