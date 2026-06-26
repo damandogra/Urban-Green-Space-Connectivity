@@ -13,6 +13,7 @@ author:
 format:
   html:
     output-file: index.html
+    favicon: favicon.ico
     theme: [cosmo, report.scss]
     toc: true
     number-sections: true
