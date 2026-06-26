@@ -533,8 +533,9 @@ Overall, the MCDA integrates the individual analyses into a single decision supp
 
 ### Limitations
 
-Few limitations have been identified in accordance to our data source. First, most of our datasets come from OSM. Its data completeness however differ between Yuexiu, Guangzhou and Delft, the Netherlands as OSM's volunteer-based system is more dominant in Wester European cities compared to Chinese cities. This means that data gathered is not the most up-to-date nor accurate, or could be biased. Moreover, language barrier in accessing chinese dataset makes it more difficult to perform more direct comparison between the two cities, especially within the spatial justice aspect. Here, instead of using income per sub-district data, our methodology had to rely on VIIRS night-light data as proxy to economic development. While there have been literatures supporting the linkage between VIIRS night-light data as economic proxy for development, this still does not provide direct comparison between the two cities. Furthermore, GBIF observations from Typology diversity & Biodiversity section may contain sampling bias as Chinese dataset is much more up to date in comparison to Delft dataset. Interpretation becomes less meaningful due to this sampling bias. In obtaining the datasets, we are also aware of the temporal effect if data gathered were to be obtained throughout different seasons. For example, the comparison would not be less meaningful if NDVI obtained for Delft and Yuexiu were obtained during different seasons.
+Few limitations have been identified in accordance to the used data sources. First, most of the datasets come from OSM, its data completeness, however, differs between Yuexiu, Guangzhou and Delft. The Netherlands as OSM's volunteer-based system is more dominant in Western European cities compared to Chinese cities. This means that the data which is gathered is not the most up-to-date nor accurate, and could be biased. Moreover, the language barrier in accessing chinese dataset makes it more difficult to perform a direct comparison between the two cities, especially regarding the spatial justice analysis. Here, instead of using income per sub-district data, our methodology had to rely on an alternative method; the VIIRS night-light data as a proxy to economic development was used instead of actual income related numbers. While literature supports the link between VIIRS night-light data as economic proxy for development, this still does not provide a fully correct comparison between the two cities. Furthermore, GBIF observations from the ecological quality section may contain sampling bias, as the Chinese dataset are much more up to date in comparison to the Delft dataset. Due to this sampling bias, interpretation becomes less meaningful. In obtaining the datasets, there was an awareness of the temporal effect if data gathered was to be obtained in different seasons. For example, the comparison would not be less meaningful if NDVI for Delft and Yuexiu were obtained during a different seasons.
 
+<<<<<<< HEAD
 Additional limitations relate to specific analytical decisions.
 
 **WorldPop floor artifacts.** Nine Yuexiu subdistrict polygons carried `pop_count = 1` placeholder values from WorldPop, producing two fabricated high-priority subdistricts (Binjiang, Liede) in an initial analysis run. These were identified via a hard discontinuity in the sorted population distribution and excluded via a `pop_count ≥ 100` filter applied consistently across scripts 04 and 06.
@@ -564,34 +565,55 @@ subdistricts compress toward the lower urgency end, not because vegetation is
 healthy but because the range is stretched by non-vegetated pixels.
 
 There are also limitations within the analytical methodology. The MCDA weights were assigned a priori rather than derived empirically. This means that our choice to assign weight accessibility at 30%, biodiversity and connectivity at 25%, and equity/spatial justice at 20% is a judgement made before analysis. This however can differ to other researcher or planning priorities, as the weights assigned were based on judgement with nature-based solution being central to our focus analysis. Moreover, @fig-prioritytiers displays relative ranking, and does not display absolute urgency to where there needs immediate intervention to nature-based solution. It attempts to inform the least well-performing regions, rather than genuine crisis/urgency.
+=======
+In our code methodology a few limitations are identified. The MCDA weights were assigned and not derived from @fig-connectmaps, which means that the choice to assign weight accessibility at 30%, biodiversity and connectivity at 25%, and spatial justice at 20%, is a judgement made before carrying out the analysis. This, however, can differ with other research or planning priorities, as the weights assigned in this study have been based on nature-based solutions being central to the focus. Moreover, @fig-prioritytiers displays relative ranking, and does not display absolute urgency to where there needs immediate intervention to nature-based solution. It attempts to inform the least well-performing regions, rather than genuine crisis/urgency.
+
+Finally, a limitation was on the fact that there has been no regard of peripherical conditions, and, in addition, different transportation methods. Different mobility networks bring different accessibility results, if for example tramlines in relationship to urban green space would be considered. Same goes for population density in relationship to accessible urban green space, even if its further away. If peripherical conditions would have been taken in regard, the outer neighbourhoods especially, could have a completely different score on a couple of the analysis, such as the buffer and the green space per capita. 
+>>>>>>> 687674a (Re-write and add of discussion and reprocucibility and ai statement)
 
 ### Future Work
+
+**Network-based accessibility analysis:** Future work could replace Euclidean distances with a pedestrian network analysis using real walking routes and real access points (those have been assumed). Incorporating barriers such as railways, major roads, and using actual crossing points would provide a more realistic representation of how residents access urban green spaces and improve the planning relevance of accessibility indicators. 
 
 **Sensitivity analysis application on MCDA weighing distribution:** Sensitivity analysis can be applied onto weights within the MCDA analysis to examine how different weighing combinations affect the MCDA result. This would mitigate the inherent subjectivity on the opinion of authors and ensure robustness of multiple what-if scenarios. Thus, ensuring a resilient and informed decision-making process.
 
 **Dataset incoroporated enable direct comparison between two cities**: This directly relates to how data sourced through OSM is lower in Chinese cities (such seen in the GBIF analysis on biodiversity) compared to that of Delft. This will enhance consistency and reliability of cross-city comparisons.
 
-**Incorporation of more urban cooling quantitative analysis**: The blue-green infrastructure analysis can also be improved with more urban cooling or biodiversity effects, which would be particularly relevant given the context of both cities; Delft's canal-rich characteristic and within Yuexiu's central area within the Pearl River Delta. This directly translates improving urban green space quality.
+**Incorporation of more urban cooling quantitative analysis**: The blue-green infrastructure analysis can also be improved with more urban cooling or biodiversity effects, which would be particularly relevant given the context of both cities; Delft's canal-rich characteristic and within Yuexiu's central area within the Pearl River Delta. Taking blue and green infrastructure in regard would also give a more accurate result in connectivity, since blue and green often work together. This directly translates to improving urban green space quality.
 
 **Comparison between two cities more comparable in size and population density**: To improve the validity of cross-city comparison, future studies hope to ensure alignment between city sizes and population density. Reducing the current discrepancy in scale would result in more meaningful comparison for future planning recommendations.
 
+**Integration of ecosystem services**: Additional indicators such as urban heat island intensity, flood mitigation potential, carbon storage potential, or air-quality regulation could be incorporated to evaluate a wider range of ecosystem services provided by urban green infrastructure. 
+
+**Validation through user perception**: Planning and urban design are practices that heavily rely on user experience, and for more equal planning practices, citizen participation is a must. Future work coul validate the analytical framework using surveys, interviews, or participatory GIS. Comparing the modelled priority areas together with the residents, using their perception of green space quality would strengthen the framework and help refine indicator selection and weighing, and ultimately, could even provide different assessment criteria, that someone who does not actually live in the area would not think of. 
+
 ### Reproducibility
 
-**Reproducibility of from data source**:
+**Reproducibility of the data source**:
 
--   **OSM** is a crowd-sourced, volunteer-based global map providing vector features such as building, roads and point of interests. It uses ODbL 1.0 licensing/CC-BY-SA 2.0, which means that alteration, transformation is allowed yet there is legal requirement to distribute the new version via the same licensing.
+-   **Use of a configuration file**: Project-specific parameters, directory paths, coordinate reference systems, and plotting settings are centralised in a configuration file (00_config.R). This enables the workflow to be adapted to new case studies while requiring only minimal changes to the codebase. 
+
+-   **Use of a configuration file**: All spatial datasets were projected to local projected coordinate reference systems (Delft: EPSG:28992; Yuexiu:EPSG:4547) prior to analysis. This ensures consistent distance- and area-based calculations and enables reproducibility across different geographical study areas. 
+
+-   **OSM**: is a crowd-sourced, volunteer-based global map providing vector features such as building, roads and point of interests. It uses ODbL 1.0 licensing/CC-BY-SA 2.0, which means that alteration, transformation is allowed yet there is legal requirement to distribute the new version via the same licensing.
 
 <!-- -->
 
 -   **WorldPop, VIIRS and NDVI**: These datasets all come from sources from CC-BY 4.0 or public licensing, allowing for sharing, adapting or commercial uses as long as credits are given for creator.
 
-**Reproducibility of pipeline workflow**: The entire analysis workflow is designed for full reproducibility and can be executed via running groupE/run_pipeline.R. The project relies on several R libraries, which can be installed or updated.
+-   **Reproducibility of pipeline workflow**: Since several datasets (e.g. OSM and GBIF) are continuously updated, complete numerical reproducibility depends on using the exact same data snapshots. The repository therefore specifies the data sources and versions used throughout the analyses to maximise reproducibility. 
+
+-   **Data versioning**: The entire analysis workflow is designed for full reproducibility and can be executed via running groupE/run_pipeline.R. The project relies on several R libraries, which can be installed or updated.
 
 Moreover, to support open science, our workflow follows the FAIR; Findable, Accessible, Interoperable, and Reusable data principles. Findability and accessibility of our pipeline is demonstrated through our public GitHub repository, with explicit open data sources to ensure reusability of data principles.
 
-### AI usage
+### AI statement
 
+<<<<<<< HEAD
 Throughout the development of this assignment, we have been assisted by OpenAI’s ChatGPT version GPT-5.5, Google’s Gemini 3 Flash (Free tier) and Claude Sonnet 4.6. We have reviewed and understood all suggestions made by those models, and take full responsibility for the content being submitted. AI is used specifically to support our R coding.
+=======
+Throughout the development of this assignment, we used by OpenAI’s ChatGPT version GPT-5.5 and Google’s Gemini 3 Flash (Free tier) as supporting tools. The tools were primarily used to assist with R programming, debugging, gathering information on analytical methods, and for improving clarity and grammar of the written report. All AI-generated suggestions were critically reviewed and adapted. The analytical decisions, methodological choices, data processing, interpretations, and conclusions were made solely by the authors. 
+>>>>>>> 687674a (Re-write and add of discussion and reprocucibility and ai statement)
 
 ## Conclusion
 
