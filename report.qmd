@@ -25,25 +25,36 @@ source(here::here("R/00_config.R"))
 
 <!-- # Introduction -->
 
-## Introduction
+Due to rapid urbanisation, the pressure on urban green space (UGS) increases and the benefits are often unevenly distributed across neighborhoods. Green spaces are essential urban infrastructure that influence the physical and mental well-being of inhabitants. They provide a wide range of services, such as urban cooling, air quality improvement and pose opportunities for social interaction. Not only are they beneficial to humans, they also support biodiversity conservation and species movement, thereby enhancing health, ecological, and social outcomes. However, not all citizens have equal access to these green spaces and they differ in quality. Therefore, their benefits depend not only on the presence of green spaces, but also on their accessibility, ecological quality, and spatial distribution. Research emphasizes implementing multi-functional blue-green infrastructure rather than isolated parks in contemporary planning processes. (Morris, 2003; Kasim, et al., 2019)
 
-### Background
+Connectivity is a key dimension of green space quality, since urban green spaces often function better as networks rather than independent elements. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity and the ecological condition become indicators of urban green space quality. In addition, better connected green networks improve human access and facilitate movement through cities. Despite growing attention to green infrastructure networks, accessibility, ecological quality, and connectivity are still often assessed independently. (Irvine et al., 2008)
 
-### Problem statement
+As defined by Roberto Rocco (n.d.), spatial justice concerns the equitable distribution of urban resources and opportunities across different population groups. When applied to urban green spaces, it considers not only the quantity of green space, but also its quality. Together they determine whether residents have equitable access to connected and ecologically functional green environments. This is important because unequal access can reinforce existing social and environmental inequalities, making spatial justice an increasingly important consideration in urban planning. (De Sousa Silva et al., 2018)
 
-Due to rapid urbanisation, the pressure on urban green space (UGS) increases and the benefits are often unevenly distributed across neighborhoods. Green spaces are essential urban infrastructure that influence the physical and mental well-being of inhabitants. They provide a wide range of services, such as urban cooling, air quality improvement and pose opportunities for social interaction. Not only are they beneficial to humans, they also support biodiversity conservation and species attraction, thereby enhancing health, ecological, and social outcomes. However, not all citizens have equal access to these green spaces and they differ in quality. Therefore, their benefits depend not only on the presence of green spaces, but also on their accessibility, ecological quality, and spatial distribution. Research emphasizes multi-functional blue-green infrastructure rather than isolated parks. (Morris, 2003; Kasim, et al., 2019)
+Thus in this study, urban green space quality is understood as the combined performance of four dimensions: accessibility, ecological quality, spatial justice, and connectivity. Evaluating these dimensions together, they provide a more comprehensive assessment than considering each independently. To support evidence-based planning, this study integrates these dimensions into a reproducible analytical framework using a Spatial Multi-Criteria Decision Analysis (S-MCDA). The framework combines ecological, spatial, and social indicators to identify priority areas for intervention and is applied to two contrasting urban contexts: Yuexiu District, Guangzhou (China) and Delft (The Netherlands). The methodology is designed to be reproducible for both small cities and city districts. By using globally available datasets and a consistent analytical workflow, the framework can be transferred to other urban contexts to support nature-based planning strategies that improve urban green space quality and spatial justice. 
 
-Connectivity is a key dimension of green space quality, since urban green spaces often function better as networks rather than independent elements. Connected green networks improve ecological functioning by facilitating movement of species and strengthens the ecosystem resilience. The amount of biodiversity thus plays a role in determining the quality of the UGS (Irvine et al., 2008). In addition, better connected green networks improve human access and movement through cities. Despite growing attention to green infrastructure networks, accessibility, ecological quality, and connectivity are still often assessed independently. This limits our understanding of urban green space quality.
+### Study Sites
+The study compares the urban contexts of Guangzhou, in China and Delft, in The Netherlands. Both cities have a historic urban core and have a relatively high urban green coverage. Urban green spaces cover about 34% of Guangzhou, and similarly, Delft is covered by 33% (HUGSI). 
 
-Spatial justice concerns the equitable distribution of urban resources and opportunities across different populations groups (Rocco, n.d). When applied to urban green spaces, it considers not only the quantity of the green spaces, but also whether residents have equitable access to connected and ecologically functional green environments. Unequal access can reinforce existing social and environmental inequalities, making spatial justice an increasingly important consideration in urban planning. (De Sousa Silva et al., 2018)
+Despite these similarities, comparing both cities presents a challenge because of their differences in scale and population density. Delft covers approximately 24 km2 and has a relative low density; the population is 102.000, while Guangzhou has a population of 18.680.000 over 7.433,3 km2 (WorldPop). As a result, Guangzhou is not only about 300 times as big on surface area, it is also approximately 6 times more densely populated than Delft. A direct comparison between the two cities would therefore be inappropriate, requiring the selection of a comparable spatial unit.
 
-In this study, urban green space quality is understood as the combined performance of four dimensions: accessibility, ecological quality, connectivity, and spatial justice. Considering these dimensions together provides a more comprehensive assessment than evaluating each independently.
+```{r}
+#| label: fig-context
+#| fig-cap: "Study sites of Guangzhou and Delft"
+#| out-width: "100%"
 
-Due to spatial justice being increasingly recognised as an important factor for urban quality/wellbeing, municipalities and planners are looking for ways to improve not only the amount, but also the quality of these urban green spaces. This study responds to the need to integrate several dimensions into a reproducible framework. The framework combines them through a Spatial Multi-Criteria Decision Analysis (S-MCDA) to support in identifying priority areas for intervention. The aim of the research is to develop a spatial analytical tool for evaluating urban green space quality by investigating the relationship between accessibility, connectivity, biodiversity, and ultimately, spatial justice. This relationship is compared in two contrasting urban contexts: Delft (The Netherlands) and Guangzhou (China). The framework identifies areas where interventions can improve urban green space quality and translates findings into planning recommendations for increasing this quality.
+knitr::include_graphics(file.path(OUT_ROOT,"fig_context_gz_dl.png"))
+```
 
-Study sites: Delft, The Netherlands and historic center district of Yuexiu in Guangzhou, China.
+Guangzhou is administratively divided into districts. To get a comparable study area, this research focuses on Yuexiu District, the historical core of Guangzhou. Yuexiu covers 33.8 km2 and reports 1.173.100 inhabitants (WorldPop). Although still considerably denser than Delft, it represents a much more comparable spatial scale than the municipality of Guangzhou as a whole. The analytical framework can be applied consistently across both study areas with the use of this spatial unit. 
 
-Methodology aims to be reproducible for either small cities or city districts. It concludes with providing a strategy for nature-based solutions to improve the relationship between spatial justice and green space connectivity.
+```{r}
+#| label: fig-context
+#| fig-cap: "Study sites of Yuexiu District (Guangzhou) and Delft."
+#| out-width: "100%"
+
+knitr::include_graphics(file.path(OUT_ROOT, "report_files/fig_context_yx_dl.png"))
+```
 
 ### Literature Review
 
