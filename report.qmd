@@ -77,11 +77,7 @@ knitr::include_graphics(file.path(OUT_ROOT, "fig_ugs_yx_dl.png"))
 
 ### Research questions
 
-The main research question of this study is: opt 1. How does connectivity in between urban green spaces contribute to spatial justice in the cities Delft and Guangzhou?
-
-opt 2. How can accessibility, ecological quality, spatial justice, and connectivity be integrated into a spatial analytical framework to evaluate urban green space quality in Delft and Yuexiu?
-
-opt 3. How does the connectivity of urban green spaces contribute to urban green space quality and spatial justice in Delft and Yuexiu District?
+The main research question of this study is: How can urban green space quality assessment help inform on nature-based interventions in Delft and Yuexiu District?
 
 To answer this question, urban green space quality is evaluated through four complementary dimensions: accessibility, ecological quality, spatial justice, and connectivity. Each dimension forms a research objective with a corresponding sub-research question. The results of these analyses are integrated in a framework through a S-MCDA to indentify priority areas for interventions.
 
@@ -593,6 +589,10 @@ Throughout the development of this assignment, we have been assisted by OpenAI's
 
 ## Conclusion
 
+This study answers to the research question ::: {.callout-note appearance="simple"}
+**Research Question**  How can urban green space quality assessment help inform on nature-based interventions in Delft and Yuexiu District?
+:::
+
 This study developed and applied a reproducible spatial analytical framework for evaluating urban green space quality. Accessibility, ecological quality, spatial justice, and connectivity are the key dimensions on which urban green space quality is assessed. By integrating these dimensions into a Spatial Multi-Criteria Decision Analysis (S-MCDA), the framework provides a decision-support tool which can help identifying priority areas for nature-based interventions in urban contexts. The method can be applied to a variety of urban contexts as long as the spatial unit remains comparable. 
 
 The comparison between Yuexiu and Delft demonstrates that urban green space quality not only depends on the quantity of green spaces, but also on its quality, which is assessed through the four dimensions. Delft generally performs better across the assessed indicators, with higher accessbility, more consistent ecological quality, lower spatial inequality, and a denser network of interconnected green patches. In contrast, Yuexiu is characterised by fewer but substantially larger parks that serve a much population-dense urban context. Although these parks provide important ecological functions, they remain relatively isolated from one another. This results in lower accessibility rates with weaker ecological connectivity. Ultimately, there is a greater spatial inequality in Yuexiu than in Delft. 
@@ -600,9 +600,3 @@ The comparison between Yuexiu and Delft demonstrates that urban green space qual
 The MCDA shows that connectivity is where the greatest opportunity for improvement in both study areas is. Rather than identifying the better-performing city, the framework highlights location-specific priorities and shows that effective nature-based solutions should respond to local spatial conditions; there is no universal "solution". In Delft, small interventions can still strengthen an already well-connected green network. In Yuexiu, benefits are likely to be achieved by creating ecological stepping stones and green corridors that connect the isolated patches (mostly parks), this would ultimately improve accessibility for the surrounding neighbourhoods. for Yuexiu, much larger interventions are necessary.
 
 This study has demonstrated that combining the four dimensions (accessibility, ecological quality, spatial justice, and connectivity) into a reproducible framework provides a more complete assessment of urban green space quality and helps contextualising it. By relying mostly on open-access datasets and a transparant methodology, the workflow can be transferred to other cities and/or districts and be adapted to different planning contexts. It therefore offers planners and decision-makers a tool for prioritising nature-based solutions and supporting more equitable and resilient urban green infrastructure. 
-
-::: {.callout-note appearance="simple"}
-**Research Question**  How can urban green space quality assessment help inform on nature-based interventions in Delft and Yuexiu District?
-How does connectivity between & biodiversity in urban green spaces 
-contribute to spatial justice in the cities Delft and Guangzhou?
-:::
