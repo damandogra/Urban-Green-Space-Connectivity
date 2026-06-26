@@ -57,10 +57,20 @@ Guangzhou is administratively divided into districts. To get a comparable study 
 
 ```{r}
 #| label: fig-context
-#| fig-cap: "Study sites of Yuexiu District (Guangzhou) and Delft."
+#| fig-cap: "Study sites of Yuexiu District (Guangzhou) and Delft"
 #| out-width: "100%"
 
 knitr::include_graphics(file.path(OUT_ROOT, "report_files/fig_context_yx_dl.png"))
+```
+
+This study assesses urban green spaces. Figure @fig-ugs shows the assessed composition of urban green spaces in Yuexiu and Delft, and is put in context with roads and water bodies within the administrative boundaries. For the sake of time in this study, peripherical conditions of Yuexiu and Delft are not assessed, which could influence the results, but would be a possibility for further research.
+
+```{r}
+#| label: fig-ugs
+#| fig-cap: "Urban green spaces"
+#| out-width: "100%"
+
+knitr::include_graphics(file.path(OUT_ROOT, "report_files/fig_ugs_yx_dl.png"))
 ```
 
 ## Research Questions
@@ -190,30 +200,40 @@ WIP!!!! ---\>
 ## Results
 
 ### 1. Accessibility
-
+In order to assess accessibility to urban green spaces accordingly, first Yuexiu and Delft need to be contextualised according to their population densities. As shown in Figure @fig-density, Yuexiu has a much higher population density than Delft across almost all administrative units. Delft shows a more varied and generally lower-density pattern, while Yuexiu is characterised by a homogenous high density, this reflects its position as urban core of Guangzhou. 
 ```{r}
-#| label: fig-access
-#| fig-cap: "Access per capita map."
-knitr::include_graphics(file.path(OUT_ROOT, "fig_access_per_capita.png"))
+#| label: fig-density
+#| fig-cap: "Population density map"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_population_density.png"))
 ```
 
-Delft neighbourhoods exhibit a mid-to-high, more evenly distributed green space-per-capita, while Yuexiu reveal low, more sparse green space composition within its core urban area. This can be attributed to the nature of scale of urbanization between the two cities where Yuexiu exhibit more megacity characteristic in comparison to Delft, exhibiting more medium-sized European city. With much higher population density of Yuexiu, 25,000/km² in comparison to Delft, 4,856/km² on population density, this discrepancy may explain the Yuexiu's need to prioritize more residential development over green spaces.
+This density difference is important for interpreting the green space per capita results. Figure @fig-access shows green space per capita is higher in Delft, and more evenly distributed across the city. In Yuexiu, values remain low in most jiedao, despite the presence of several larger green patches. This suggests that Yuexiu's high population density places much greater pressure on available urban green space. However, the amount of green space per person depends not only on the surface amount presence of green areas, but also on the number of residents sharing them. There could be an equal amount of green surface area, but if density is higher, more residents share it, which brings the number of green space per capita down. Therefore, with much higher population density of Yuexiu (25,000/km²) in comparison to Delft (4,856/km²), the lower green space per capita in Yuexiu can not be interpreted as a lack of green space, but should be considered as a result of a much higher number of residents sharing an amount of accessible greenery. 
 
 Moreover, the data reveals a large discrepancy in green space-per-capita ratio, with scale peaking to 400 m²/person in Delft, compared to merely 10 m²/person in Yuexiu. This is a 40 times fold difference in the upper scale bound. To make up for this large disparity, the visualization utilizes a uniform pseudo-log scale to compress the higher range while expanding the lower range, thus resulting in a more meaningful comparison between the two cities @fig-access.
 
 ```{r}
-#| label: fig-meandist
-#| fig-cap: "Mean Distance to the nearest green space."
-knitr::include_graphics(file.path(OUT_ROOT, "fig_nearest_green_distance.png"))
+#| label: fig-access
+#| fig-cap: "Green space per capita map"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_access_per_capita.png"))
 ```
+
+The buffer analysis confirms the previous mentioned pattern. Figure @fig-buffer shows that almost the entire population of Delft is within a 300m access area surrounding green space, and most certainly within 500m access. Delft's scale tops at \~200m, even the worst-served wijk is close by Yuexiu standards. Yuexiu has one neighbourhood reaching 600m+ (the black patch in the northwest, same outlier as the blue-green ratio map, which had zero green space). The central strip of the high distance of neighbourhood to green space on the Delft map, corresponds to the rail corridor where green space is sparse.Yuexiu performs worse on accessibility equality, especially at the 300m treshold, although accessibility improves considerably at 500m. This indicated that green space in Yuexiu is not necessarily absent, but that it is less available within short walking distance for a large share of the population, meaning the population within certain neighbourhoods has to travel to reach a green space.
 
 ```{r}
 #| label: fig-buffer
-#| fig-cap: "Buffer coverage percentage."
+#| fig-cap: "Buffer coverage percentage"
 knitr::include_graphics(file.path(OUT_ROOT, "fig_buffer_coverage.png"))
 ```
 
-The Mean distance to nearest green space, reveals the mean distance the population within each neighbourhood has to travel to reach a green space. Delft's scale tops at \~200m, even the worst-served wijk is close by Yuexiu standards. Yuexiu has one neighbourhood reaching 600m+ (the black patch in the northwest, same outlier as the blue-green ratio map, which had zero green space). The central strip of the high distance of neighbourhood to green space on the Delft map, corresponds to the rail corridor where green space is sparse. While both cities do not exhibit large disparity in accessibility to green space within each city, the between-city differences is more apparent evident in their maximum distance metrics @fig-meandist. This is also supported by the normalized walking distance to green space difference between the two cities on @fig-buffer.
+While both cities do not exhibit large disparity in accessibility to green space within each city, the between-city differences is more apparent evident in their maximum distance metrics @fig-meandist. This is also supported by the normalized walking distance to green space difference between the two cities on @fig-buffer.
+
+```{r}
+#| label: fig-meandist
+#| fig-cap: "Mean Distance to the nearest green space"
+knitr::include_graphics(file.path(OUT_ROOT, "fig_nearest_green_distance.png"))
+```
+
+Finally, the network analysis presented on @fig-network displays assumed access points of parks from road network, through intersecting a 3m green area buffer with road networks. Access points, visualized in red dots, reveal a starking difference between the two cities. Within a 300m buffer, approximating to 3 to 4 minutes of walking, residents of Yuexiu historic district are able reach access points to green areas. In contrast to Yuexiu, Delft reveals a different spatial pattern, with more access points and its green spaces that are distributed more evenly across the city. The widespread availability of green spaces is seen by its higher degree of buffer overlap, covering almost the entire city of Delft - that is different compared to Yuexiu, exhibiting more sparse distribution of urban green spaces.
 
 ```{r}
 #| label: fig-network
@@ -221,7 +241,7 @@ The Mean distance to nearest green space, reveals the mean distance the populati
 knitr::include_graphics(file.path(OUT_ROOT, "fig_network_walk_access.png"))
 ```
 
-Finally, the network analysis presented on @fig-network displays the access points of parks from road network, through intersecting a 300m green area buffer with road networks. Access points, visualized in orange, reveal a starking difference between the two cities. Within a 300m buffer, approximating to 3 to 4 minutes of walking, residents of Yuexiu historic district are able reach access points to green areas. In contrast to Yuexiu, Delft reveals a different spatial pattern. While fewer orange access points are mapped across Delft, its green spaces are distributed more evenly across the city. The widespread availability of green spaces is seen by its higher degree of buffer overlap, covering almost the entire city of Delft - that is different compared to Yuexiu, exhibiting more sparse distribution of urban green spaces. It can thus be concluded that while Yuexiu may exhibit more access point to parks, Delft may not exhibit as many access points, as most of the city, are already accessible to green areas, within 100-300-500m buffers (approximating to 1.5m, 3m, and 6.5m of walking distance).
+These results conclude a different accessibility structure, where Yuexiu depends more on larger green spaces and travel time, whereas Delft benefits from a more equally distributed green space network, consisting out of smaller patches. Delft performs better in terms of green space availability and walking-distance access, and due to its lesser density, its urban green space is less pressurised. 
 
 ### 2. Typology diversity & Biodiversity
 
@@ -326,7 +346,7 @@ Figure @fig-fragm reveal that while Delft has much higher number of patches, its
 
 ```{r}
 #| label: fig-connectmaps
-#| fig-cap: "Green patch connectivity maps for Yuexiu and Delft."
+#| fig-cap: "Green patch connectivity maps for Yuexiu and Delft"
 #| 
 knitr::include_graphics(file.path(OUT_ROOT, "fig_connectivity_maps.png"))
 ```
@@ -361,7 +381,7 @@ For each of the four criteria, the city-wide mean of the normalized urgency scor
 
 ```{r}
 #| label: fig-prioritytiers
-#| fig-cap: "Green patch connectivity maps for Yuexiu and Delft."
+#| fig-cap: "Green patch connectivity maps for Yuexiu and Delft"
 #|
 knitr::include_graphics(file.path(OUT_ROOT, "fig_priority_tiers.png"))
 ```
