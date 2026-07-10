@@ -2,14 +2,6 @@
 title: "Spatial Justice through Urban Green Space Connectivity"
 favicon: "https://applied-spatial-analytics.github.io/create-your-report-groupe/docs/favicon.ico"
 bibliography: references.bib
-subtitle: "Project report of Group E"
-author:
-  - name: "Roxanne Vuijk"
-    affiliation: "MSc Urbanism"
-  - name: "Belina Aileen"
-    affiliation: "MSc Geomatics"
-  - name: "Daman Dogra"
-    affiliation: "MSc Geomatics"
 format:
   html:
     output-file: index.html
